@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
 <head>
@@ -46,6 +46,9 @@
     <link rel="stylesheet" type="text/css" href="css/user.css">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <!-- Scripts are loaded at the end of the body to improve page load speed -->
+<link rel="stylesheet" href="/mynestai/mynestai.css">
+
+<script src="/mynestai/mynestai.js"></script>
 </head>
 
 <body class="no-blur">
@@ -95,8 +98,8 @@
                                     </strong>
 
                                     <div class="flex-container gap3px">
-                                        <div data-preset-manager-import="kobold" class="margin0 menu_button_icon menu_button" title="Import preset" data-i18n="[title]Import preset">
-                                            <i class="fa-fw fa-solid fa-file-import"></i>
+                                        <div data-preset-manager-Import="kobold" class="margin0 menu_button_icon menu_button" title="Import preset" data-i18n="[title]Import preset">
+                                            <i class="fa-fw fa-solid fa-file-Import"></i>
                                         </div>
                                         <div data-preset-manager-export="kobold" class="margin0 menu_button_icon menu_button" title="Export preset" data-i18n="[title]Export preset">
                                             <i class="fa-fw fa-solid fa-file-export"></i>
@@ -137,8 +140,8 @@
                                     </strong>
 
                                     <div class="flex-container gap3px">
-                                        <div data-preset-manager-import="novel" class="margin0 menu_button_icon menu_button" title="Import preset" data-i18n="[title]Import preset">
-                                            <i class="fa-fw fa-solid fa-file-import"></i>
+                                        <div data-preset-manager-Import="novel" class="margin0 menu_button_icon menu_button" title="Import preset" data-i18n="[title]Import preset">
+                                            <i class="fa-fw fa-solid fa-file-Import"></i>
                                         </div>
                                         <div data-preset-manager-export="novel" class="margin0 menu_button_icon menu_button" title="Export preset" data-i18n="[title]Export preset">
                                             <i class="fa-fw fa-solid fa-file-export"></i>
@@ -182,8 +185,8 @@
                                                 <i class="fa-fw fa-solid fa-link toggleOn"></i>
                                                 <i class="fa-fw fa-solid fa-link-slash toggleOff"></i>
                                             </label>
-                                            <div id="import_oai_preset" class="margin0 menu_button menu_button_icon" title="Import preset" data-i18n="[title]Import preset">
-                                                <i class="fa-fw fa-solid fa-file-import"></i>
+                                            <div id="Import_oai_preset" class="margin0 menu_button menu_button_icon" title="Import preset" data-i18n="[title]Import preset">
+                                                <i class="fa-fw fa-solid fa-file-Import"></i>
                                             </div>
                                             <div id="export_oai_preset" class="margin0 menu_button menu_button_icon" title="Export preset" data-i18n="[title]Export preset">
                                                 <i class="fa-fw fa-solid fa-file-export"></i>
@@ -199,7 +202,7 @@
                                             <option value="gui" data-i18n="Default">Default</option>
                                         </select>
                                         <div class="flex-container marginLeft5 gap3px">
-                                            <input id="openai_preset_import_file" type="file" accept=".json,.settings" hidden />
+                                            <input id="openai_preset_Import_file" type="file" accept=".json,.settings" hidden />
                                             <div id="update_oai_preset" class="menu_button menu_button_icon" title="Update current preset" data-i18n="[title]Update current preset">
                                                 <i class="fa-fw fa-solid fa-save"></i>
                                             </div>
@@ -220,8 +223,8 @@
                                     </strong>
 
                                     <div class="flex-container gap3px">
-                                        <div data-preset-manager-import="textgenerationwebui" class="margin0 menu_button_icon menu_button" title="Import preset" data-i18n="[title]Import preset">
-                                            <i class="fa-fw fa-solid fa-file-import"></i>
+                                        <div data-preset-manager-Import="textgenerationwebui" class="margin0 menu_button_icon menu_button" title="Import preset" data-i18n="[title]Import preset">
+                                            <i class="fa-fw fa-solid fa-file-Import"></i>
                                         </div>
                                         <div data-preset-manager-export="textgenerationwebui" class="margin0 menu_button_icon menu_button" title="Export preset" data-i18n="[title]Export preset">
                                             <i class="fa-fw fa-solid fa-file-export"></i>
@@ -2234,10 +2237,10 @@
                                         <select id="openai_logit_bias_preset">
                                         </select>
                                         <i title="New preset" id="openai_logit_bias_new_preset" class="menu_button fa-solid fa-plus" data-i18n="[title]New preset"></i>
-                                        <i title="Import preset" id="openai_logit_bias_import_preset" class="menu_button fa-solid fa-file-import" data-i18n="[title]Import preset"></i>
+                                        <i title="Import preset" id="openai_logit_bias_Import_preset" class="menu_button fa-solid fa-file-Import" data-i18n="[title]Import preset"></i>
                                         <i title="Export preset" id="openai_logit_bias_export_preset" class="menu_button fa-solid fa-file-export" data-i18n="[title]Export preset"></i>
                                         <i title="Delete preset" id="openai_logit_bias_delete_preset" class="menu_button fa-solid fa-trash-can" data-i18n="[title]Delete preset"></i>
-                                        <input id="openai_logit_bias_import_file" type="file" accept=".json" hidden />
+                                        <input id="openai_logit_bias_Import_file" type="file" accept=".json" hidden />
                                     </div>
                                     <div class="inline-drawer wide100p">
                                         <div class="inline-drawer-toggle inline-drawer-header">
@@ -3326,17 +3329,17 @@
                                         <option value="gemini-2.5-flash-image-preview">gemini-2.5-flash-image-preview</option>
                                     </optgroup>
                                     <optgroup label="Gemini 2.0">
-                                        <option value="gemini-2.0-pro-exp-02-05">gemini-2.0-pro-exp-02-05 → 2.5-exp-03-25</option>
-                                        <option value="gemini-2.0-pro-exp">gemini-2.0-pro-exp → 2.5-exp-03-25</option>
-                                        <option value="gemini-exp-1206">gemini-exp-1206 → 2.5-exp-03-25</option>
+                                        <option value="gemini-2.0-pro-exp-02-05">gemini-2.0-pro-exp-02-05 â†’ 2.5-exp-03-25</option>
+                                        <option value="gemini-2.0-pro-exp">gemini-2.0-pro-exp â†’ 2.5-exp-03-25</option>
+                                        <option value="gemini-exp-1206">gemini-exp-1206 â†’ 2.5-exp-03-25</option>
                                         <option value="gemini-2.0-flash-001">gemini-2.0-flash-001</option>
                                         <option value="gemini-2.0-flash-exp-image-generation">gemini-2.0-flash-exp-image-generation</option>
                                         <option value="gemini-2.0-flash-preview-image-generation">gemini-2.0-flash-preview-image-generation</option>
                                         <option value="gemini-2.0-flash-exp">gemini-2.0-flash-exp</option>
                                         <option value="gemini-2.0-flash">gemini-2.0-flash</option>
-                                        <option value="gemini-2.0-flash-thinking-exp-01-21">gemini-2.0-flash-thinking-exp-01-21 → 2.5-flash-preview-05-20</option>
-                                        <option value="gemini-2.0-flash-thinking-exp-1219">gemini-2.0-flash-thinking-exp-1219 → 2.5-flash-preview-05-20</option>
-                                        <option value="gemini-2.0-flash-thinking-exp">gemini-2.0-flash-thinking-exp → 2.5-flash-preview-05-20</option>
+                                        <option value="gemini-2.0-flash-thinking-exp-01-21">gemini-2.0-flash-thinking-exp-01-21 â†’ 2.5-flash-preview-05-20</option>
+                                        <option value="gemini-2.0-flash-thinking-exp-1219">gemini-2.0-flash-thinking-exp-1219 â†’ 2.5-flash-preview-05-20</option>
+                                        <option value="gemini-2.0-flash-thinking-exp">gemini-2.0-flash-thinking-exp â†’ 2.5-flash-preview-05-20</option>
                                         <option value="gemini-2.0-flash-lite-001">gemini-2.0-flash-lite-001</option>
                                         <option value="gemini-2.0-flash-lite-preview-02-05">gemini-2.0-flash-lite-preview-02-05</option>
                                         <option value="gemini-2.0-flash-lite-preview">gemini-2.0-flash-lite-preview</option>
@@ -4069,7 +4072,7 @@
                     <label for="auto-connect-checkbox" class="checkbox_label"><input id="auto-connect-checkbox" type="checkbox" />
                         <span data-i18n="Auto-connect to Last Server">Auto-connect to Last Server</span>
                     </label>
-                    <a id="viewSecrets" href="javascript:void(0);" data-i18n="[missing_key_text]Missing key;[key_saved_text]Key saved" missing_key_text="❌ Missing key" key_saved_text="✔️ Key saved">
+                    <a id="viewSecrets" href="javascript:void(0);" data-i18n="[missing_key_text]Missing key;[key_saved_text]Key saved" missing_key_text="âŒ Missing key" key_saved_text="âœ”ï¸ Key saved">
                         <span data-i18n="View hidden API keys">View hidden API keys</span>
                     </a>
                 </div>
@@ -4091,9 +4094,9 @@
                         </a>
                     </h3>
                     <div class="flex-container" data-cc-null>
-                        <input id="af_master_import_file" type="file" hidden accept=".json" class="displayNone">
-                        <div id="af_master_import" class="menu_button menu_button_icon" title="Import Advanced Formatting settings&#10;&#10;You can also provide legacy files for Instruct and Context templates." data-i18n="[title]Import Advanced Formatting settings">
-                            <i class="fa-solid fa-file-import"></i>
+                        <input id="af_master_Import_file" type="file" hidden accept=".json" class="displayNone">
+                        <div id="af_master_Import" class="menu_button menu_button_icon" title="Import Advanced Formatting settings&#10;&#10;You can also provide legacy files for Instruct and Context templates." data-i18n="[title]Import Advanced Formatting settings">
+                            <i class="fa-solid fa-file-Import"></i>
                             <span data-i18n="Master Import">Master Import</span>
                         </div>
                         <div id="af_master_export" class="menu_button menu_button_icon" title="Export Advanced Formatting settings" data-i18n="[title]Export Advanced Formatting settings">
@@ -4129,7 +4132,7 @@
                                     <i data-preset-manager-update="context" class="menu_button fa-solid fa-save" title="Update current template" data-i18n="[title]Update current template"></i>
                                     <i data-preset-manager-rename="context" class="menu_button fa-pencil fa-solid" title="Rename current template" data-i18n="[title]Rename current template"></i>
                                     <i data-preset-manager-new="context" class="menu_button fa-solid fa-file-circle-plus" title="Save template as" data-i18n="[title]Save template as"></i>
-                                    <i data-preset-manager-import="context" class="displayNone menu_button fa-solid fa-file-import" title="Import template" data-i18n="[title]Import template"></i>
+                                    <i data-preset-manager-Import="context" class="displayNone menu_button fa-solid fa-file-Import" title="Import template" data-i18n="[title]Import template"></i>
                                     <i data-preset-manager-export="context" class="displayNone menu_button fa-solid fa-file-export" title="Export template" data-i18n="[title]Export template"></i>
                                     <i data-preset-manager-restore="context" class="menu_button fa-solid fa-recycle" title="Restore current template" data-i18n="[title]Restore current template"></i>
                                     <i id="context_delete_preset" data-preset-manager-delete="context" class="menu_button fa-solid fa-trash-can" title="Delete the template" data-i18n="[title]Delete the template"></i>
@@ -4268,7 +4271,7 @@
                                     <i data-preset-manager-update="instruct" class="menu_button fa-solid fa-save" title="Update current template" data-i18n="[title]Update current template"></i>
                                     <i data-preset-manager-rename="instruct" class="menu_button fa-pencil fa-solid" title="Rename current template" data-i18n="[title]Rename current template"></i>
                                     <i data-preset-manager-new="instruct" class="menu_button fa-solid fa-file-circle-plus" title="Save template as" data-i18n="[title]Save template as"></i>
-                                    <i data-preset-manager-import="instruct" class="displayNone menu_button fa-solid fa-file-import" title="Import template" data-i18n="[title]Import template"></i>
+                                    <i data-preset-manager-Import="instruct" class="displayNone menu_button fa-solid fa-file-Import" title="Import template" data-i18n="[title]Import template"></i>
                                     <i data-preset-manager-export="instruct" class="displayNone menu_button fa-solid fa-file-export" title="Export template" data-i18n="[title]Export template"></i>
                                     <i data-preset-manager-restore="instruct" class="menu_button fa-solid fa-recycle" title="Restore current template" data-i18n="[title]Restore current template"></i>
                                     <i data-preset-manager-delete="instruct" class="menu_button fa-solid fa-trash-can" title="Delete template" data-i18n="[title]Delete template"></i>
@@ -4451,7 +4454,7 @@
                                     <i data-preset-manager-update="sysprompt" class="menu_button fa-solid fa-save" title="Update current prompt" data-i18n="[title]Update current prompt"></i>
                                     <i data-preset-manager-rename="sysprompt" class="menu_button fa-pencil fa-solid" title="Rename current prompt" data-i18n="[title]Rename current prompt"></i>
                                     <i data-preset-manager-new="sysprompt" class="menu_button fa-solid fa-file-circle-plus" title="Save prompt as" data-i18n="[title]Save prompt as"></i>
-                                    <i data-preset-manager-import="sysprompt" class="displayNone menu_button fa-solid fa-file-import" title="Import template" data-i18n="[title]Import template"></i>
+                                    <i data-preset-manager-Import="sysprompt" class="displayNone menu_button fa-solid fa-file-Import" title="Import template" data-i18n="[title]Import template"></i>
                                     <i data-preset-manager-export="sysprompt" class="displayNone menu_button fa-solid fa-file-export" title="Export template" data-i18n="[title]Export template"></i>
                                     <i data-preset-manager-restore="sysprompt" class="menu_button fa-solid fa-recycle" title="Restore current prompt" data-i18n="[title]Restore current prompt"></i>
                                     <i data-preset-manager-delete="sysprompt" class="menu_button fa-solid fa-trash-can" title="Delete prompt" data-i18n="[title]Delete prompt"></i>
@@ -4587,7 +4590,7 @@
                                             <i data-preset-manager-update="reasoning" class="menu_button fa-solid fa-save" title="Update current template" data-i18n="[title]Update current template"></i>
                                             <i data-preset-manager-rename="reasoning" class="menu_button fa-pencil fa-solid" title="Rename current template" data-i18n="[title]Rename current template"></i>
                                             <i data-preset-manager-new="reasoning" class="menu_button fa-solid fa-file-circle-plus" title="Save template as" data-i18n="[title]Save template as"></i>
-                                            <i data-preset-manager-import="reasoning" class="displayNone menu_button fa-solid fa-file-import" title="Import template" data-i18n="[title]Import template"></i>
+                                            <i data-preset-manager-Import="reasoning" class="displayNone menu_button fa-solid fa-file-Import" title="Import template" data-i18n="[title]Import template"></i>
                                             <i data-preset-manager-export="reasoning" class="displayNone menu_button fa-solid fa-file-export" title="Export template" data-i18n="[title]Export template"></i>
                                             <i data-preset-manager-restore="reasoning" class="menu_button fa-solid fa-recycle" title="Restore current template" data-i18n="[title]Restore current template"></i>
                                             <i data-preset-manager-delete="reasoning" class="menu_button fa-solid fa-trash-can" title="Delete template" data-i18n="[title]Delete template"></i>
@@ -4814,7 +4817,7 @@
                     <div id="world_popup">
                         <hr>
                         <div class="flex-container alignitemscenter">
-                            <input type="file" id="world_import_file" accept=".json,.lorebook,.png" name="avatar" hidden>
+                            <input type="file" id="world_Import_file" accept=".json,.lorebook,.png" name="avatar" hidden>
                             <div id="world_create_button" class="menu_button menu_button_icon">
                                 <i class="fa-solid fa-globe"></i>
                                 <span data-i18n="Create">Create</span>
@@ -4823,7 +4826,7 @@
                             <select id="world_editor_select">
                                 <option value="" data-i18n="--- Pick to Edit ---">--- Pick to Edit ---</option>
                             </select>
-                            <div id="world_import_button" class="menu_button fa-solid fa-file-import" title="Import World Info" data-i18n="[title]Import World Info"></div>
+                            <div id="world_Import_button" class="menu_button fa-solid fa-file-Import" title="Import World Info" data-i18n="[title]Import World Info"></div>
                             <div id="world_popup_export" class="menu_button fa-solid fa-file-export" title="Export World Info" data-i18n="[title]Export World Info"></div>
                             <div id="world_popup_name_button" class="menu_button fa-pencil fa-solid" title="Rename World Info" data-i18n="[title]Rename World Info"></div>
                             <div id="world_duplicate" class="menu_button fa-solid fa-paste" title="Duplicate World Info" data-i18n="[title]Duplicate World Info"></div>
@@ -4842,16 +4845,16 @@
                                 <option data-rule="custom" value="13" data-i18n="Custom">Custom</option>
                                 <option data-order="asc" data-field="comment" value="1" data-i18n="Title A-Z">Title A-Z</option>
                                 <option data-order="desc" data-field="comment" value="2" data-i18n="Title Z-A">Title Z-A</option>
-                                <option data-order="asc" data-field="content" data-rule="length" value="3" data-i18n="Tokens ↗">Tokens ↗</option>
-                                <option data-order="desc" data-field="content" data-rule="length" value="4" data-i18n="Tokens ↘">Tokens ↘</option>
-                                <option data-order="asc" data-field="depth" value="5" data-i18n="Depth ↗">Depth ↗</option>
-                                <option data-order="desc" data-field="depth" value="6" data-i18n="Depth ↘">Depth ↘</option>
-                                <option data-order="asc" data-field="order" value="7" data-i18n="Order ↗">Order ↗</option>
-                                <option data-order="desc" data-field="order" value="8" data-i18n="Order ↘">Order ↘</option>
-                                <option data-order="asc" data-field="uid" value="9" data-i18n="UID ↗">UID ↗</option>
-                                <option data-order="desc" data-field="uid" value="10" data-i18n="UID ↘">UID ↘</option>
-                                <option data-order="asc" data-field="probability" value="11" data-i18n="Trigger% ↗">Trigger% ↗</option>
-                                <option data-order="desc" data-field="probability" value="12" data-i18n="Trigger% ↘">Trigger% ↘</option>
+                                <option data-order="asc" data-field="content" data-rule="length" value="3" data-i18n="Tokens â†—">Tokens â†—</option>
+                                <option data-order="desc" data-field="content" data-rule="length" value="4" data-i18n="Tokens â†˜">Tokens â†˜</option>
+                                <option data-order="asc" data-field="depth" value="5" data-i18n="Depth â†—">Depth â†—</option>
+                                <option data-order="desc" data-field="depth" value="6" data-i18n="Depth â†˜">Depth â†˜</option>
+                                <option data-order="asc" data-field="order" value="7" data-i18n="Order â†—">Order â†—</option>
+                                <option data-order="desc" data-field="order" value="8" data-i18n="Order â†˜">Order â†˜</option>
+                                <option data-order="asc" data-field="uid" value="9" data-i18n="UID â†—">UID â†—</option>
+                                <option data-order="desc" data-field="uid" value="10" data-i18n="UID â†˜">UID â†˜</option>
+                                <option data-order="asc" data-field="probability" value="11" data-i18n="Trigger% â†—">Trigger% â†—</option>
+                                <option data-order="desc" data-field="probability" value="12" data-i18n="Trigger% â†˜">Trigger% â†˜</option>
                             </select>
                             <div id="world_refresh" class="menu_button fa-solid fa-arrows-rotate" title="Refresh" data-i18n="[title]Refresh"></div>
                             <div id="world_info_pagination"></div>
@@ -4913,8 +4916,8 @@
                             <h4 class="title_restorable">
                                 <span data-i18n="UI Theme">UI Theme</span>
                                 <div class="flex-container">
-                                    <div id="ui_preset_import_button" class="menu_button menu_button_icon margin0" title="Import a theme file" data-i18n="[title]Import a theme file">
-                                        <i class="fa-solid fa-file-import"></i>
+                                    <div id="ui_preset_Import_button" class="menu_button menu_button_icon margin0" title="Import a theme file" data-i18n="[title]Import a theme file">
+                                        <i class="fa-solid fa-file-Import"></i>
                                     </div>
                                     <div id="ui_preset_export_button" class="menu_button menu_button_icon margin0" title="Export a theme file" data-i18n="[title]Export a theme file">
                                         <i class="fa-solid fa-file-export"></i>
@@ -4923,7 +4926,7 @@
                                         <i class="fa-solid fa-trash-can"></i>
                                     </div>
                                 </div>
-                                <input type="file" id="ui_preset_import_file" accept=".json" hidden>
+                                <input type="file" id="ui_preset_Import_file" accept=".json" hidden>
                             </h4>
                             <div class="flex-container flexnowrap alignitemscenter">
                                 <select id="themes" class="margin0">
@@ -4939,7 +4942,7 @@
                         <div name="themeElements" class="flex-container flexFlowColumn flexNoGap">
                             <!-- <h4><span data-i18n="UI Colors">Theme Settings</span></h4> -->
                             <div name="AvatarAndChatDisplay" class="flex-container flexFlowColumn">
-                                <div class="flex-container alignItemsBaseline" title="This style applies to all avatars globaly, including your Persona, Character Management, Account selection, etc." data-i18n="[title]This style applies to all avatars globaly, including your Persona, Character Management, Account selection, etc.">
+                                <div class="flex-container alignItemsBaseline" title="This style applies to all avatars globaly, including Your Profile, Character Management, Account selection, etc." data-i18n="[title]This style applies to all avatars globaly, including Your Profile, Character Management, Account selection, etc.">
                                     <span data-i18n="Avatar Style:">Avatars:</span>
                                     <select id="avatar_style" class="widthNatural flex1 margin0 text_pole">
                                         <option value="0" data-i18n="Circle">Circle</option>
@@ -5164,13 +5167,13 @@
                                     <option data-i18n="Created by" value="creator">Created by</option>
                                 </select>
                             </div>
-                            <div class="flex-container alignitemscenter" title="Defines on importing cards which action should be chosen for importing its listed tags. 'Ask' will always display the dialog." data-i18n="[title]Defines on importing cards which action should be chosen for importing its listed tags. 'Ask' will always display the dialog.">
-                                <label for="tag_import_setting"><small data-i18n="Import Card Tags">Import Card Tags</small></label>
-                                <select id="tag_import_setting" class="widthNatural flex1 margin0">
+                            <div class="flex-container alignitemscenter" title="Defines on Importing cards which action should be chosen for Importing its listed tags. 'Ask' will always display the dialog." data-i18n="[title]Defines on Importing cards which action should be chosen for Importing its listed tags. 'Ask' will always display the dialog.">
+                                <label for="tag_Import_setting"><small data-i18n="Import Card Tags">Import Card Tags</small></label>
+                                <select id="tag_Import_setting" class="widthNatural flex1 margin0">
                                     <option data-i18n="Ask" value="1">Ask</option>
-                                    <option data-i18n="tag_import_none" value="2">None</option>
-                                    <option data-i18n="tag_import_all" value="3">All</option>
-                                    <option data-i18n="tag_import_existing" value="4">Existing</option>
+                                    <option data-i18n="tag_Import_none" value="2">None</option>
+                                    <option data-i18n="tag_Import_all" value="3">All</option>
+                                    <option data-i18n="tag_Import_existing" value="4">Existing</option>
                                 </select>
                             </div>
                             <label class="checkbox_label" for="fuzzy_search_checkbox" title="Use fuzzy matching, and search characters in the list by all data fields, not just by a name substring." data-i18n="[title]Use fuzzy matching, and search characters in the list by all data fields, not just by a name substring">
@@ -5185,7 +5188,7 @@
                                 <input id="prefer_character_jailbreak" type="checkbox" />
                                 <small data-i18n="Prefer Character Card Instructions">Prefer Char. Instructions</small>
                             </label>
-                            <label class="checkbox_label" for="never_resize_avatars" title="Avoid cropping and resizing imported character images. When off, crop/resize to 512x768.&#10;This will disable the upload cropping popup for avatars." data-i18n="[title]never_resize_avatars_tooltip">
+                            <label class="checkbox_label" for="never_resize_avatars" title="Avoid cropping and resizing Imported character images. When off, crop/resize to 512x768.&#10;This will disable the upload cropping popup for avatars." data-i18n="[title]never_resize_avatars_tooltip">
                                 <input id="never_resize_avatars" type="checkbox" />
                                 <small data-i18n="Never resize avatars">Never resize avatars</small>
                             </label>
@@ -5260,8 +5263,8 @@
                                 <input id="relaxed_api_urls" type="checkbox" />
                                 <small data-i18n="Relaxed API URLS">Relaxed API URLs</small>
                             </label>
-                            <label class="checkbox_label" for="world_import_dialog" title="Ask to import the World Info/Lorebook for every new character with embedded lorebook. If unchecked, a brief message will be shown instead." data-i18n="[title]Ask to import the World Info/Lorebook for every new character with embedded lorebook. If unchecked, a brief message will be shown instead">
-                                <input id="world_import_dialog" type="checkbox" />
+                            <label class="checkbox_label" for="world_Import_dialog" title="Ask to Import the World Info/Lorebook for every new character with embedded lorebook. If unchecked, a brief message will be shown instead." data-i18n="[title]Ask to Import the World Info/Lorebook for every new character with embedded lorebook. If unchecked, a brief message will be shown instead">
+                                <input id="world_Import_dialog" type="checkbox" />
                                 <small data-i18n="Lorebook Import Dialog">Lorebook Import Dialog</small>
                             </label>
                             <label class="checkbox_label" for=" enable_auto_select_input" title="Enable auto-select of input text in some text fields when clicking/selecting them. Applies to popup input textboxes, and possible other custom input fields." data-i18n="[title]Enable auto-select of input text in some text fields when clicking/selecting them. Applies to popup input textboxes, and possible other custom input fields.">
@@ -5837,12 +5840,12 @@
                                 <i class="fa-solid fa-ranking-star"></i>
                                 <span data-i18n="Usage Stats">Usage Stats</span>
                             </div>
-                            <div id="personas_backup" class="menu_button menu_button_icon" data-i18n="[title]Backup your personas to a file" title="Backup your personas to a file">
+                            <div id="personas_backup" class="menu_button menu_button_icon" data-i18n="[title]Backup Your Profiles to a file" title="Backup Your Profiles to a file">
                                 <i class="fa-solid fa-file-export"></i>
                                 <span data-i18n="Backup">Backup</span>
                             </div>
-                            <div id="personas_restore" class="menu_button menu_button_icon" data-i18n="[title]Restore your personas from a file" title="Restore your personas from a file">
-                                <i class="fa-solid fa-file-import"></i>
+                            <div id="personas_restore" class="menu_button menu_button_icon" data-i18n="[title]Restore Your Profiles from a file" title="Restore Your Profiles from a file">
+                                <i class="fa-solid fa-file-Import"></i>
                                 <span data-i18n="Restore">Restore</span>
                             </div>
                             <input id="personas_restore_input" type="file" accept=".json" hidden>
@@ -5986,7 +5989,7 @@
             </div>
         </div>
         <div id="rightNavHolder" class="drawer">
-            <div id="unimportantYes" class="drawer-toggle drawer-header">
+            <div id="unImportantYes" class="drawer-toggle drawer-header">
                 <div id="rightNavDrawerIcon" class="drawer-icon fa-solid fa-address-card fa-fw closedIcon" title="Character Management" data-i18n="[title]Character Management">
                 </div>
             </div>
@@ -6076,7 +6079,7 @@
                                                     <option id="set_character_world" data-i18n="Link to World Info">
                                                         Link to World Info
                                                     </option>
-                                                    <option id="import_character_info" data-i18n="Import Card Lore">
+                                                    <option id="Import_character_info" data-i18n="Import Card Lore">
                                                         Import Card Lore
                                                     </option>
                                                     <option id="set_chat_character_settings" data-i18n="Character Settings Overrides">
@@ -6094,7 +6097,7 @@
                                                     <option id="replace_update" data-i18n="Replace / Update">
                                                         Replace / Update
                                                     </option>
-                                                    <option id="import_tags" data-i18n="Import Tags">
+                                                    <option id="Import_tags" data-i18n="Import Tags">
                                                         Import Tags
                                                     </option>
                                                     <option id="set_as_assistant" data-i18n="Set / Unset as Welcome Page Assistant">
@@ -6344,10 +6347,10 @@
                             </div>
                         </div>
                     </div>
-                    <div id="rm_character_import" class="right_menu" style="display: none;">
-                        <form id="form_import" action="javascript:void(null);" method="post" enctype="multipart/form-data">
-                            <input multiple type="file" id="character_import_file" accept=".json, image/png, .yaml, .yml, .charx, .byaf" name="avatar">
-                            <input id="character_import_file_type" name="file_type" class="text_pole" value="" autocomplete="off">
+                    <div id="rm_character_Import" class="right_menu" style="display: none;">
+                        <form id="form_Import" action="javascript:void(null);" method="post" enctype="multipart/form-data">
+                            <input multiple type="file" id="character_Import_file" accept=".json, image/png, .yaml, .yml, .charx, .byaf" name="avatar">
+                            <input id="character_Import_file_type" name="file_type" class="text_pole" value="" autocomplete="off">
                         </form>
                         <input type="file" id="character_replace_file" accept=".json, image/png, .yaml, .yml, .charx, .byaf" name="replace_avatar" hidden>
                     </div>
@@ -6355,8 +6358,8 @@
                         <div id="charListFixedTop">
                             <div id="rm_button_bar">
                                 <div id="rm_button_create" title="Create New Character" data-i18n="[title]Create New Character" class="menu_button fa-solid fa-user-plus"></div>
-                                <div id="character_import_button" title="Import Character from File" data-i18n="[title]Import Character from File" class="menu_button fa-solid fa-file-import"></div>
-                                <div id="external_import_button" title="Import content from external URL" data-i18n="[title]Import content from external URL" class="menu_button fa-solid fa-cloud-arrow-down"></div>
+                                <div id="character_Import_button" title="Import Character from File" data-i18n="[title]Import Character from File" class="menu_button fa-solid fa-file-Import"></div>
+                                <div id="external_Import_button" title="Import content from external URL" data-i18n="[title]Import content from external URL" class="menu_button fa-solid fa-cloud-arrow-down"></div>
                                 <div id="rm_button_group_chats" title="Create New Chat Group" data-i18n="[title]Create New Chat Group" class="menu_button fa-solid fa-users-gear"></div>
                                 <div id="rm_buttons_container">
                                     <!-- Container for additional buttons added by extensions -->
@@ -6453,7 +6456,7 @@
                 </div>
             </div>
         </div>
-        <template id="popup_template" data-i18n="[popup-button-save]popup-button-save;[popup-button-yes]popup-button-yes;[popup-button-no]popup-button-no;[popup-button-cancel]popup-button-cancel;[popup-button-import]popup-button-import;[popup-button-crop]popup-button-crop" popup-button-save="Save" popup-button-yes="Yes" popup-button-no="No" popup-button-cancel="Cancel" popup-button-import="Import" popup-button-crop="Crop"> <!-- localization data holder for popups -->
+        <template id="popup_template" data-i18n="[popup-button-save]popup-button-save;[popup-button-yes]popup-button-yes;[popup-button-no]popup-button-no;[popup-button-cancel]popup-button-cancel;[popup-button-Import]popup-button-Import;[popup-button-crop]popup-button-crop" popup-button-save="Save" popup-button-yes="Yes" popup-button-no="No" popup-button-cancel="Cancel" popup-button-Import="Import" popup-button-crop="Crop"> <!-- localization data holder for popups -->
             <dialog class="popup">
                 <div class="popup-body">
                     <div class="popup-content">
@@ -6659,12 +6662,12 @@
         <div id="shadow_select_chat_popup">
             <div id="select_chat_popup">
                 <div name="selectChatPopupHeader" class="flex-container alignitemscenter justifySpaceBetween flexGap10">
-                    <div id="select_chat_import"> <!-- import chat popup header -->
-                        <form id="form_import_chat" action="javascript:void(null);" method="post" enctype="multipart/form-data" style="display: none;">
-                            <input type="file" id="chat_import_file" accept=".json, .jsonl" multiple name="avatar">
-                            <input id="chat_import_file_type" name="file_type" class="text_pole" value="" autocomplete="off" style="display: none;">
-                            <input id="chat_import_avatar_url" name="avatar_url" class="text_pole" value="" autocomplete="off" style="display: none;">
-                            <input id="chat_import_character_name" name="character_name" class="text_pole" value="" autocomplete="off" style="display: none;">
+                    <div id="select_chat_Import"> <!-- Import chat popup header -->
+                        <form id="form_Import_chat" action="javascript:void(null);" method="post" enctype="multipart/form-data" style="display: none;">
+                            <input type="file" id="chat_Import_file" accept=".json, .jsonl" multiple name="avatar">
+                            <input id="chat_Import_file_type" name="file_type" class="text_pole" value="" autocomplete="off" style="display: none;">
+                            <input id="chat_Import_avatar_url" name="avatar_url" class="text_pole" value="" autocomplete="off" style="display: none;">
+                            <input id="chat_Import_character_name" name="character_name" class="text_pole" value="" autocomplete="off" style="display: none;">
                         </form>
                     </div>
                     <div id="selectChatPopupHeaderText" class="TxtLrgBoldCenter">
@@ -6675,8 +6678,8 @@
                         <i class="fa-solid fa-plus"></i>
                         <span data-i18n="New Chat">New Chat</span>
                     </div>
-                    <div id="chat_import_button" class="menu_button menu_button_icon">
-                        <i class="fa-solid fa-file-import"></i>
+                    <div id="chat_Import_button" class="menu_button menu_button_icon">
+                        <i class="fa-solid fa-file-Import"></i>
                         <span data-i18n="Import Chat">Import Chat</span>
                     </div>
                     <input type="search" id="select_chat_search" class="text_pole flex1" data-i18n="[placeholder]Search..." placeholder="Search..." autocomplete="off">
@@ -6776,6 +6779,7 @@
                                 <small class="chat_messages_num select_chat_block_filename_item"></small>
                             </div>
                             <div class="select_chat_actions flex-container gap10px">
+                                <div title="Chat options" class="chatMenuButton opacity50p hoverglow fa-solid fa-ellipsis" data-i18n="[title]Chat options"></div>
                                 <div title="Export JSONL chat file" data-format="jsonl" class="exportRawChatButton opacity50p hoverglow fa-solid fa-file-export" data-i18n="[title]Export JSONL chat file"></div>
                                 <div title="Download chat as plain text document" data-format="txt" class="exportChatButton opacity50p hoverglow fa-solid fa-file-lines" data-i18n="[title]Download chat as plain text document"></div>
                                 <div title="Delete chat file" file_name="" class="PastChat_cross opacity50p hoverglow fa-solid fa-skull" data-i18n="[title]Delete chat file"></div>
@@ -6786,9 +6790,43 @@
                 </div>
             </div>
         </div>
+        <div id="chat_menu_overlay" class="template_element">
+            <div class="chat-menu-overlay" style="display: none;">
+                <div class="chat-menu-backdrop"></div>
+                <div class="chat-menu-panel">
+                    <div class="chat-menu-header">
+                        <span class="chat-menu-title" data-i18n="Chat Options">Chat Options</span>
+                        <button class="chat-menu-close" data-i18n="[title]Close">&times;</button>
+                    </div>
+                    <div class="chat-menu-items">
+                        <button class="chat-menu-item" data-action="start_new_chat">
+                            <i class="fa-solid fa-comments"></i>
+                            <span data-i18n="Start New Chat">Start New Chat</span>
+                        </button>
+                        <button class="chat-menu-item" data-action="manage_chat_files">
+                            <i class="fa-solid fa-folder-open"></i>
+                            <span data-i18n="Manage Chat Files">Manage Chat Files</span>
+                        </button>
+                        <button class="chat-menu-item" data-action="export_chat">
+                            <i class="fa-solid fa-file-export"></i>
+                            <span data-i18n="Export Chat">Export Chat</span>
+                        </button>
+                        <button class="chat-menu-item" data-action="duplicate_chat">
+                            <i class="fa-solid fa-copy"></i>
+                            <span data-i18n="Duplicate Chat">Duplicate Chat</span>
+                        </button>
+                        <hr class="chat-menu-divider">
+                        <button class="chat-menu-item chat-menu-item-danger" data-action="delete_chat">
+                            <i class="fa-solid fa-trash-can"></i>
+                            <span data-i18n="Delete Chat">Delete Chat</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="tag_view_template" class="template_element">
             <div class="tag_view_item">
-                <div class="drag-handle" data-i18n="[title]Drag to reorder tag">☰</div>
+                <div class="drag-handle" data-i18n="[title]Drag to reorder tag">â˜°</div>
                 <div title="Tag as folder" class="tag_as_folder fa-solid fa-folder-open right_menu_button" data-i18n="[title]Use tag as folder">
                     <span class="tag_folder_indicator"></span>
                 </div>
@@ -6813,8 +6851,8 @@
                             <small class="textAlignCenter" data-i18n="Primary Keywords">Primary Keywords</small>
                             <select class="keyprimaryselect keyselect" name="key" data-i18n="[placeholder]Keywords or Regexes" placeholder="Keywords or Regexes" multiple="multiple"></select>
                             <textarea class="text_pole keyprimarytextpole mobile" name="key" rows="1" data-i18n="[placeholder]Comma separated list" placeholder="Comma separated list" style="display: none;"></textarea>
-                            <button type="button" class="switch_input_type_icon" tabindex="-1" title="Switch to plaintext mode" data-i18n="[title]Switch to plaintext mode" data-icon-on="✨" data-icon-off="⌨️" data-tooltip-on="Switch to fancy mode" data-tooltip-off="Switch to plaintext mode">
-                                ⌨️
+                            <button type="button" class="switch_input_type_icon" tabindex="-1" title="Switch to plaintext mode" data-i18n="[title]Switch to plaintext mode" data-icon-on="âœ¨" data-icon-off="âŒ¨ï¸" data-tooltip-on="Switch to fancy mode" data-tooltip-off="Switch to plaintext mode">
+                                âŒ¨ï¸
                             </button>
                         </div>
                         <div class="world_entry_form_control">
@@ -6835,8 +6873,8 @@
                             <small class="textAlignCenter" data-i18n="Optional Filter">Optional Filter</small>
                             <select class="keysecondaryselect keyselect" name="keysecondary" data-i18n="[placeholder]Keywords or Regexes (ignored if empty)" placeholder="Keywords or Regexes (ignored if empty)" multiple="multiple"></select>
                             <textarea class="text_pole keysecondarytextpole mobile" name="keysecondary" rows="1" data-i18n="[placeholder]Comma separated list (ignored if empty)" placeholder="Comma separated list (ignored if empty)" style="display: none;"></textarea>
-                            <button type="button" class="switch_input_type_icon" tabindex="-1" title="Switch to plaintext mode" data-i18n="[title]Switch to plaintext mode" data-icon-on="✨" data-icon-off="⌨️" data-tooltip-on="Switch to fancy mode" data-tooltip-off="Switch to plaintext mode">
-                                ⌨️
+                            <button type="button" class="switch_input_type_icon" tabindex="-1" title="Switch to plaintext mode" data-i18n="[title]Switch to plaintext mode" data-icon-on="âœ¨" data-icon-off="âŒ¨ï¸" data-tooltip-on="Switch to fancy mode" data-tooltip-off="Switch to plaintext mode">
+                                âŒ¨ï¸
                             </button>
                         </div>
                     </div>
@@ -7148,45 +7186,45 @@
                                             <textarea class="text_pole" rows="1" name="comment" data-i18n="[placeholder]Entry Title/Memo" placeholder="Entry Title/Memo"></textarea>
                                         </div>
                                         <!-- <span class="world_entry_form_position_value"></span> -->
-                                        <select data-i18n="[title]WI Entry Status:🔵 Constant🟢 Normal🔗 Vectorized" title="WI Entry Status:&#13;🔵 Constant&#13;🟢 Normal&#13;🔗 Vectorized" name="entryStateSelector" class="text_pole widthNatural margin0">
-                                            <option value="constant" title="Constant" data-i18n="[title]WI_Entry_Status_Constant">🔵</option>
-                                            <option value="normal" title="Normal" data-i18n="[title]WI_Entry_Status_Normal">🟢</option>
-                                            <option value="vectorized" title="Vectorized" data-i18n="[title]WI_Entry_Status_Vectorized">🔗</option>
+                                        <select data-i18n="[title]WI Entry Status:ðŸ”µ ConstantðŸŸ¢ NormalðŸ”— Vectorized" title="WI Entry Status:&#13;ðŸ”µ Constant&#13;ðŸŸ¢ Normal&#13;ðŸ”— Vectorized" name="entryStateSelector" class="text_pole widthNatural margin0">
+                                            <option value="constant" title="Constant" data-i18n="[title]WI_Entry_Status_Constant">ðŸ”µ</option>
+                                            <option value="normal" title="Normal" data-i18n="[title]WI_Entry_Status_Normal">ðŸŸ¢</option>
+                                            <option value="vectorized" title="Vectorized" data-i18n="[title]WI_Entry_Status_Vectorized">ðŸ”—</option>
                                         </select>
                                     </div>
                                     <div class="WIEnteryHeaderControls flex-container">
                                         <div name="PositionBlock" class="world_entry_form_control world_entry_form_radios wi-enter-footer-text">
                                             <label for="position" class="WIEntryHeaderTitleMobile" data-i18n="Position:">Position:</label>
-                                            <select name="position" class="text_pole widthNatural margin0" data-i18n="[title]T_Position" title="↑Char: Before Character Definitions&#13;↓Char: After Character Definitions&#13;↑EM: Before Example Messages&#13;↓EM: After Example Messages&#13;↑AN: Before Author's Note&#13;↓AN: After Author's Note&#13;@D ⚙️: at Depth (System)&#13;@D 👤: at Depth (User)&#13;@D 🤖: at Depth (Assistant)">
+                                            <select name="position" class="text_pole widthNatural margin0" data-i18n="[title]T_Position" title="â†‘Char: Before Character Definitions&#13;â†“Char: After Character Definitions&#13;â†‘EM: Before Example Messages&#13;â†“EM: After Example Messages&#13;â†‘AN: Before Author's Note&#13;â†“AN: After Author's Note&#13;@D âš™ï¸: at Depth (System)&#13;@D ðŸ‘¤: at Depth (User)&#13;@D ðŸ¤–: at Depth (Assistant)">
                                                 <option value="0" data-role="" data-i18n="Before Char Defs">
-                                                    ↑Char
+                                                    â†‘Char
                                                 </option>
                                                 <option value="1" data-role="" data-i18n="After Char Defs">
-                                                    ↓Char
+                                                    â†“Char
                                                 </option>
                                                 <option value="5" data-role="" data-i18n="Before EM">
-                                                    ↑EM
+                                                    â†‘EM
                                                 </option>
                                                 <option value="6" data-role="" data-i18n="After EM">
-                                                    ↓EM
+                                                    â†“EM
                                                 </option>
                                                 <option value="2" data-role="" data-i18n="Before AN">
-                                                    ↑AN
+                                                    â†‘AN
                                                 </option>
                                                 <option value="3" data-role="" data-i18n="After AN">
-                                                    ↓AN
+                                                    â†“AN
                                                 </option>
                                                 <option value="4" data-role="0" data-i18n="at Depth System">
-                                                    @D ⚙️
+                                                    @D âš™ï¸
                                                 </option>
                                                 <option value="4" data-role="1" data-i18n="at Depth User">
-                                                    @D 👤
+                                                    @D ðŸ‘¤
                                                 </option>
                                                 <option value="4" data-role="2" data-i18n="at Depth AI">
-                                                    @D 🤖
+                                                    @D ðŸ¤–
                                                 </option>
                                                 <option value="7" data-role="" data-i18n="Outlet">
-                                                    ➡️ Outlet
+                                                    âž¡ï¸ Outlet
                                                 </option>
                                             </select>
                                         </div>
@@ -7246,7 +7284,7 @@
         </div>
         <div id="openai_logit_bias_template" class="template_element">
             <div class="openai_logit_bias_form">
-                <span class="drag-handle">☰</span>
+                <span class="drag-handle">â˜°</span>
                 <input class="openai_logit_bias_text text_pole" data-i18n="[placeholder]Text or token ids" placeholder="Text or [token ids]" />
                 <input class="openai_logit_bias_value text_pole" type="number" min="-100" value="0" max="100" />
                 <i class="menu_button fa-solid fa-xmark openai_logit_bias_remove"></i>
@@ -7254,7 +7292,7 @@
         </div>
         <div id="logit_bias_template" class="template_element">
             <div class="logit_bias_form">
-                <span class="drag-handle">☰</span>
+                <span class="drag-handle">â˜°</span>
                 <input class="logit_bias_text text_pole" data-i18n="[placeholder]Type here..." placeholder="type here..." />
                 <input class="logit_bias_value text_pole" type="number" min="-100" value="0" max="100" step="0.01" />
                 <i class="menu_button fa-solid fa-xmark logit_bias_remove"></i>
@@ -7456,6 +7494,30 @@
                 </div>
             </div>
         </div>
+        <div id="message_context_menu" class="template_element">
+            <div class="message-context-menu" style="display: none;">
+                <div class="message-context-backdrop"></div>
+                <div class="message-context-panel">
+                    <div class="message-context-header">
+                        <span class="message-context-title" data-i18n="Message Actions">Message Actions</span>
+                    </div>
+                    <div class="message-context-items">
+                        <button class="message-context-item" data-action="generate_image">
+                            <i class="fa-solid fa-paintbrush"></i>
+                            <span data-i18n="Generate Image">Generate Image</span>
+                        </button>
+                        <button class="message-context-item" data-action="edit_message">
+                            <i class="fa-solid fa-pencil"></i>
+                            <span data-i18n="Edit Message">Edit Message</span>
+                        </button>
+                        <button class="message-context-item message-context-item-danger" data-action="delete_message">
+                            <i class="fa-solid fa-trash-can"></i>
+                            <span data-i18n="Delete Message">Delete Message</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="group_avatars_template" class="template_element">
             <div class="avatar avatar_collage collage_1">
                 <img alt="img1" class="img_1" src="">
@@ -7479,52 +7541,52 @@
 
         <div id="onboarding_template" class="template_element">
             <div class="onboarding">
-                <h3 data-i18n="Welcome to SillyTavern!">Welcome to SillyTavern!</h3>
+                <h3 data-i18n="Welcome to MYnestAI!">Welcome to MYnestAI!</h3>
                 <div id="onboarding-UI-language-block" class="flex-container alignItemsBaseline">
                     <span data-i18n="UI Language">Language:</span>
                     <select id="onboarding_ui_language_select" class="flex1 margin0">
                         <option value="en">English</option>
                     </select>
                 </div>
-                <b data-i18n="SillyTavern is aimed at advanced users.">
-                    SillyTavern is aimed at advanced users.
+                <b data-i18n="MYnestAI is Your Profilel AI companion workspace.">
+                    MYnestAI is Your Profilel AI companion workspace.
                 </b>
                 <ul class="justifyLeft marginTopBot5">
-                    <li><span data-i18n="welcome_message_part_1">Read the</span> <a href="https://docs.sillytavern.app/" target="_blank" data-i18n="welcome_message_part_2">Official Documentation</a><span data-i18n="welcome_message_part_3">.</span></li>
-                    <li><span data-i18n="welcome_message_part_4">Type</span> <code>/help</code> <span data-i18n="welcome_message_part_5">in chat for commands and macros.</span></li>
-                    <li><span data-i18n="welcome_message_part_6">Join the</span> <a href="https://discord.gg/sillytavern" data-i18n="Discord server" target="_blank">Discord server</a> <span data-i18n="welcome_message_part_7">for info and announcements.</span></li>
+                    <li><span>Explore</span> <a href="#" target="_blank">MYnestAI</a><span>.</span></li>
+                    <li>Use the chat to talk with your AI characters.</li>
+                    <li>Create characters, configure providers, and customize your experience.</li>
                 </ul>
                 <div class="expander"></div>
                 <div class="textAlignCenter">
-                    <h3 data-i18n="Looking for AI characters?">
-                        Looking for AI characters?
+                    <h3 data-i18n="Choose an AI character">
+                        Choose an AI character
                     </h3>
                     <span>
-                        <span class="menu_button menu_button_icon external_import_button">
+                        <span class="menu_button menu_button_icon external_Import_button">
                             <i class="fa-solid fa-cloud-arrow-down"></i>
-                            <span data-i18n="onboarding_import">Import</span>
+                            <span data-i18n="onboarding_Import">Import</span>
                         </span>
-                        <span data-i18n="from supported sources or view">
-                            from supported sources or view
+                        <span data-i18n="from your character library or">
+                            from your character library or
                         </span>
                         <span class="open_characters_library menu_button menu_button_icon">
                             <i class="fa-solid fa-image-portrait"></i>
-                            <span data-i18n="Sample characters">Sample characters</span>
+                            <span data-i18n="Browse characters">Browse characters</span>
                         </span>
                     </span>
                 </div>
                 <div class="expander"></div>
-                <h3 data-i18n="Your Persona">
-                    Your Persona
+                <h3 data-i18n="Your Profile">
+                    Your Profile
                 </h3>
                 <div class="justifyLeft margin-bot-10px">
-                    <span data-i18n="Before you get started, you must select a persona name.">
-                        Before you get started, you must select a persona name.
+                    <span data-i18n="Choose the name you want your AI characters to use for you.">
+                        Choose the name you want your AI characters to use for you.
                     </span>
                     <br>
-                    <span data-i18n="welcome_message_part_8">This can be changed at any time via the</span> <code><i class="fa-solid fa-face-smile"></i></code> <span data-i18n="welcome_message_part_9">icon.</span>
+                    <span data-i18n="welcome_message_part_8">You can change this later using the</span> <code><i class="fa-solid fa-face-smile"></i></code> <span data-i18n="welcome_message_part_9">icon.</span>
                 </div>
-                <h4 data-i18n="Persona Name:">Persona Name:</h4>
+                <h4 data-i18n="Your Name:">Your Name:</h4>
             </div>
         </div>
         <div id="group_member_template" class="template_element">
@@ -8216,3 +8278,5 @@
 </body>
 
 </html>
+
+

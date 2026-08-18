@@ -1,4 +1,4 @@
-// native node modules
+﻿// native node modules
 import fs from 'node:fs';
 import path from 'node:path';
 import util from 'node:util';
@@ -286,7 +286,7 @@ async function preSetupTasks() {
 
     // Print formatted header
     console.log();
-    console.log(`SillyTavern ${version.pkgVersion}`);
+    console.log(`MYnestAI ${version.pkgVersion}`);
     if (version.gitBranch && version.commitDate) {
         const date = new Date(version.commitDate);
         const localDate = date.toLocaleString('en-US', { timeZoneName: 'short' });
@@ -415,9 +415,9 @@ async function postSetupTasks(result) {
         setInterval(writeHeartbeat, intervalMs).unref();
     }
 
-    setWindowTitle('SillyTavern WebServer');
+    setWindowTitle('MYnestAI WebServer');
 
-    let logListen = 'SillyTavern is listening on';
+    let logListen = 'MYnestAI is listening on';
 
     if (result.useIPv6 && !result.v6Failed) {
         logListen += color.green(
@@ -431,7 +431,7 @@ async function postSetupTasks(result) {
         );
     }
 
-    const goToLog = `Go to: ${color.blue(browserLaunchUrl)} to open SillyTavern`;
+    const goToLog = `Go to: ${color.blue(browserLaunchUrl)} to open MYnestAI`;
     const plainGoToLog = removeColorFormatting(goToLog);
 
     console.log(logListen);
@@ -487,3 +487,4 @@ initUserStorage(globalThis.DATA_ROOT)
     .then(apply404Middleware)
     .then(() => new ServerStartup(app, cliArgs).start())
     .then(postSetupTasks);
+

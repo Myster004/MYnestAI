@@ -26,6 +26,7 @@ const interactableSelectors = [
     '.select_chat_block .exportChatButton', // Export chat button in the past chats menu
     '.select_chat_block .PastChat_cross', // Delete chat button in the past chats menu
     '.select_chat_block .renameChatButton', // The button to rename a past chat in the past chats menu
+    '.select_chat_block .chatMenuButton', // The chat options button in the past chats menu
 ];
 
 if (CSS.supports('selector(:has(*))')) {

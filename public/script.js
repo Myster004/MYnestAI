@@ -11248,6 +11248,103 @@ jQuery(async function () {
         }
     }
 
+    async function duplicateChat(chatFile) {
+        const loaderHandle = loader.show({
+            slug: 'chat-duplicate',
+            title: t`Duplicate Chat`,
+            message: t`Duplicating chat…`,
+            toastMode: loader.ToastMode.STATIC,
+        });
+
+        try {
+            const newName = await callGenericPopup(
+                '<h3>' + t`Enter new name for the duplicated chat:` + '</h3>',
+                POPUP_TYPE.INPUT,
+                chatFile + '_copy',
+            );
+
+            if (!newName || typeof newName !== 'string') {
+                loaderHandle.hide();
+                return;
+            }
+
+            if (selected_group) {
+                await duplicateGroupChat(selected_group, chatFile, newName);
+            } else {
+                await duplicateCharacterChat(characters[this_chid].avatar, chatFile, newName);
+            }
+
+            toastr.success(t`Chat duplicated successfully`);
+            await displayPastChats([newName]);
+        } catch (error) {
+            console.error('Error duplicating chat:', error);
+            toastr.error(t`Failed to duplicate chat`);
+        } finally {
+            loaderHandle.hide();
+        }
+    }
+
+    async function duplicateCharacterChat(avatarUrl, sourceFile, targetFile) {
+        const fileNameWithoutExt = sourceFile.replace('.jsonl', '');
+        const response = await fetch('/api/chats/get', {
+            method: 'POST',
+            headers: getRequestHeaders(),
+            body: JSON.stringify({
+                ch_name: characters[this_chid].name,
+                file_name: fileNameWithoutExt,
+                avatar_url: avatarUrl,
+            }),
+            cache: 'no-cache',
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to load source chat');
+        }
+
+        const chatData = await response.json();
+
+        await saveChat({
+            chatName: targetFile,
+            chatData: chatData,
+            force: true,
+        });
+    }
+
+    async function duplicateGroupChat(group, sourceFile, targetFile) {
+        const fileNameWithoutExt = sourceFile.replace('.jsonl', '');
+        const response = await fetch('/api/chats/group/get', {
+            method: 'POST',
+            headers: getRequestHeaders(),
+            body: JSON.stringify({
+                group_id: group.id,
+                file_name: fileNameWithoutExt,
+            }),
+            cache: 'no-cache',
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to load source group chat');
+        }
+
+        const chatData = await response.json();
+
+        const saveChatRequest = await compressRequest({
+            method: 'POST',
+            headers: getRequestHeaders(),
+            body: JSON.stringify({
+                group_id: group.id,
+                file_name: targetFile,
+                chat: chatData,
+            }),
+            cache: 'no-cache',
+        });
+
+        const result = await fetch('/api/chats/group/save', saveChatRequest);
+        if (!result.ok) {
+            throw new Error('Failed to save duplicated group chat');
+        }
+    }
+
     $(document).on('click', '.PastChat_cross', async function (e, { fromSlashCommand = false } = {}) {
         e.stopPropagation();
         const deleteFileName = $(this).attr('file_name');
@@ -11478,6 +11575,67 @@ jQuery(async function () {
             console.log(`An error has occurred: ${error.message}`);
             await delay(250);
             toastr.error(`Error: ${error.message}`);
+        }
+    });
+
+    // Chat Menu Overlay
+    let chatMenuTargetFile = null;
+
+    function showChatMenuOverlay(fileName) {
+        chatMenuTargetFile = fileName;
+        const overlay = $('#chat_menu_overlay .chat-menu-overlay').clone();
+        overlay.removeAttr('style');
+        $('body').append(overlay);
+        requestAnimationFrame(() => overlay.addClass('visible'));
+    }
+
+    function hideChatMenuOverlay() {
+        const overlay = $('.chat-menu-overlay');
+        overlay.removeClass('visible');
+        setTimeout(() => overlay.remove(), 200);
+        chatMenuTargetFile = null;
+    }
+
+$(document).on('click', '.chatMenuButton', function (e) {
+        e.stopImmediatePropagation();
+        const fileName = $(this).closest('.select_chat_block_wrapper').find('.select_chat_block_filename').text();
+        showChatMenuOverlay(fileName);
+    });
+
+    $(document).on('click', '.chat-menu-backdrop, .chat-menu-close', function (e) {
+        e.stopImmediatePropagation();
+        hideChatMenuOverlay();
+    });
+
+    $(document).on('click', '.chat-menu-item', async function () {
+        const action = $(this).data('action');
+        const fileName = chatMenuTargetFile;
+        hideChatMenuOverlay();
+
+        switch (action) {
+            case 'start_new_chat':
+                if (!selected_group && characters[this_chid]) {
+                    await doNewChat({ deleteCurrentChat: true });
+                }
+                break;
+            case 'manage_chat_files':
+                $('#option_select_chat').trigger('click');
+                break;
+            case 'export_chat':
+                $('.exportChatButton').filter(function () {
+                    return $(this).closest('.select_chat_block_wrapper').find('.select_chat_block_filename').text() === fileName;
+                }).trigger('click');
+                break;
+            case 'duplicate_chat':
+                await duplicateChat(fileName);
+                break;
+            case 'delete_chat': {
+                const result = await callGenericPopup('<h3>' + t`Delete the Chat File?` + '</h3>', POPUP_TYPE.CONFIRM);
+                if (result === POPUP_RESULT.AFFIRMATIVE) {
+                    await handleDeleteChat(fileName, selected_group, false);
+                }
+                break;
+            }
         }
     });
 
@@ -11870,6 +12028,125 @@ jQuery(async function () {
             });
         }
     });
+
+    // Message Context Menu (Right-click / Touch-hold)
+    let messageContextTarget = null;
+    let messageContextTimeout = null;
+
+    function showMessageContextMenu(messageElement, x, y) {
+        const mesId = Number(messageElement.attr('mesid'));
+        messageContextTarget = mesId;
+
+        const overlay = $('#message_context_menu .message-context-menu').clone();
+        overlay.removeAttr('style');
+        $('body').append(overlay);
+
+        const panel = overlay.find('.message-context-panel');
+
+        // Get panel dimensions after adding to DOM
+        const panelWidth = 260; // min-width + padding
+        const panelHeight = 180; // estimated height
+
+        // Adjust to keep within viewport
+        const maxX = window.innerWidth - panelWidth - 20;
+        const maxY = window.innerHeight - panelHeight - 20;
+        const adjustedX = Math.max(10, Math.min(x, maxX));
+        const adjustedY = Math.max(10, Math.min(y, maxY));
+
+        panel.css({
+            left: `${adjustedX}px`,
+            top: `${adjustedY}px`,
+        });
+
+        // Add blur to the message
+        messageElement.addClass('context-menu-open');
+
+        requestAnimationFrame(() => overlay.addClass('visible'));
+    }
+
+    function hideMessageContextMenu() {
+        const overlay = $('.message-context-menu');
+        if (messageContextTarget !== null) {
+            const messageElement = $(`#chat .mes[mesid="${messageContextTarget}"]`);
+            messageElement.removeClass('context-menu-open');
+        }
+        overlay.removeClass('visible');
+        setTimeout(() => overlay.remove(), 150);
+        messageContextTarget = null;
+    }
+
+    // Right-click handler
+    $(document).on('contextmenu', '#chat .mes', function (e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        if (is_delete_mode) return;
+        showMessageContextMenu($(this), e.clientX, e.clientY);
+    });
+
+    // Touch-hold handler
+    $(document).on('touchstart', '#chat .mes', function (e) {
+        if (is_delete_mode) return;
+        const touch = e.originalEvent.touches[0];
+        messageContextTimeout = setTimeout(() => {
+            showMessageContextMenu($(this), touch.clientX, touch.clientY);
+        }, 500);
+    });
+
+    $(document).on('touchend touchmove', '#chat .mes', function () {
+        if (messageContextTimeout) {
+            clearTimeout(messageContextTimeout);
+            messageContextTimeout = null;
+        }
+    });
+
+    // Close on backdrop click
+    $(document).on('click', '.message-context-backdrop', function () {
+        hideMessageContextMenu();
+    });
+
+    // Context menu item click
+    $(document).on('click', '.message-context-item', async function () {
+        const action = $(this).data('action');
+        const mesId = messageContextTarget;
+        hideMessageContextMenu();
+
+        if (mesId === null || mesId === undefined) return;
+
+        switch (action) {
+            case 'generate_image':
+                await generateImageForMessage(mesId);
+                break;
+            case 'edit_message':
+                $('.mes_edit').filter(function () {
+                    return $(this).closest('.mes').attr('mesid') == mesId;
+                }).trigger('click');
+                break;
+            case 'delete_message':
+                $('.mes_edit_delete').filter(function () {
+                    return $(this).closest('.mes').attr('mesid') == mesId;
+                }).trigger('click');
+                break;
+        }
+    });
+
+    async function generateImageForMessage(mesId) {
+        const message = chat[mesId];
+        if (!message) {
+            toastr.error(t`Message not found`);
+            return;
+        }
+
+        // Trigger the SD generate button for this message
+        const $messageElement = $(`#chat .mes[mesid="${mesId}"]`);
+        const $sdButton = $messageElement.find('.sd_message_gen');
+
+        if ($sdButton.length) {
+            $sdButton.trigger('click');
+        } else {
+            // Fallback: show the SD dropdown
+            toastr.info('Stable Diffusion extension not available for this message');
+        }
+    }
 
     $(document).on('click', '.mes_edit_cancel', async function () {
         await messageEditCancel.call(this, this_edit_mes_id);

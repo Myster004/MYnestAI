@@ -108,12 +108,12 @@
             "whatwg-url": "^14.0.0"
         }
     },
-    "name": "sillytavern",
+    "name": "MYnestAI",
     "type": "module",
     "license": "AGPL-3.0",
     "repository": {
         "type": "git",
-        "url": "https://github.com/SillyTavern/SillyTavern.git"
+        "url": "https://github.com/Myster004/MYnestAI.git"
     },
     "version": "1.18.0",
     "scripts": {
@@ -131,7 +131,7 @@
         "plugins:install": "node plugins install"
     },
     "bin": {
-        "sillytavern": "./src/server-global.js"
+        "MYnestAI": "./src/server-global.js"
     },
     "rules": {
         "no-path-concat": "off",
@@ -173,3 +173,4 @@
         "typescript": "^5.9.3"
     }
 }
+

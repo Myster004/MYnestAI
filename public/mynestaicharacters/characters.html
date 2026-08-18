@@ -1,0 +1,237 @@
+<div id="mynestai-character-tab" class="mna-characters">
+
+    <div class="mna-character-header">
+        <div>
+            <h1>Characters</h1>
+            <p>Create and manage your AI companions.</p>
+        </div>
+
+        <button id="mna-create-character" class="mna-primary-button">
+            <i class="fa-solid fa-plus"></i>
+            Create Character
+        </button>
+    </div>
+
+    <div class="mna-character-toolbar">
+        <div class="mna-search">
+            <i class="fa-solid fa-search"></i>
+            <input
+                id="mna-character-search"
+                type="search"
+                placeholder="Search characters..."
+            >
+        </div>
+
+        <select id="mna-character-sort">
+            <option value="name-asc">A-Z</option>
+            <option value="name-desc">Z-A</option>
+            <option value="recent">Recently Used</option>
+            <option value="favorites">Favorites</option>
+        </select>
+    </div>
+
+    <div id="mna-character-grid" class="mna-character-grid">
+        <!-- Characters will be inserted here -->
+    </div>
+
+    <div id="mna-character-empty" class="mna-character-empty">
+        <i class="fa-solid fa-user-plus"></i>
+        <h2>No characters yet</h2>
+        <p>Create your first AI companion.</p>
+
+        <button id="mna-create-character-empty" class="mna-primary-button">
+            Create Character
+        </button>
+    </div>
+
+</div>
+
+
+<!-- Character Editor -->
+
+<div id="mna-character-editor" class="mna-modal" style="display:none;">
+
+    <div class="mna-modal-backdrop"></div>
+
+    <div class="mna-character-editor-panel">
+
+        <div class="mna-editor-header">
+
+            <div>
+                <h2 id="mna-editor-title">Create Character</h2>
+            </div>
+
+            <button id="mna-character-editor-close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <div class="mna-editor-body">
+
+            <div class="mna-avatar-section">
+
+                <label for="mna-character-avatar">
+
+                    <img
+                        id="mna-character-avatar-preview"
+                        src="/img/ai4.png"
+                        alt="Character avatar"
+                    >
+
+                    <div class="mna-avatar-overlay">
+                        <i class="fa-solid fa-camera"></i>
+                    </div>
+
+                </label>
+
+                <input
+                    id="mna-character-avatar"
+                    type="file"
+                    accept="image/*"
+                    hidden
+                >
+
+            </div>
+
+
+            <div class="mna-character-fields">
+
+                <div class="mna-field">
+
+                    <label>Character Name</label>
+
+                    <input
+                        id="mna-character-name"
+                        type="text"
+                        placeholder="Name your character..."
+                    >
+
+                </div>
+
+
+                <div class="mna-field">
+
+                    <label>Description</label>
+
+                    <textarea
+                        id="mna-character-description"
+                        placeholder="Describe your character..."
+                    ></textarea>
+
+                </div>
+
+
+                <div class="mna-field">
+
+                    <label>Personality</label>
+
+                    <textarea
+                        id="mna-character-personality"
+                        placeholder="Describe their personality..."
+                    ></textarea>
+
+                </div>
+
+
+                <div class="mna-field">
+
+                    <label>Scenario</label>
+
+                    <textarea
+                        id="mna-character-scenario"
+                        placeholder="Describe the scenario..."
+                    ></textarea>
+
+                </div>
+
+
+                <div class="mna-field">
+
+                    <label>First Message</label>
+
+                    <textarea
+                        id="mna-character-first-message"
+                        placeholder="What should they say when the chat begins?"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="mna-field">
+
+                    <label>Example Messages</label>
+
+                    <textarea
+                        id="mna-character-example-messages"
+                        placeholder="Example dialogue..."
+                    ></textarea>
+
+                </div>
+
+
+                <div class="mna-field">
+
+                    <label>Creator Notes</label>
+
+                    <textarea
+                        id="mna-character-creator-notes"
+                        placeholder="Private notes about this character..."
+                    ></textarea>
+
+                </div>
+
+
+                <div class="mna-field">
+
+                    <label>Tags</label>
+
+                    <input
+                        id="mna-character-tags"
+                        type="text"
+                        placeholder="anime, fantasy, female..."
+                    >
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="mna-editor-footer">
+
+            <button
+                id="mna-delete-character"
+                class="mna-danger-button"
+                style="display:none;"
+            >
+                <i class="fa-solid fa-trash"></i>
+                Delete
+            </button>
+
+            <div class="mna-editor-footer-right">
+
+                <button
+                    id="mna-cancel-character"
+                    class="mna-secondary-button"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    id="mna-save-character"
+                    class="mna-primary-button"
+                >
+                    <i class="fa-solid fa-check"></i>
+                    Save Character
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

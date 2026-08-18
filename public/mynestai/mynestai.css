@@ -1,0 +1,2139 @@
+/* =========================================================
+   MYnestAI
+   Main application shell
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap');
+
+body,
+button,
+input,
+select,
+textarea,
+#mynestai-panels,
+#mynestai-app-nav,
+#mynestai-chat-workspace,
+#mynestai-companion-page,
+.mynestai-overlay-menu,
+.mynestai-edit-dialog {
+    font-family: 'Nunito', sans-serif !important;
+}
+
+:root {
+    --mynest-bg: #080808;
+
+    --mynest-panel: rgba(30, 30, 32, 0.88);
+    --mynest-panel-hover: rgba(48, 48, 52, 0.94);
+
+    --mynest-border: rgba(255, 255, 255, 0.12);
+
+    --mynest-text: #f4f4f5;
+    --mynest-muted: #a1a1aa;
+
+    --mynest-accent: #d98b9e;
+    --mynest-accent-soft: rgba(217, 139, 158, 0.25);
+
+    --mynest-radius: 24px;
+
+    --mynest-nav-height: 64px;
+}
+
+
+/* =========================================================
+   APP NAVIGATION
+   ========================================================= */
+
+#mynestai-app-nav {
+    position: fixed;
+
+    left: 50%;
+    bottom: 18px;
+
+    transform: translateX(-50%);
+
+    z-index: 999999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    padding: 7px;
+
+    background: rgba(18, 18, 20, 0.88);
+
+    border: 1px solid var(--mynest-border);
+
+    border-radius: 22px;
+
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+
+    box-shadow:
+        0 12px 45px rgba(0, 0, 0, 0.55),
+        inset 0 1px rgba(255, 255, 255, 0.04);
+
+    opacity: 1;
+    visibility: visible;
+
+    transition:
+        opacity 0.25s ease,
+        visibility 0.25s ease,
+        transform 0.25s ease;
+}
+
+
+/* =========================================================
+   NAV - HIDDEN UNTIL SILLYTAVERN FIRES APP_READY
+   -----------------------------------------------------
+   This class is applied by app.js as soon as the nav is
+   created, and removed only once SillyTavern's own
+   APP_READY event fires. Without this rule the class had
+   no visual effect and the nav rendered on top of ST's own
+   loading screen.
+   ========================================================= */
+
+#mynestai-app-nav.mynestai-start-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* MYnestAI owns navigation; the legacy global toolbar is no longer shown. */
+#top-bar {
+    display: none !important;
+}
+
+#mynestai-app-nav.mynestai-nav-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(16px);
+}
+
+
+/* =========================================================
+   NAVIGATION BUTTONS
+   ========================================================= */
+
+.mynestai-nav-button {
+    width: 52px;
+    height: 48px;
+
+    flex: 0 0 52px;
+
+    padding: 0;
+
+    border: 0;
+
+    border-radius: 17px;
+
+    background: transparent;
+
+    color: var(--mynest-muted);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+/* =========================================================
+   NAVIGATION HOVER
+   ========================================================= */
+
+.mynestai-nav-button:hover {
+    background: rgba(255, 255, 255, 0.07);
+
+    color: var(--mynest-text);
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   ACTIVE NAVIGATION
+   ========================================================= */
+
+.mynestai-nav-button.active {
+    background: var(--mynest-accent-soft);
+
+    color: var(--mynest-text);
+
+    box-shadow:
+        inset 0 0 0 1px rgba(217, 139, 158, 0.08);
+}
+
+
+/* =========================================================
+   NAVIGATION ICON
+   ========================================================= */
+
+.mynestai-nav-button i {
+    font-size: 18px;
+
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease;
+}
+
+.mynestai-nav-button.active i {
+    color: var(--mynest-accent);
+
+    transform: scale(1.05);
+}
+
+
+/* =========================================================
+   MAIN MYnestAI PANELS
+   ========================================================= */
+
+#mynestai-panels {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 900000;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   PANEL
+   ========================================================= */
+
+.mynestai-panel {
+    position: absolute;
+
+    inset: 0;
+
+    display: none;
+
+    padding:
+        32px
+        32px
+        105px
+        32px;
+
+    overflow-y: auto;
+
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(217, 139, 158, 0.08),
+            transparent 45%
+        ),
+        var(--mynest-bg);
+
+    color: var(--mynest-text);
+
+    pointer-events: auto;
+
+    box-sizing: border-box;
+
+    scrollbar-width: thin;
+    scrollbar-color:
+        rgba(255,255,255,0.15)
+        transparent;
+}
+
+
+/* =========================================================
+   ACTIVE PANEL
+   ========================================================= */
+
+.mynestai-panel.active {
+    display: block;
+}
+
+
+/* =========================================================
+   PANEL SCROLLBAR
+   ========================================================= */
+
+.mynestai-panel::-webkit-scrollbar {
+    width: 7px;
+}
+
+.mynestai-panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mynestai-panel::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.12);
+
+    border-radius: 10px;
+}
+
+.mynestai-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.mynestai-header {
+    max-width: 1000px;
+
+    margin:
+        0
+        auto
+        28px;
+}
+
+
+/* =========================================================
+   HEADER TITLE
+   ========================================================= */
+
+.mynestai-header h1 {
+    margin: 0;
+
+    font-size: 30px;
+
+    font-weight: 750;
+
+    letter-spacing: -0.5px;
+}
+
+
+/* =========================================================
+   HEADER DESCRIPTION
+   ========================================================= */
+
+.mynestai-header p {
+    margin: 7px 0 0;
+
+    color: var(--mynest-muted);
+
+    font-size: 14px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   CHAT PANEL
+   ========================================================= */
+
+#mynestai-chat-panel {
+    padding-top: 45px;
+}
+
+
+/* =========================================================
+   CHAT LIST
+   ========================================================= */
+
+#mynestai-chat-list {
+    width: min(100%, 900px);
+
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   EMPTY CHAT STATE
+   ========================================================= */
+
+.mynestai-empty {
+    min-height: 55vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    color: var(--mynest-muted);
+}
+
+
+/* =========================================================
+   EMPTY CHAT CONTENT
+   ========================================================= */
+
+.mynestai-empty-inner {
+    max-width: 420px;
+}
+
+
+/* =========================================================
+   EMPTY CHAT ICON
+   ========================================================= */
+
+.mynestai-empty-icon {
+    width: 72px;
+    height: 72px;
+
+    margin:
+        0
+        auto
+        18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.06);
+
+    color: var(--mynest-accent);
+
+    font-size: 28px;
+}
+
+
+/* =========================================================
+   EMPTY CHAT TITLE
+   ========================================================= */
+
+.mynestai-empty h2 {
+    margin:
+        0
+        0
+        8px;
+
+    color: var(--mynest-text);
+
+    font-size: 23px;
+}
+
+
+/* =========================================================
+   EMPTY CHAT DESCRIPTION
+   ========================================================= */
+
+.mynestai-empty p {
+    margin: 0;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   CHAT CARD
+   ========================================================= */
+
+.mynestai-chat-card {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    min-height: 135px;
+
+    margin-bottom: 18px;
+
+    padding:
+        18px
+        22px;
+
+    border-radius: 27px;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.12);
+
+    background:
+        linear-gradient(
+            110deg,
+            rgba(217,139,158,0.60),
+            rgba(80,80,90,0.55)
+        );
+
+    box-sizing: border-box;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        filter 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+/* =========================================================
+   CHAT CARD HOVER
+   ========================================================= */
+
+.mynestai-chat-card:hover {
+    transform: translateY(-2px);
+
+    filter: brightness(1.08);
+
+    border-color:
+        rgba(255,255,255,0.22);
+}
+
+
+/* =========================================================
+   CHAT AVATAR
+   ========================================================= */
+
+.mynestai-chat-avatar {
+    width: 92px;
+    height: 92px;
+
+    flex: 0 0 92px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    border:
+        3px solid
+        rgba(255,255,255,0.28);
+
+    background: #222;
+}
+
+
+/* =========================================================
+   CHAT INFORMATION
+   ========================================================= */
+
+.mynestai-chat-info {
+    min-width: 0;
+
+    flex: 1;
+
+    margin-left: 22px;
+}
+
+
+/* =========================================================
+   CHAT NAME
+   ========================================================= */
+
+.mynestai-chat-name {
+    margin-bottom: 8px;
+
+    font-size: 25px;
+
+    font-weight: 750;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   CHAT PREVIEW
+   ========================================================= */
+
+.mynestai-chat-preview {
+    color: rgba(255,255,255,0.78);
+
+    font-size: 16px;
+
+    line-height: 1.35;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   CHAT ARROW
+   ========================================================= */
+
+.mynestai-chat-arrow {
+    margin-left: 15px;
+
+    font-size: 35px;
+
+    font-weight: 200;
+
+    color: rgba(255,255,255,0.85);
+}
+
+
+/* =========================================================
+   PLACEHOLDER PANELS
+   ========================================================= */
+
+.mynestai-placeholder {
+    width: min(100%, 900px);
+
+    margin:
+        50px
+        auto;
+
+    padding: 35px;
+
+    border-radius: var(--mynest-radius);
+
+    background: var(--mynest-panel);
+
+    border:
+        1px solid
+        var(--mynest-border);
+
+    text-align: center;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   PLACEHOLDER ICON
+   ========================================================= */
+
+.mynestai-placeholder i {
+    font-size: 42px;
+
+    color: var(--mynest-accent);
+
+    margin-bottom: 18px;
+}
+
+
+/* =========================================================
+   PLACEHOLDER TITLE
+   ========================================================= */
+
+.mynestai-placeholder h2 {
+    margin:
+        0
+        0
+        8px;
+}
+
+
+/* =========================================================
+   PLACEHOLDER DESCRIPTION
+   ========================================================= */
+
+.mynestai-placeholder p {
+    margin: 0;
+
+    color: var(--mynest-muted);
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    #mynestai-app-nav {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+
+        width: auto;
+
+        transform: none;
+
+        justify-content: space-around;
+
+        gap: 4px;
+
+        padding: 6px;
+
+        border-radius: 20px;
+    }
+
+
+    .mynestai-nav-button {
+        width: auto;
+
+        height: 48px;
+
+        flex: 1 1 0;
+
+        min-width: 0;
+
+        border-radius: 16px;
+    }
+
+
+    .mynestai-nav-button i {
+        font-size: 17px;
+    }
+
+
+    .mynestai-panel {
+        padding:
+            22px
+            14px
+            85px
+            14px;
+    }
+
+
+    .mynestai-header {
+        margin-bottom: 22px;
+    }
+
+
+    .mynestai-header h1 {
+        font-size: 27px;
+    }
+
+
+    .mynestai-header p {
+        font-size: 13px;
+    }
+
+
+    .mynestai-chat-card {
+        min-height: 105px;
+
+        padding:
+            13px
+            15px;
+
+        border-radius: 22px;
+    }
+
+
+    .mynestai-chat-avatar {
+        width: 70px;
+        height: 70px;
+
+        flex-basis: 70px;
+    }
+
+
+    .mynestai-chat-info {
+        margin-left: 15px;
+    }
+
+
+    .mynestai-chat-name {
+        font-size: 20px;
+    }
+
+
+    .mynestai-chat-preview {
+        font-size: 13px;
+    }
+
+
+    .mynestai-chat-arrow {
+        font-size: 28px;
+
+        margin-left: 10px;
+    }
+
+
+    .mynestai-placeholder {
+        margin-top: 30px;
+
+        padding: 28px 20px;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+    #mynestai-app-nav {
+        left: 7px;
+        right: 7px;
+        bottom: 7px;
+    }
+
+
+    .mynestai-nav-button {
+        height: 46px;
+
+        border-radius: 15px;
+    }
+
+
+    .mynestai-nav-button i {
+        font-size: 16px;
+    }
+}
+
+/* =========================================================
+   FUNCTIONAL MYNESTAI VIEWS
+   These overrides only apply while an existing SillyTavern panel is
+   temporarily hosted inside a MYnestAI tab.
+   ========================================================= */
+
+#mynestai-panels.mynestai-shell-hidden {
+    display: none;
+}
+
+/* SillyTavern's centred top toolbar is available in MYnestAI's other
+   workspaces, but not while the user is reading or writing a chat. */
+body.mynestai-in-chat #top-bar,
+body:has(#mynestai-panels.mynestai-shell-hidden) #top-bar {
+    display: none !important;
+}
+
+/* Keep SillyTavern's chat engine in the DOM, but never show its legacy
+   message and composer UI behind the MYnestAI conversation workspace. */
+body.mynestai-in-chat #sheld,
+body.mynestai-in-chat #chat,
+body.mynestai-in-chat #form_sheld {
+    display: none !important;
+}
+
+/* Keep the group delete control next to Chat Lore and match its compact size. */
+#mynestai-characters-host #group-metadata-controls .chat_lorebook_button,
+#mynestai-characters-host #group-metadata-controls #rm_group_delete {
+    box-sizing: border-box;
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    min-height: 36px;
+    margin: 0 0 0 6px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =========================================================
+   MYNESTAI CHAT WORKSPACE
+   A self-contained conversation surface that sits above SillyTavern's
+   legacy chat UI while retaining its data and generation backend.
+   ========================================================= */
+
+#mynestai-chat-workspace {
+    position: fixed;
+    inset: 0;
+    z-index: 950000;
+    display: none;
+    grid-template-rows: auto 1fr auto;
+    background: rgba(16, 17, 19, .64);
+    color: var(--mynest-text);
+}
+
+#mynestai-chat-workspace.mynestai-visible {
+    display: grid;
+}
+
+.mynestai-chat-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 70px;
+    padding: 10px max(20px, calc((100vw - 1040px) / 2));
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+    background: rgba(16, 17, 19, .94);
+}
+
+.mynestai-chat-header button {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--mynest-text);
+    cursor: pointer;
+    font-size: 17px;
+}
+
+.mynestai-chat-header button:hover {
+    background: rgba(255, 255, 255, .08);
+}
+
+#mynestai-chat-identity {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 11px;
+    min-width: 0;
+}
+
+#mynestai-chat-identity img {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+#mynestai-chat-identity span {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+#mynestai-chat-identity strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#mynestai-chat-identity small {
+    color: #8d949e;
+    font-size: 12px;
+}
+
+.mynestai-message-stream {
+    width: min(100%, 880px);
+    min-height: 0;
+    margin: 0 auto;
+    padding: 32px 24px 22px;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.mynestai-message {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    margin: 0 0 20px;
+}
+
+.mynestai-message > img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.mynestai-message > div {
+    max-width: min(78%, 670px);
+}
+
+.mynestai-message-author {
+    display: block;
+    margin: 0 0 5px 3px;
+    color: #9da4af;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.mynestai-message p {
+    margin: 0;
+    padding: 12px 15px;
+    border-radius: 18px 18px 18px 5px;
+    background: #1d2025;
+    color: #ebedf0;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.mynestai-message .mynestai-thought {
+    color: #9da4af;
+    font-style: italic;
+}
+
+.mynestai-message-user {
+    justify-content: flex-end;
+}
+
+.mynestai-message-user > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.mynestai-message-user p {
+    border-radius: 18px 18px 5px 18px;
+    background: #b86980;
+    color: #fff;
+}
+
+.mynestai-composer {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    width: min(calc(100% - 32px), 850px);
+    margin: 0 auto;
+    padding: 13px 0 max(16px, env(safe-area-inset-bottom));
+}
+
+.mynestai-composer textarea {
+    min-height: 48px;
+    max-height: 160px;
+    flex: 1;
+    resize: vertical;
+    padding: 13px 16px;
+    border: 1px solid rgba(255, 255, 255, .11);
+    border-radius: 17px;
+    outline: 0;
+    background: #1b1d21;
+    color: var(--mynest-text);
+    font: inherit;
+    box-sizing: border-box;
+}
+
+.mynestai-composer textarea:focus {
+    border-color: rgba(217, 139, 158, .7);
+}
+
+.mynestai-composer button {
+    display: grid;
+    width: 48px;
+    height: 48px;
+    place-items: center;
+    border: 0;
+    border-radius: 16px;
+    background: var(--mynest-accent);
+    color: #1a1114;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+@media (max-width: 700px) {
+    .mynestai-chat-header { padding: 8px 14px; min-height: 62px; }
+    .mynestai-message-stream { padding: 22px 15px 12px; }
+    .mynestai-message > div { max-width: 87%; }
+    .mynestai-composer { width: calc(100% - 20px); padding-top: 8px; }
+}
+
+#mynestai-characters-host {
+    width: min(100%, 1100px);
+    min-height: 60vh;
+    margin: 0 auto;
+}
+
+#mynestai-characters-panel #right-nav-panel {
+    position: static !important;
+    display: flex !important;
+    width: 100% !important;
+    min-width: 0;
+    height: min(68vh, 760px) !important;
+    max-height: none !important;
+    overflow: hidden;
+    border: 1px solid var(--mynest-border);
+    border-radius: var(--mynest-radius);
+    background: var(--mynest-panel);
+    box-sizing: border-box;
+}
+
+#mynestai-characters-panel #right-nav-panelheader {
+    display: none;
+}
+
+#mynestai-character-detail-back {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    margin: 0 8px 0 0;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    color: var(--SmartThemeBodyColor);
+    background: transparent;
+    cursor: pointer;
+}
+
+#mynestai-character-detail-back:hover {
+    background: rgba(255, 255, 255, .08);
+}
+
+#mynestai-characters-host.mynestai-character-detail-open #mynestai-character-detail-back {
+    display: inline-flex;
+}
+
+/* Character Lore is intentionally not part of the MYnestAI character editor. */
+#mynestai-characters-host #world_button {
+    display: none !important;
+}
+
+/* Native character tools open their own SillyTavern popups.  They must sit
+   above MYnestAI's full-page panel in order to remain visible and clickable. */
+#shadow_popup,
+#character_popup,
+#world_popup,
+#export_format_popup {
+    z-index: 1000001 !important;
+}
+
+#mynestai-characters-panel #rm_characters_block {
+    min-height: 0;
+}
+
+/* Streamline the borrowed SillyTavern character manager for MYnestAI. */
+#mynestai-characters-panel #CharListButtonAndHotSwaps,
+#mynestai-characters-panel .showTagList,
+#mynestai-characters-panel .manageTags,
+#mynestai-characters-panel .filterByFolder,
+#mynestai-characters-panel .clearAllFilters,
+#mynestai-characters-panel #external_Import_button {
+    display: none !important;
+}
+
+.mynestai-browse-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    width: min(100%, 900px);
+    margin: 0 auto 20px;
+}
+
+.mynestai-source-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 22px;
+    border: 1px solid var(--mynest-border);
+    border-radius: var(--mynest-radius);
+    background: var(--mynest-panel);
+    color: var(--mynest-text);
+    text-decoration: none;
+    transition: transform .2s ease, background .2s ease;
+}
+
+.mynestai-source-card:hover {
+    transform: translateY(-2px);
+    background: var(--mynest-panel-hover);
+}
+
+.mynestai-source-card > :first-child {
+    color: var(--mynest-accent);
+    font-size: 28px;
+}
+
+.mynestai-source-card span {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.mynestai-source-card small {
+    color: var(--mynest-muted);
+}
+
+.mynestai-action-button {
+    display: block;
+    margin: 0 auto;
+    padding: 11px 16px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 14px;
+    background: var(--mynest-accent-soft);
+    color: var(--mynest-text);
+    cursor: pointer;
+    font: inherit;
+}
+
+/* =========================================================
+   SETTINGS HUB
+   ========================================================= */
+
+#mynestai-settings-content {
+    width: min(100%, 900px);
+    margin: 0 auto;
+}
+
+.mynestai-settings-heading,
+.mynestai-settings-page-header {
+    margin: 12px 0 26px;
+}
+
+.mynestai-settings-heading h1,
+.mynestai-settings-page-header h1 {
+    margin: 0;
+    font-size: 31px;
+}
+
+.mynestai-settings-heading p,
+.mynestai-settings-page-header p {
+    margin: 7px 0 0;
+    color: var(--mynest-muted);
+}
+
+.mynestai-settings-list {
+    overflow: hidden;
+    border: 1px solid var(--mynest-border);
+    border-radius: var(--mynest-radius);
+    background: var(--mynest-panel);
+}
+
+.mynestai-settings-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+    min-height: 92px;
+    padding: 17px 22px;
+    border: 0;
+    border-bottom: 1px solid var(--mynest-border);
+    background: transparent;
+    color: var(--mynest-text);
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+}
+
+.mynestai-settings-row:last-child {
+    border-bottom: 0;
+}
+
+.mynestai-settings-row:hover {
+    background: rgba(255, 255, 255, .045);
+}
+
+.mynestai-settings-row > :first-child {
+    width: 28px;
+    color: var(--mynest-accent);
+    font-size: 23px;
+    text-align: center;
+}
+
+.mynestai-settings-row span {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.mynestai-settings-row strong {
+    font-size: 18px;
+}
+
+.mynestai-settings-row small {
+    color: var(--mynest-muted);
+    font-size: 14px;
+}
+
+.mynestai-settings-row > :last-child {
+    color: var(--mynest-muted);
+}
+
+.mynestai-settings-page-header {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+#mynestai-settings-back {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border: 1px solid var(--mynest-border);
+    border-radius: 12px;
+    background: var(--mynest-panel);
+    color: var(--mynest-text);
+    cursor: pointer;
+}
+
+.mynestai-settings-page {
+    min-height: 300px;
+    padding: 42px 24px;
+    border: 1px solid var(--mynest-border);
+    border-radius: var(--mynest-radius);
+    background: var(--mynest-panel);
+    text-align: center;
+}
+
+.mynestai-settings-page > i {
+    color: var(--mynest-accent);
+    font-size: 38px;
+}
+
+.mynestai-settings-page h2 {
+    margin: 16px 0 7px;
+}
+
+.mynestai-settings-page p {
+    margin: 0;
+    color: var(--mynest-muted);
+}
+
+#mynestai-settings-native-host {
+    min-height: 340px;
+    padding: 18px;
+    overflow: auto;
+    text-align: left;
+}
+
+#mynestai-settings-native-host > .mynestai-native-settings,
+#mynestai-settings-native-host > .drawer-content {
+    position: static !important;
+    display: flex !important;
+    width: 100% !important;
+    min-width: 0;
+    max-width: none !important;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: visible !important;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    box-sizing: border-box;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration,
+#mynestai-settings-native-host > #AdvancedFormatting,
+#mynestai-settings-native-host > #WorldInfo,
+#mynestai-settings-native-host > #Backgrounds,
+#mynestai-settings-native-host > #rm_extensions_block,
+#mynestai-settings-native-host > #PersonaManagement {
+    flex-direction: column;
+}
+
+/* Chat Generation: place saved profiles beside the active provider form. */
+#mynestai-settings-native-host > #rm_api_block {
+    display: grid !important;
+    grid-template-columns: minmax(250px, 360px) minmax(0, 1fr);
+    gap: 18px 34px;
+    align-items: start;
+}
+
+#mynestai-settings-native-host > #rm_api_block > .wide100p:first-child {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    padding: 18px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 14px;
+    background: rgba(0, 0, 0, .14);
+    box-sizing: border-box;
+}
+
+#mynestai-settings-native-host > #rm_api_block > #title_api {
+    grid-column: 2;
+    margin: 2px 0 -8px;
+    font-size: 22px;
+}
+
+#mynestai-settings-native-host > #rm_api_block > #title_api + .flex-container {
+    grid-column: 2;
+    width: 100%;
+    min-width: 0;
+}
+
+#mynestai-settings-native-host > #rm_api_block #main-API-selector-block {
+    width: min(100%, 440px);
+    margin-bottom: 18px;
+}
+
+#mynestai-settings-native-host > #rm_api_block #connection_profiles {
+    min-width: 0;
+}
+
+@media (max-width: 780px) {
+    #mynestai-settings-native-host > #rm_api_block {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    #mynestai-settings-native-host > #rm_api_block > .wide100p:first-child,
+    #mynestai-settings-native-host > #rm_api_block > #title_api,
+    #mynestai-settings-native-host > #rm_api_block > #title_api + .flex-container {
+        grid-column: 1;
+        grid-row: auto;
+    }
+
+    #mynestai-settings-native-host > #rm_api_block > .wide100p:first-child {
+        position: static;
+    }
+}
+
+#mynestai-settings-native-host .scrollableInner {
+    width: 100%;
+    max-height: none;
+    overflow: visible;
+}
+
+/* Image Generation uses two always-open sections in MYnestAI. */
+#mynestai-settings-native-host #sd_container .mynestai-static-drawer {
+    cursor: default;
+    pointer-events: none;
+}
+
+#mynestai-settings-native-host #sd_container .mynestai-static-drawer .inline-drawer-icon {
+    display: none;
+}
+
+#mynestai-settings-native-host #sd_container .mynestai-static-drawer b {
+    font-size: 20px;
+}
+
+#mynestai-settings-native-host #sd_container .mynestai-static-drawer .notes-link {
+    display: none;
+}
+
+#mynestai-settings-native-host #sd_container .inline-drawer-content {
+    display: block !important;
+}
+
+/* Image Generation belongs to its dedicated MYnestAI page, not Extensions. */
+#mynestai-settings-native-host > #rm_extensions_block #sd_container,
+#mynestai-settings-native-host > #rm_extensions_block .extensions_block > hr,
+#mynestai-settings-native-host > #rm_extensions_block .extensions_block > hr ~ * {
+    display: none !important;
+}
+
+/* MYnestAI uses one shared background gallery and a single upload action. */
+#mynestai-settings-native-host > #Backgrounds #bg_tabs .bg_tabs_list,
+#mynestai-settings-native-host > #Backgrounds #bg_chat_tab,
+#mynestai-settings-native-host > #Backgrounds .bg-header-row-2 {
+    display: none !important;
+}
+
+#mynestai-settings-native-host > #Backgrounds #bg_global_tab {
+    display: block !important;
+}
+
+#mynestai-settings-native-host > #Backgrounds .bg-header-row-1 > * {
+    display: none !important;
+}
+
+#mynestai-settings-native-host > #Backgrounds .bg-header-row-1 #add_background_button_top {
+    display: flex !important;
+    margin-left: auto;
+}
+
+/* Consistent MYnestAI treatment for every native settings page.  These rules
+   only style existing controls; their native IDs, events, and values remain
+   untouched. */
+#mynestai-settings-native-host > .mynestai-native-settings:not(#rm_api_block) {
+    gap: 14px;
+}
+
+#mynestai-settings-native-host .inline-drawer,
+#mynestai-settings-native-host .range-block,
+#mynestai-settings-native-host .extensions_block {
+    margin: 0 0 14px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 14px;
+    background: rgba(0, 0, 0, .14);
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+#mynestai-settings-native-host .inline-drawer-toggle,
+#mynestai-settings-native-host .inline-drawer-header {
+    min-height: 52px;
+    padding: 10px 14px;
+    box-sizing: border-box;
+}
+
+#mynestai-settings-native-host .inline-drawer-content {
+    padding: 4px 14px 16px;
+    box-sizing: border-box;
+}
+
+#mynestai-settings-native-host .range-block,
+#mynestai-settings-native-host .extensions_block {
+    padding: 16px;
+}
+
+#mynestai-settings-native-host h3,
+#mynestai-settings-native-host h4 {
+    line-height: 1.25;
+}
+
+#mynestai-settings-native-host input:not([type="checkbox"]):not([type="radio"]),
+#mynestai-settings-native-host select,
+#mynestai-settings-native-host textarea {
+    min-height: 38px;
+    box-sizing: border-box;
+}
+
+#mynestai-settings-native-host textarea {
+    min-height: 76px;
+}
+
+#mynestai-settings-native-host .menu_button {
+    min-height: 36px;
+}
+
+#mynestai-settings-native-host .checkbox_label {
+    min-height: 30px;
+    align-items: center;
+}
+
+/* Full-screen chat and message action menus. */
+.mynestai-overlay-menu {
+    position: fixed;
+    inset: 0;
+    z-index: 1000005;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.mynestai-overlay-menu.mynestai-visible {
+    display: flex;
+}
+
+.mynestai-menu-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, .62);
+    backdrop-filter: blur(8px);
+}
+
+.mynestai-menu-panel {
+    position: relative;
+    z-index: 1;
+    width: min(92vw, 390px);
+    padding: 10px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 18px;
+    background: #18191d;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .5);
+}
+
+.mynestai-menu-panel header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px 14px;
+    color: var(--mynest-text);
+}
+
+.mynestai-menu-panel header button {
+    border: 0;
+    background: transparent;
+    color: var(--mynest-muted);
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.mynestai-menu-panel > button {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 48px;
+    gap: 13px;
+    padding: 10px 13px;
+    border: 0;
+    border-radius: 11px;
+    background: transparent;
+    color: var(--mynest-text);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.mynestai-menu-panel > button:hover {
+    background: rgba(255, 255, 255, .09);
+}
+
+.mynestai-menu-panel > button i {
+    width: 20px;
+    color: var(--mynest-accent);
+    text-align: center;
+}
+
+.mynestai-menu-panel > button.mynestai-menu-danger {
+    color: #ff9a9a;
+}
+
+.mynestai-menu-panel > button.mynestai-menu-danger i {
+    color: #ff7777;
+}
+
+#mynestai-message-menu {
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+#mynestai-message-menu .mynestai-menu-backdrop {
+    background: rgba(0, 0, 0, .12);
+    backdrop-filter: none;
+}
+
+#mynestai-message-menu .mynestai-menu-panel {
+    position: fixed;
+    width: 220px;
+    padding: 8px;
+}
+
+.mynestai-message-context-target {
+    filter: blur(3px);
+    transition: filter .15s ease;
+}
+
+/* =========================================================
+   COMPANION MODE
+   ========================================================= */
+
+#mynestai-companion-page {
+    position: fixed;
+    inset: 0;
+    z-index: 1000004;
+    display: none;
+    grid-template-rows: auto 1fr auto;
+    background: #050505;
+    color: var(--mynest-text);
+}
+
+#mynestai-companion-page.mynestai-visible {
+    display: grid;
+}
+
+.mynestai-companion-header {
+    display: grid;
+    grid-template-columns: 72px 1fr auto;
+    align-items: center;
+    gap: 16px;
+    min-height: 92px;
+    padding: 18px max(22px, calc((100vw - 900px) / 2));
+    border-bottom: 1px solid rgba(255, 255, 255, .09);
+    background: rgba(5, 5, 5, .96);
+}
+
+.mynestai-companion-header button {
+    min-width: 52px;
+    min-height: 52px;
+    border: 1px solid transparent;
+    border-radius: 15px;
+    background: transparent;
+    color: var(--mynest-text);
+    cursor: pointer;
+    font: inherit;
+}
+
+.mynestai-companion-header > button:first-child {
+    font-size: 30px;
+}
+
+.mynestai-companion-header h1 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(28px, 3.4vw, 36px);
+    font-weight: 800;
+    line-height: 1;
+}
+
+.mynestai-companion-title > div {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mynestai-companion-header span {
+    display: block;
+    margin-top: 8px;
+    color: var(--mynest-muted);
+    font-size: 14px;
+}
+
+#mynestai-companion-save {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 0 18px;
+    border-color: rgba(255, 255, 255, .14);
+    background: rgba(255, 255, 255, .04);
+    color: rgba(255, 255, 255, .42);
+    font-size: 18px;
+    font-weight: 800;
+}
+
+#mynestai-companion-save.mynestai-companion-save-ready {
+    border-color: rgba(52, 211, 153, .48);
+    background: rgba(16, 185, 129, .18);
+    color: #6ee7b7;
+}
+
+.mynestai-companion-body {
+    width: min(100%, 740px);
+    margin: 0 auto;
+    padding: 30px 24px 128px;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.mynestai-companion-stack {
+    display: grid;
+    gap: 28px;
+}
+
+.mynestai-companion-mode > span {
+    display: block;
+    color: #a4a4aa;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+}
+
+.mynestai-companion-mode > p {
+    margin: 14px 0 24px;
+    color: #96969c;
+    font-size: 21px;
+    line-height: 1.55;
+}
+
+.mynestai-companion-mode-options {
+    display: grid;
+    gap: 18px;
+}
+
+.mynestai-companion-mode-options button {
+    display: grid;
+    grid-template-columns: 88px 1fr auto;
+    align-items: start;
+    gap: 22px;
+    width: 100%;
+    padding: 28px;
+    border: 1px solid rgba(255, 255, 255, .14);
+    border-radius: 28px;
+    background: rgba(18, 18, 20, .86);
+    color: #fff;
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+}
+
+.mynestai-companion-mode-options button > i {
+    display: grid;
+    width: 84px;
+    height: 84px;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, .13);
+    border-radius: 20px;
+    color: #aaaab0;
+    font-size: 35px;
+}
+
+.mynestai-companion-mode-options strong {
+    display: block;
+    font-size: 31px;
+    font-weight: 800;
+}
+
+.mynestai-companion-mode-options small {
+    display: block;
+    margin-top: 10px;
+    color: #929297;
+    font-size: 21px;
+    line-height: 1.45;
+}
+
+.mynestai-companion-mode-options b {
+    align-self: start;
+    padding: 8px 13px;
+    border: 1px solid rgba(52, 211, 153, .65);
+    border-radius: 12px;
+    color: #34d399;
+    font-size: 15px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+}
+
+.mynestai-companion-mode-options button.active {
+    border-color: rgba(52, 211, 153, .7);
+    background: rgba(6, 78, 59, .26);
+    box-shadow: 0 0 0 3px rgba(52, 211, 153, .1);
+}
+
+.mynestai-companion-mode-options button.active > i {
+    border-color: rgba(52, 211, 153, .55);
+    background: rgba(16, 185, 129, .16);
+    color: #34d399;
+}
+
+.mynestai-companion-soul-head {
+    display: grid;
+    gap: 26px;
+}
+
+.mynestai-companion-soul-head > div:first-child {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+}
+
+.mynestai-companion-soul-head > div:first-child > i {
+    display: grid;
+    width: 58px;
+    height: 58px;
+    place-items: center;
+    border: 1px solid rgba(217, 139, 158, .42);
+    border-radius: 15px;
+    color: var(--mynest-accent);
+    font-size: 30px;
+}
+
+.mynestai-companion-soul-head strong {
+    display: block;
+    color: #fff;
+    font-size: 34px;
+    font-weight: 800;
+    line-height: 1.12;
+}
+
+.mynestai-companion-soul-head small {
+    display: block;
+    margin-top: 10px;
+    color: #9b9b9f;
+    font-size: 20px;
+    line-height: 1.45;
+}
+
+.mynestai-companion-generate {
+    display: grid;
+    grid-template-columns: 54px 1fr;
+    gap: 0 18px;
+    padding: 28px;
+    border: 1px solid rgba(52, 211, 153, .42);
+    border-radius: 8px;
+    background: rgba(6, 78, 59, .24);
+}
+
+.mynestai-companion-generate > i {
+    display: grid;
+    width: 54px;
+    height: 54px;
+    place-items: center;
+    border: 1px solid rgba(52, 211, 153, .42);
+    border-radius: 12px;
+    color: #34d399;
+    font-size: 24px;
+}
+
+.mynestai-companion-generate button {
+    grid-column: 2;
+    min-height: 54px;
+    margin-top: 24px;
+    border: 1px solid rgba(52, 211, 153, .5);
+    border-radius: 8px;
+    background: rgba(16, 185, 129, .22);
+    color: #34d399;
+    cursor: pointer;
+    font: inherit;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.mynestai-companion-generate .mynestai-companion-direction {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    border: 0;
+    border-top: 1px solid rgba(255, 255, 255, .11);
+    background: transparent;
+    color: var(--mynest-muted);
+    text-align: left;
+}
+
+.mynestai-companion-section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 38px 0 16px;
+    color: #a4a4aa;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+}
+
+.mynestai-companion-section-title button {
+    border: 0;
+    background: transparent;
+    color: var(--mynest-muted);
+    cursor: pointer;
+    font: inherit;
+    text-transform: none;
+}
+
+.mynestai-companion-field,
+.mynestai-companion-memory {
+    display: grid;
+    gap: 12px;
+    color: #aaaab0;
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.mynestai-companion-field textarea,
+.mynestai-companion-memory textarea {
+    min-height: 116px;
+    padding: 22px;
+    border: 1px solid rgba(255, 255, 255, .16);
+    border-radius: 8px;
+    outline: 0;
+    resize: vertical;
+    background: rgba(0, 0, 0, .32);
+    color: #fff;
+    font: inherit;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.mynestai-companion-field textarea:focus,
+.mynestai-companion-memory textarea:focus {
+    border-color: rgba(52, 211, 153, .58);
+    box-shadow: 0 0 0 3px rgba(52, 211, 153, .12);
+}
+
+.mynestai-companion-field textarea::placeholder,
+.mynestai-companion-memory textarea::placeholder {
+    color: rgba(255, 255, 255, .32);
+}
+
+.mynestai-companion-card,
+.mynestai-companion-toggle {
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, .13);
+    border-radius: 8px;
+    background: rgba(18, 18, 20, .86);
+}
+
+.mynestai-companion-card {
+    margin-top: 20px;
+}
+
+.mynestai-companion-card-title {
+    display: grid;
+    grid-template-columns: 58px 1fr 24px;
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+    padding: 24px 28px;
+    border: 0;
+    background: transparent;
+    color: var(--mynest-text);
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+}
+
+.mynestai-companion-card-title > i:first-child,
+.mynestai-companion-toggle > i {
+    display: grid;
+    width: 58px;
+    height: 58px;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .05);
+    color: #34d399;
+    font-size: 25px;
+}
+
+.mynestai-companion-card-blue .mynestai-companion-card-title > i:first-child {
+    color: #60a5fa;
+}
+
+.mynestai-companion-card-gold .mynestai-companion-card-title > i:first-child {
+    color: #f59e0b;
+}
+
+.mynestai-companion-card-violet .mynestai-companion-card-title > i:first-child {
+    color: #a78bfa;
+}
+
+.mynestai-companion-card-title strong,
+.mynestai-companion-toggle strong {
+    display: block;
+    color: #fff;
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.mynestai-companion-card-title small,
+.mynestai-companion-toggle small {
+    display: block;
+    margin-top: 8px;
+    color: #85858b;
+    font-size: 20px;
+    line-height: 1.5;
+}
+
+.mynestai-companion-card-body {
+    display: grid;
+    gap: 28px;
+    padding: 28px;
+    border-top: 1px solid rgba(255, 255, 255, .09);
+}
+
+.mynestai-companion-card-body p {
+    margin: 0;
+    color: #b0b0b5;
+    font-size: 22px;
+    line-height: 1.6;
+}
+
+.mynestai-companion-card-collapsed .mynestai-companion-card-body {
+    display: none;
+}
+
+.mynestai-companion-card-collapsed .mynestai-companion-card-title > i:last-child {
+    transform: rotate(180deg);
+}
+
+.mynestai-companion-slider {
+    display: grid;
+    gap: 14px;
+}
+
+.mynestai-companion-slider span,
+.mynestai-companion-slider small {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.mynestai-companion-slider strong {
+    color: #fff;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.mynestai-companion-slider b {
+    color: #b6b6bb;
+    font-size: 21px;
+}
+
+.mynestai-companion-slider input {
+    width: 100%;
+    accent-color: #34d399;
+}
+
+.mynestai-companion-slider small {
+    color: rgba(255, 255, 255, .38);
+    font-size: 17px;
+    font-style: normal;
+}
+
+.mynestai-companion-slider em {
+    font-style: normal;
+}
+
+.mynestai-companion-toggle {
+    display: grid;
+    grid-template-columns: 58px 1fr auto;
+    gap: 18px;
+    align-items: start;
+    margin-bottom: 18px;
+    padding: 28px;
+}
+
+.mynestai-companion-toggle input {
+    width: 68px;
+    height: 38px;
+    accent-color: #34d399;
+}
+
+.mynestai-edit-dialog {
+    position: fixed;
+    inset: 0;
+    z-index: 1000007;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, .68);
+    backdrop-filter: blur(8px);
+}
+
+.mynestai-edit-card {
+    width: min(720px, 100%);
+    padding: 22px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 18px;
+    background: #18191d;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .55);
+}
+
+.mynestai-edit-card h3 {
+    margin: 0 0 14px;
+}
+
+.mynestai-edit-card textarea {
+    width: 100%;
+    min-height: 180px;
+    resize: vertical;
+    padding: 12px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 10px;
+    background: #101114;
+    color: var(--mynest-text);
+    box-sizing: border-box;
+    font: inherit;
+}
+
+.mynestai-edit-card > div {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.mynestai-edit-card button {
+    min-height: 40px;
+    padding: 0 16px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 10px;
+    background: #25272c;
+    color: var(--mynest-text);
+    cursor: pointer;
+}
+
+.mynestai-edit-card [data-edit-save] {
+    border-color: var(--mynest-accent);
+    background: var(--mynest-accent);
+    color: #18191d;
+}
+
+#shadow_select_chat_popup,
+.chat-menu-overlay {
+    z-index: 1000006 !important;
+}
+
+/* Native range controls use a pale track in some themes; keep the value line
+   dark and high-contrast inside MYnestAI settings. */
+#mynestai-settings-native-host input[type="range"] {
+    accent-color: var(--mynest-accent);
+}
+
+#mynestai-settings-native-host input[type="range"]::-webkit-slider-runnable-track {
+    background: #050505;
+}
+
+#mynestai-settings-native-host input[type="range"]::-moz-range-track {
+    background: #050505;
+}
+
+@media (max-width: 780px) {
+    #mynestai-settings-native-host {
+        padding: 12px;
+    }
+
+    #mynestai-settings-native-host .inline-drawer-toggle,
+    #mynestai-settings-native-host .inline-drawer-header {
+        padding: 10px 12px;
+    }
+
+    #mynestai-settings-native-host .inline-drawer-content,
+    #mynestai-settings-native-host .range-block,
+    #mynestai-settings-native-host .extensions_block {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+}

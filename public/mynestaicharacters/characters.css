@@ -1,0 +1,634 @@
+/* =========================================================
+   MYnestAI Character Management
+   ========================================================= */
+
+.mna-characters {
+    width: 100%;
+    height: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+
+/* ---------------------------------------------------------
+   Header
+   --------------------------------------------------------- */
+
+.mna-character-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.mna-character-header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.mna-character-header p {
+    margin: 6px 0 0;
+    opacity: 0.65;
+    font-size: 14px;
+}
+
+
+/* ---------------------------------------------------------
+   Buttons
+   --------------------------------------------------------- */
+
+.mna-primary-button,
+.mna-secondary-button,
+.mna-danger-button {
+    border: 0;
+    border-radius: 10px;
+    padding: 11px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: 0.15s ease;
+}
+
+.mna-primary-button {
+    background: var(--SmartThemeQuoteColor, #6c63ff);
+    color: #fff;
+}
+
+.mna-primary-button:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.mna-secondary-button {
+    background: rgba(255, 255, 255, 0.08);
+    color: inherit;
+}
+
+.mna-secondary-button:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.mna-danger-button {
+    background: rgba(220, 50, 50, 0.15);
+    color: #ff6b6b;
+}
+
+.mna-danger-button:hover {
+    background: rgba(220, 50, 50, 0.25);
+}
+
+
+/* ---------------------------------------------------------
+   Toolbar
+   --------------------------------------------------------- */
+
+.mna-character-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.mna-search {
+    flex: 1;
+    min-width: 0;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 13px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mna-search i {
+    opacity: 0.55;
+}
+
+.mna-search input {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: inherit;
+    font-size: 14px;
+}
+
+.mna-search input::placeholder {
+    opacity: 0.5;
+}
+
+#mna-character-sort {
+    height: 42px;
+    min-width: 150px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.06);
+    color: inherit;
+    outline: 0;
+}
+
+
+/* ---------------------------------------------------------
+   Character Grid
+   --------------------------------------------------------- */
+
+.mna-character-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 18px;
+}
+
+
+/* ---------------------------------------------------------
+   Character Card
+   --------------------------------------------------------- */
+
+.mna-character-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.055);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    transition:
+        transform 0.18s ease,
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.mna-character-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.mna-character-card-avatar {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    display: block;
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.mna-character-card-info {
+    padding: 12px;
+}
+
+.mna-character-card-name {
+    font-size: 16px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mna-character-card-description {
+    margin-top: 5px;
+    font-size: 12px;
+    line-height: 1.4;
+    opacity: 0.6;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+
+/* ---------------------------------------------------------
+   Favorite
+   --------------------------------------------------------- */
+
+.mna-character-favorite {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(5px);
+
+    cursor: pointer;
+    z-index: 3;
+}
+
+.mna-character-favorite i {
+    color: #fff;
+    opacity: 0.8;
+}
+
+.mna-character-favorite.active i {
+    color: #ffd43b;
+    opacity: 1;
+}
+
+
+/* ---------------------------------------------------------
+   Empty State
+   --------------------------------------------------------- */
+
+.mna-character-empty {
+    display: none;
+    min-height: 300px;
+
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    text-align: center;
+    opacity: 0.8;
+}
+
+.mna-character-empty i {
+    font-size: 42px;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.mna-character-empty h2 {
+    margin: 0 0 6px;
+}
+
+.mna-character-empty p {
+    margin: 0 0 18px;
+    opacity: 0.6;
+}
+
+
+/* =========================================================
+   Character Editor Modal
+   ========================================================= */
+
+.mna-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+}
+
+.mna-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(5px);
+}
+
+
+/* ---------------------------------------------------------
+   Editor Panel
+   --------------------------------------------------------- */
+
+.mna-character-editor-panel {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    width: min(900px, 94vw);
+    height: min(850px, 92vh);
+
+    display: flex;
+    flex-direction: column;
+
+    border-radius: 16px;
+
+    background: var(
+        --SmartThemeBlurTintColor,
+        #18181c
+    );
+
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    box-shadow:
+        0 25px 80px rgba(0, 0, 0, 0.5);
+
+    overflow: hidden;
+}
+
+
+/* ---------------------------------------------------------
+   Editor Header
+   --------------------------------------------------------- */
+
+.mna-editor-header {
+    min-height: 62px;
+    padding: 0 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mna-editor-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+#mna-character-editor-close {
+    width: 36px;
+    height: 36px;
+
+    border: 0;
+    border-radius: 8px;
+
+    background: transparent;
+    color: inherit;
+
+    cursor: pointer;
+    font-size: 18px;
+}
+
+#mna-character-editor-close:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+
+/* ---------------------------------------------------------
+   Editor Body
+   --------------------------------------------------------- */
+
+.mna-editor-body {
+    flex: 1;
+    min-height: 0;
+
+    overflow-y: auto;
+
+    padding: 22px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+
+/* ---------------------------------------------------------
+   Avatar
+   --------------------------------------------------------- */
+
+.mna-avatar-section {
+    display: flex;
+    justify-content: center;
+}
+
+.mna-avatar-section label {
+    position: relative;
+
+    width: 150px;
+    height: 200px;
+
+    display: block;
+
+    border-radius: 14px;
+    overflow: hidden;
+
+    cursor: pointer;
+
+    background: rgba(255, 255, 255, 0.05);
+
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#mna-character-avatar-preview {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    display: block;
+}
+
+.mna-avatar-overlay {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.45);
+
+    opacity: 0;
+
+    transition: opacity 0.15s ease;
+}
+
+.mna-avatar-overlay i {
+    font-size: 25px;
+}
+
+.mna-avatar-section label:hover .mna-avatar-overlay {
+    opacity: 1;
+}
+
+
+/* ---------------------------------------------------------
+   Fields
+   --------------------------------------------------------- */
+
+.mna-character-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+}
+
+.mna-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.mna-field label {
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.8;
+}
+
+.mna-field input,
+.mna-field textarea {
+    width: 100%;
+    box-sizing: border-box;
+
+    border-radius: 9px;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    background: rgba(255, 255, 255, 0.055);
+
+    color: inherit;
+
+    outline: none;
+
+    padding: 11px 12px;
+
+    font-family: inherit;
+    font-size: 14px;
+
+    transition:
+        border-color 0.15s ease,
+        background 0.15s ease;
+}
+
+.mna-field input:focus,
+.mna-field textarea:focus {
+    border-color: var(--SmartThemeQuoteColor, #6c63ff);
+    background: rgba(255, 255, 255, 0.075);
+}
+
+.mna-field textarea {
+    min-height: 110px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+#mna-character-first-message {
+    min-height: 140px;
+}
+
+#mna-character-example-messages {
+    min-height: 130px;
+}
+
+
+/* ---------------------------------------------------------
+   Editor Footer
+   --------------------------------------------------------- */
+
+.mna-editor-footer {
+    min-height: 68px;
+
+    padding: 0 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mna-editor-footer-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+/* ---------------------------------------------------------
+   Mobile
+   --------------------------------------------------------- */
+
+@media (max-width: 700px) {
+
+    .mna-characters {
+        padding: 15px;
+    }
+
+    .mna-character-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .mna-character-header .mna-primary-button {
+        width: 100%;
+    }
+
+    .mna-character-toolbar {
+        flex-direction: column;
+    }
+
+    .mna-search {
+        width: 100%;
+    }
+
+    #mna-character-sort {
+        width: 100%;
+    }
+
+    .mna-character-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .mna-character-card-info {
+        padding: 9px;
+    }
+
+    .mna-character-card-name {
+        font-size: 14px;
+    }
+
+    .mna-character-card-description {
+        font-size: 11px;
+    }
+
+    .mna-character-editor-panel {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+    }
+
+    .mna-editor-body {
+        padding: 15px;
+    }
+
+    .mna-avatar-section label {
+        width: 120px;
+        height: 160px;
+    }
+
+    .mna-editor-footer {
+        padding: 10px;
+        min-height: auto;
+        gap: 8px;
+    }
+
+    .mna-editor-footer-right {
+        flex: 1;
+        justify-content: flex-end;
+    }
+
+    .mna-editor-footer .mna-danger-button {
+        margin-right: auto;
+    }
+
+}
+
+
+/* ---------------------------------------------------------
+   Very small screens
+   --------------------------------------------------------- */
+
+@media (max-width: 420px) {
+
+    .mna-character-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mna-character-card-avatar {
+        aspect-ratio: 2 / 3;
+    }
+
+    .mna-editor-footer-right button {
+        padding: 10px 11px;
+    }
+
+}

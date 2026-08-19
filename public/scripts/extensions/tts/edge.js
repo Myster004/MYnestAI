@@ -249,7 +249,7 @@ class EdgeTtsProvider {
         }
 
         if (this.settings.provider === EDGE_TTS_PROVIDER.plugin && !this.isPluginAvailable()) {
-            const message = 'Edge TTS Server plugin not loaded. Install it from https://github.com/SillyTavern/SillyTavern-EdgeTTS-Plugin and restart the SillyTavern server.';
+            const message = 'Edge TTS Server plugin not loaded. Install it from https://github.com/SillyTavern/SillyTavern-EdgeTTS-Plugin and restart the MYnestAI server.';
             // toastr.error(message)
             throw new Error(message);
         }

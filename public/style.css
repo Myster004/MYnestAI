@@ -359,7 +359,7 @@ input[type='checkbox']:focus-visible {
     opacity: 0.7;
 }
 
-.mes[is_system="true"][ch_name="SillyTavern System"] .mes_text br {
+.mes[is_system="true"][ch_name="MYnestAI System"] .mes_text br {
     display: none;
 }
 

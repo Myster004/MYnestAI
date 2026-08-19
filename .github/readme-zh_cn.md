@@ -40,14 +40,8 @@ SillyTavern 于 2023 年 2 月作为 TavernAI 1.2.8 的一个分支开始，如�
 
 ## 有问题或建议？
 
-### Discord 服务器
-
-| [![][discord-shield-badge]][discord-link] | [加入我们的 Discord 社区！](https://discord.gg/sillytavern) 获取支持，分享喜爱的角色和 Prompt。 |
-| :---------------------------------------- | :---------------------------------------------------------------------------------------------- |
-
 或者直接与开发人员联系：
 
-* Discord: cohee, rossascends, wolfsblvt
 * Reddit: [/u/RossAscends](https://www.reddit.com/user/RossAscends/), [/u/sillylossy](https://www.reddit.com/user/sillylossy/), [u/Wolfsblvt](https://www.reddit.com/user/Wolfsblvt/)
 * [提交 GitHub 问题](https://github.com/SillyTavern/SillyTavern/issues)
 
@@ -80,7 +74,7 @@ SillyTavern 于 2023 年 2 月作为 TavernAI 1.2.8 的一个分支开始，如�
 * 视觉小说模式的灵感来自 PepperTaco 的工作 (<https://github.com/peppertaco/Tavern/>)
 * Noto Sans 字体 by Google (OFL 许可证)
 * 图标主题 by Font Awesome <https://fontawesome.com> (图标: CC BY 4.0, 字体: SIL OFL 1.1, 代码: MIT 许可证)
-* 默认内容由 @OtisAlejandro (Seraphina 角色和世界书) 和 @kallmeflocc (10K Discord 用户庆祝背景) 提供
+* 默认内容由 @OtisAlejandro (Seraphina 角色和世界书) 和 @kallmeflocc (10K 用户庆祝背景) 提供
 * Docker 指南由 [@mrguymiah](https://github.com/mrguymiah) 和 [@Bronya-Rand](https://github.com/Bronya-Rand) 提供
 * kokoro-js 库由 [@hexgrad](https://github.com/hexgrad) 提供 (Apache-2.0 许可证)
 
@@ -90,5 +84,3 @@ SillyTavern 于 2023 年 2 月作为 TavernAI 1.2.8 的一个分支开始，如�
 
 <!-- LINK GROUP -->
 [cover]: https://github.com/user-attachments/assets/01a6ae9a-16aa-45f2-8bff-32b5dc587e44
-[discord-link]: https://discord.gg/sillytavern
-[discord-shield-badge]: https://img.shields.io/discord/1100685673633153084?color=5865F2&label=discord&labelColor=black&logo=discord&logoColor=white&style=for-the-badge

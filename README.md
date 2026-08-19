@@ -6,7 +6,6 @@ LLM Frontend for Power Users
 
 - GitHub: <https://github.com/SillyTavern/SillyTavern>
 - Docs: <https://docs.sillytavern.app/>
-- Discord: <https://discord.gg/sillytavern>
 - Reddit: <https://reddit.com/r/SillyTavernAI>
 
 ## License

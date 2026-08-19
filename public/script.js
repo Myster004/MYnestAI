@@ -401,7 +401,7 @@ export let converter;
 
 // array for prompt token calculations
 
-export const systemUserName = 'SillyTavern System';
+export const systemUserName = 'MYnestAI System';
 export const neutralCharacterName = 'Assistant';
 let default_user_name = 'User';
 export let name1 = default_user_name;
@@ -419,7 +419,7 @@ export let isChatSaving = false;
 let firstRun = false;
 export let settingsReady = false;
 let currentVersion = '0.0.0';
-export let displayVersion = 'SillyTavern';
+export let displayVersion = 'MYnestAI';
 
 let generation_started = new Date();
 /** @type {Character[]} */
@@ -503,7 +503,7 @@ async function getClientVersion() {
         const response = await fetch('/version');
         const data = await response.json();
         CLIENT_VERSION = data.agent;
-        displayVersion = `SillyTavern ${data.pkgVersion}`;
+        displayVersion = `MYnestAI ${data.pkgVersion}`;
         currentVersion = data.pkgVersion;
 
         if (data.gitRevision && data.gitBranch) {
@@ -704,9 +704,9 @@ async function firstLoadInit() {
 
     const splashLogo = document.createElement('img');
     splashLogo.src = '/img/logo.png';
-    splashLogo.alt = 'SillyTavern';
+    splashLogo.alt = 'MYnestAI';
     splashLogo.className = 'splash-logo';
-    splashLogo.ariaLabel = t`SillyTavern Logo`;
+    splashLogo.ariaLabel = t`MYnestAI Logo`;
 
     const splashMessage = document.createElement('h2');
     splashMessage.className = 'splash-message';
@@ -12307,7 +12307,7 @@ $(document).on('click', '.chatMenuButton', function (e) {
             }
 
             if (selected_group && format === 'json') {
-                toastr.warning(t`Only SillyTavern's own format is supported for group chat imports. Sorry!`);
+                toastr.warning(t`Only MYnestAI's own format is supported for group chat imports. Sorry!`);
                 continue;
             }
 

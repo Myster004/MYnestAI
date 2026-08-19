@@ -40,14 +40,8 @@ Die Hardwareanforderungen sind minimal: Es läuft auf allem, was NodeJS 20 oder 
 
 ## Fragen oder Vorschläge?
 
-### Discord-Server
-
-| [![][discord-shield-badge]][discord-link] | [Tritt unserer Discord-Community bei!](https://discord.gg/sillytavern) Erhalte Unterstützung, teile deine Lieblingscharaktere und Prompts. |
-| :---------------------------------------- | :----------------------------------------------------------------------------------------------------------------- |
-
 Oder nimm direkt Kontakt mit den Entwicklern auf:
 
-* Discord: cohee, rossascends, wolfsblvt
 * Reddit: [/u/RossAscends](https://www.reddit.com/user/RossAscends/), [/u/sillylossy](https://www.reddit.com/user/sillylossy/), [u/Wolfsblvt](https://www.reddit.com/user/Wolfsblvt/)
 * [Erstelle ein GitHub-Issue](https://github.com/SillyTavern/SillyTavern/issues)
 
@@ -80,7 +74,7 @@ Für detaillierte Installationsanweisungen besuche bitte unsere Dokumentation:
 * Visual Novel-Modus inspiriert von der Arbeit von PepperTaco (<https://github.com/peppertaco/Tavern/>)
 * Noto Sans-Schriftart von Google (OFL-Lizenz)
 * Symboldesign von Font Awesome <https://fontawesome.com> (Symbole: CC BY 4.0, Schriftarten: SIL OFL 1.1, Code: MIT-Lizenz)
-* Standardinhalt von @OtisAlejandro (Seraphina-Charakter und Lorebook) und @kallmeflocc (10.000 Discord-Benutzer-Feierhintergrund)
+* Standardinhalt von @OtisAlejandro (Seraphina-Charakter und Lorebook) und @kallmeflocc (10.000-Benutzer-Feierhintergrund)
 * Docker-Anleitung von [@mrguymiah](https://github.com/mrguymiah) und [@Bronya-Rand](https://github.com/Bronya-Rand)
 * kokoro-js library by [@hexgrad](https://github.com/hexgrad) (Apache-2.0 License)
 
@@ -90,5 +84,3 @@ Für detaillierte Installationsanweisungen besuche bitte unsere Dokumentation:
 
 <!-- LINK GROUP -->
 [cover]: https://github.com/user-attachments/assets/01a6ae9a-16aa-45f2-8bff-32b5dc587e44
-[discord-link]: https://discord.gg/sillytavern
-[discord-shield-badge]: https://img.shields.io/discord/1100685673633153084?color=5865F2&label=discord&labelColor=black&logo=discord&logoColor=white&style=for-the-badge

@@ -40,14 +40,8 @@ SillyTavern（略してST）は、テキスト生成LLM、画像生成エンジ�
 
 ## 質問や提案はありますか？
 
-### Discordサーバー
-
-| [![][discord-shield-badge]][discord-link] | [私たちのDiscordコミュニティに参加してください！](https://discord.gg/sillytavern) サポートを受けたり、お気に入りのキャラクターやプロンプトを共有したりできます。 |
-| :---------------------------------------- | :----------------------------------------------------------------------------------------------------------------- |
-
 または、開発者に直接連絡してください：
 
-* Discord: cohee, rossascends, wolfsblvt
 * Reddit: [/u/RossAscends](https://www.reddit.com/user/RossAscends/), [/u/sillylossy](https://www.reddit.com/user/sillylossy/), [u/Wolfsblvt](https://www.reddit.com/user/Wolfsblvt/)
 * [GitHub issueを投稿](https://github.com/SillyTavern/SillyTavern/issues)
 
@@ -80,7 +74,7 @@ SillyTavern（略してST）は、テキスト生成LLM、画像生成エンジ�
 * PepperTacoの作品に触発されたビジュアルノベルモード (<https://github.com/peppertaco/Tavern/>)
 * GoogleによるNoto Sansフォント (OFLライセンス)
 * Font Awesomeによるアイコンテーマ <https://fontawesome.com> (アイコン: CC BY 4.0, フォント: SIL OFL 1.1, コード: MITライセンス)
-* @OtisAlejandroによるデフォルトコンテンツ（Seraphinaキャラクターと伝承本）と@kallmefloccによる10K Discordユーザー記念背景
+* @OtisAlejandroによるデフォルトコンテンツ（Seraphinaキャラクターと伝承本）と@kallmefloccによる10Kユーザー記念背景
 * [@mrguymiah](https://github.com/mrguymiah)と[@Bronya-Rand](https://github.com/Bronya-Rand)によるDockerガイド
 * [@hexgrad](https://github.com/hexgrad)によるkokoro-jsライブラリ (Apache-2.0ライセンス)
 
@@ -90,5 +84,3 @@ SillyTavern（略してST）は、テキスト生成LLM、画像生成エンジ�
 
 <!-- LINK GROUP -->
 [cover]: https://github.com/user-attachments/assets/01a6ae9a-16aa-45f2-8bff-32b5dc587e44
-[discord-link]: https://discord.gg/sillytavern
-[discord-shield-badge]: https://img.shields.io/discord/1100685673633153084?color=5865F2&label=discord&labelColor=black&logo=discord&logoColor=white&style=for-the-badge

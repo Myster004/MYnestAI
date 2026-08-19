@@ -40,14 +40,8 @@ SillyTavern 的硬體需求相當低。任何能夠運行 NodeJS 20 或更高版
 
 ## 有任何問題或建議？
 
-### 歡迎加入我們的 Discord 伺服器
-
-| [![][discord-shield-badge]][discord-link] | [加入我們的 Disocrd 伺服器](https://discord.gg/sillytavern) 以獲得技術支援、分享您喜愛的角色與提示詞。 |
-| :---------------------------------------- | :----------------------------------------------------------------------------------------------------------------- |
-
 或直接聯繫開發者：
 
-* Discord: cohee, rossascends, wolfsblvt
 * Reddit: [/u/RossAscends](https://www.reddit.com/user/RossAscends/), [/u/sillylossy](https://www.reddit.com/user/sillylossy/), [u/Wolfsblvt](https://www.reddit.com/user/Wolfsblvt/)
 * [提交 GitHub 問題](https://github.com/SillyTavern/SillyTavern/issues)
 
@@ -80,7 +74,7 @@ SillyTavern 的硬體需求相當低。任何能夠運行 NodeJS 20 或更高版
 * 視覺小說模式（Visual Novel Mode）的靈感，來源於 PepperTaco 的貢獻（<https://github.com/peppertaco/Tavern/>）
 * Noto Sans 字體由 Google 提供（OFL 許可）
 * 主題圖示由 Font Awesome <https://fontawesome.com> 提供（圖示：CC BY 4.0，字體：SIL OFL 1.1，程式碼：MIT 許可）
-* 預設資源來源於 @OtisAlejandro（包含角色 Seraphina 與知識書）與 @kallmeflocc（SillyTavern 官方 Discord 伺服器成員突破 10K 的慶祝背景）
+* 預設資源來源於 @OtisAlejandro（包含角色 Seraphina 與知識書）與 @kallmeflocc（SillyTavern 官方伺服器成員突破 10K 的慶祝背景）
 * Docker 安裝指南由 [@mrguymiah](https://github.com/mrguymiah) 和 [@Bronya-Rand](https://github.com/Bronya-Rand) 編寫
 * kokoro-js 函式庫由 [@hexgrad](https://github.com/hexgrad) 提供 (Apache-2.0 許可)
 
@@ -90,5 +84,3 @@ SillyTavern 的硬體需求相當低。任何能夠運行 NodeJS 20 或更高版
 
 <!-- LINK GROUP -->
 [cover]: https://github.com/user-attachments/assets/01a6ae9a-16aa-45f2-8bff-32b5dc587e44
-[discord-link]: https://discord.gg/sillytavern
-[discord-shield-badge]: https://img.shields.io/discord/1100685673633153084?color=5865F2&label=discord&labelColor=black&logo=discord&logoColor=white&style=for-the-badge

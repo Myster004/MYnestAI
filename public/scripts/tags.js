@@ -2570,7 +2570,7 @@ function registerTagsSlashCommands() {
         ],
         helpString: `
         <div>
-            ${t`Imports character card tags as SillyTavern tags for folder/filter use.`}
+            ${t`Imports character card tags as MYnestAI tags for folder/filter use.`}
         </div>
         <div>
             ${t`Character cards can have embedded tags (set via <code>tags</code> argument in <code>/char-create</code> or <code>/char-update</code>). This command imports those embedded tags as ST tags that can be used for filtering and organizing characters.`}

@@ -142,7 +142,7 @@ export class CommandLineParser {
             .option('browserLaunchEnabled', {
                 type: 'boolean',
                 default: null,
-                describe: 'Automatically launch SillyTavern in the browser',
+                describe: 'Automatically launch MYnestAI in the browser',
             })
             .option('browserLaunchHostname', {
                 type: 'string',

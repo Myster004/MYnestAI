@@ -1,10 +1,12 @@
 import path from 'node:path';
 import fs from 'node:fs';
+import os from 'node:os';
 import { promises as fsPromises } from 'node:fs';
 import { Buffer } from 'node:buffer';
 
 import express from 'express';
 import sanitize from 'sanitize-filename';
+import fetch from 'node-fetch';
 import { sync as writeFileAtomicSync } from 'write-file-atomic';
 import yaml from 'yaml';
 import _ from 'lodash';
@@ -1593,6 +1595,113 @@ router.post('/import', async function (request, response) {
     } catch (err) {
         console.error(err);
         response.send({ error: true });
+    }
+});
+
+const CHUB_SEARCH_URL = 'https://api.chub.ai/search';
+
+function sanitizeSearchParams(query) {
+    const allowed = ['categories', 'page', 'per_page', 'search', 'sort', 'nsfw'];
+    const params = new URLSearchParams();
+    params.set('project', 'characters');
+    for (const key of allowed) {
+        const value = query[key];
+        if (value !== undefined && value !== '') params.set(key, String(value));
+    }
+    if (!params.has('per_page')) params.set('per_page', '40');
+    if (!params.has('page')) params.set('page', '1');
+    return params;
+}
+
+function mapChubNode(node) {
+    return {
+        id: node.id,
+        name: node.name,
+        fullPath: node.fullPath,
+        avatarUrl: node.avatar_url || null,
+        cardUrl: node.max_res_url || null,
+        rating: node.rating ?? null,
+        favorites: node.n_favorites ?? null,
+        nsfw: Boolean(node.nsfw_image || node.is_nsfw),
+        tags: Array.isArray(node.topics) ? node.topics.slice(0, 16) : [],
+        createdAt: node.createdAt ?? null,
+        lastActivityAt: node.lastActivityAt ?? null,
+    };
+}
+
+const CHUB_PAGE_SIZE = 40;
+
+router.get('/browse', async function (request, response) {
+    try {
+        const page = Math.max(1, Number(request.query.page) || 1);
+        const perPage = Math.max(1, Math.min(Number(request.query.per_page) || 20, 100));
+        const offset = (page - 1) * perPage;
+        const firstChubPage = Math.floor(offset / CHUB_PAGE_SIZE) + 1;
+        const lastChubPage = Math.floor((offset + perPage - 1) / CHUB_PAGE_SIZE) + 1;
+        const params = sanitizeSearchParams(request.query);
+        const fetchPage = async (chubPage) => {
+            const pageParams = new URLSearchParams(params);
+            pageParams.set('page', String(chubPage));
+            const res = await fetch(`${CHUB_SEARCH_URL}?${pageParams.toString()}`, {
+                headers: { 'User-Agent': 'MYnestAI/1.0', 'Accept': 'application/json' },
+                signal: AbortSignal.timeout(15000),
+            });
+            if (!res.ok) throw new Error(`Chub search failed (${res.status})`);
+            return res.json();
+        };
+        const results = await Promise.all(Array.from({ length: lastChubPage - firstChubPage + 1 }, (_, i) => fetchPage(firstChubPage + i)));
+        const merged = [];
+        const seen = new Set();
+        let count = 0;
+        for (const json of results) {
+            if (count === 0) count = json?.data?.count ?? 0;
+            const pageNodes = Array.isArray(json?.data?.nodes) ? json.data.nodes : [];
+            for (const node of pageNodes) {
+                if (seen.has(node.id)) continue;
+                seen.add(node.id);
+                merged.push(node);
+            }
+        }
+        const localStart = offset - (firstChubPage - 1) * CHUB_PAGE_SIZE;
+        const nodes = merged.slice(localStart, localStart + perPage).map(mapChubNode);
+        const totalPages = count > 0 ? Math.ceil(count / perPage) : 0;
+        response.send({ count, page, per_page: perPage, total_pages: totalPages, nodes });
+    } catch (err) {
+        console.error('Chub search error', err);
+        response.status(502).send({ error: true, message: 'Could not reach Chub.' });
+    }
+});
+
+router.post('/browse/download', async function (request, response) {
+    const cardUrl = request.body?.cardUrl;
+    if (!cardUrl || typeof cardUrl !== 'string') return response.status(400).send({ error: true, message: 'Missing card URL.' });
+    let safe = false;
+    try {
+        safe = ['avatars.charhub.io', 'chub.ai'].some(host => new URL(cardUrl).hostname === host || new URL(cardUrl).hostname.endsWith(`.${host}`));
+    } catch { /* ignore */ }
+    if (!safe) return response.status(400).send({ error: true, message: 'Refusing non-Chub URL.' });
+
+    const tempPath = path.join(os.tmpdir(), `mynestai_${Date.now()}_${Math.random().toString(36).slice(2)}.png`);
+    try {
+        const res = await fetch(cardUrl, {
+            headers: { 'User-Agent': 'MYnestAI/1.0' },
+            signal: AbortSignal.timeout(30000),
+        });
+        if (!res.ok) throw new Error(`card fetch ${res.status}`);
+        const buffer = Buffer.from(await res.arrayBuffer());
+        if (buffer.length < 8 || buffer.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') {
+            throw new Error('not a PNG card');
+        }
+        await fsPromises.writeFile(tempPath, buffer);
+        const fileName = await importFromPng(tempPath, { request, response });
+        if (!fileName) throw new Error('import returned no file name');
+        invalidateThumbnail(request.user.directories, 'avatar', `${fileName}.png`);
+        response.send({ file_name: fileName });
+    } catch (err) {
+        console.error('Browse download error', err);
+        response.status(502).send({ error: true, message: 'Could not download that card.' });
+    } finally {
+        try { await fsPromises.unlink(tempPath); } catch { /* ignore */ }
     }
 });
 

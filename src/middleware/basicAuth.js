@@ -23,7 +23,7 @@ const basicAuthLimiter = new RateLimiterMemory({
 const basicAuthMiddleware = async function (request, response, callback) {
     const unauthorizedResponse = (res) => {
         const unauthorizedWebpage = safeReadFileSync(path.join(globalThis.DATA_ROOT, '_errors', 'unauthorized.html')) ?? '';
-        res.set('WWW-Authenticate', 'Basic realm="SillyTavern", charset="UTF-8"');
+        res.set('WWW-Authenticate', 'Basic realm="MYnestAI", charset="UTF-8"');
         return res.status(401).send(unauthorizedWebpage);
     };
 

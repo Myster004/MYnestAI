@@ -158,7 +158,7 @@ export async function verifySecuritySettings() {
     }
 
     if (!ENABLE_ACCOUNTS) {
-        logSecurityAlert('Your current SillyTavern configuration is insecure (listening to non-localhost). Enable whitelisting, basic authentication or user accounts.');
+        logSecurityAlert('Your current MYnestAI configuration is insecure (listening to non-localhost). Enable whitelisting, basic authentication or user accounts.');
     }
 
     const users = await getAllEnabledUsers();

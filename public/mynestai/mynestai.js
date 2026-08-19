@@ -3,13 +3,13 @@
 (function () {
     'use strict';
 
-    const panels = ['games', 'characters', 'chat', 'browse', 'settings'];
+    const panels = ['characters', 'chat', 'browse', 'settings'];
     const settingsSections = [
         ['connection-profiles', 'Chat Generation', 'Manage saved model connections', 'fa-comment-dots'],
         ['image-generation', 'Image Generation', 'Generate and configure images', 'fa-wand-magic-sparkles'],
         ['extensions', 'Extensions', 'Configure installed extensions', 'fa-puzzle-piece'],
         ['personas', 'Persona Management', 'Create and manage your personas', 'fa-user-gear'],
-        ['user-settings', 'User Settings', 'Customize your SillyTavern experience', 'fa-user-cog'],
+        ['user-settings', 'User Settings', 'Customize your MYnestAI experience', 'fa-user-cog'],
         ['chat-presets', 'Chat Compilation Presets', 'Control how chats are assembled', 'fa-file-lines'],
         ['formatting', 'Advanced Formatting', 'Tune prompts and response formatting', 'fa-sliders'],
         ['worlds', 'Worlds / Lorebook', 'Manage world information and lorebooks', 'fa-book-open'],
@@ -25,6 +25,7 @@
     let characterDetailObserver = null;
     let activeMessageMenu = null;
     let companionDirty = false;
+    let companionModeOverride = null;
 
     const companionFields = {
         character: [
@@ -183,7 +184,7 @@
         const defaults = defaultCompanionData();
         try {
             const stored = JSON.parse(localStorage.getItem(companionStorageKey()) || '{}');
-            return {
+            const data = {
                 ...defaults,
                 ...stored,
                 character: { ...defaults.character, ...(stored.character || {}) },
@@ -191,6 +192,8 @@
                 sliders: { ...defaults.sliders, ...(stored.sliders || {}) },
                 settings: { ...defaults.settings, ...(stored.settings || {}) },
             };
+            if (companionModeOverride !== null) data.mode = companionModeOverride;
+            return data;
         } catch {
             return defaults;
         }
@@ -218,9 +221,10 @@
         const data = collectCompanionData();
         localStorage.setItem(companionStorageKey(), JSON.stringify(data));
         companionDirty = false;
+        companionModeOverride = null;
         updateCompanionSaveState();
         syncCompanionPrompt(data);
-        window.toastr?.success?.('Companion Mode saved.');
+        window.toastr?.success?.('Companion Soul saved.');
     }
 
     function syncCompanionPrompt(data = loadCompanionData()) {
@@ -234,7 +238,7 @@
         const name = target?.item?.name || 'the companion';
         const sliderSummary = Object.entries(data.sliders || {}).map(([key, value]) => `${key.replace(/[A-Z]/g, match => ` ${match.toLowerCase()}`)} ${value}%`).join('; ');
         const lines = [
-            `MYnestAI Companion Mode for ${name}:`,
+            `MYnestAI Companion Soul for ${name}:`,
             'This is a persistent companion, not a scene-only roleplay character. Keep the written soul consistent, let emotional and relationship state shift gradually with each message, and use shared memories when relevant.',
             data.soul?.essence && `Essence: ${data.soul.essence}`,
             data.soul?.traits && `Traits: ${data.soul.traits}`,
@@ -323,6 +327,14 @@
         save.classList.toggle('mynestai-companion-save-ready', companionDirty);
     }
 
+    function messageMarkup(message, character, ctx) {
+        const isUser = Boolean(message.is_user);
+        const name = character?.name || 'Conversation';
+        const label = isUser ? (ctx.name1 || 'You') : (message.name || name);
+        const avatar = isUser ? '' : `<img src="${avatarUrl(character)}" alt="">`;
+        return `<article class="mynestai-message ${isUser ? 'mynestai-message-user' : 'mynestai-message-character'}" data-message-id="${ctx.chat.indexOf(message)}">${avatar}<div><span class="mynestai-message-author">${escapeHtml(label)}</span><p>${formatMessage(message.mes || '')}</p></div></article>`;
+    }
+
     function renderChatWorkspace() {
         const workspace = document.getElementById('mynestai-chat-workspace');
         const identity = document.getElementById('mynestai-chat-identity');
@@ -332,15 +344,34 @@
         const character = ctx.groupId ? ctx.groups?.find(item => item.id === ctx.groupId) : ctx.characters?.[ctx.characterId];
         const name = character?.name || 'Conversation';
         identity.innerHTML = `<img src="${avatarUrl(character)}" alt=""><span><strong>${escapeHtml(name)}</strong><small>Ready to chat</small></span>`;
-        const messages = Array.isArray(ctx.chat) ? ctx.chat : [];
-        stream.innerHTML = messages.filter(message => !message.is_system).map(message => {
-            const isUser = Boolean(message.is_user);
-            const label = isUser ? (ctx.name1 || 'You') : (message.name || name);
-            const avatar = isUser ? '' : `<img src="${avatarUrl(character)}" alt="">`;
-            return `<article class="mynestai-message ${isUser ? 'mynestai-message-user' : 'mynestai-message-character'}" data-message-id="${messages.indexOf(message)}">${avatar}<div><span class="mynestai-message-author">${escapeHtml(label)}</span><p>${formatMessage(message.mes || '')}</p></div></article>`;
-        }).join('') || '<div class="mynestai-empty"><div class="mynestai-empty-inner"><h2>Start the conversation</h2><p>Send the first message when you are ready.</p></div></div>';
+        const messages = Array.isArray(ctx.chat) ? ctx.chat.filter(message => !message.is_system) : [];
+        stream.innerHTML = messages.map(message => messageMarkup(message, character, ctx)).join('') || '<div class="mynestai-empty"><div class="mynestai-empty-inner"><h2>Start the conversation</h2><p>Send the first message when you are ready.</p></div></div>';
         stream.scrollTop = stream.scrollHeight;
         bindMessageMenus(stream);
+    }
+
+    function updateStreamingMessage() {
+        const workspace = document.getElementById('mynestai-chat-workspace');
+        const stream = document.getElementById('mynestai-message-stream');
+        const ctx = context();
+        if (!workspace?.classList.contains('mynestai-visible') || !stream || !ctx) return;
+        const messages = Array.isArray(ctx.chat) ? ctx.chat.filter(message => !message.is_system) : [];
+        const last = messages[messages.length - 1];
+        if (!last || last.is_user) return;
+        const character = ctx.groupId ? ctx.groups?.find(item => item.id === ctx.groupId) : ctx.characters?.[ctx.characterId];
+        const targetId = String(ctx.chat.indexOf(last));
+        const existing = stream.querySelector('.mynestai-message:last-of-type');
+        if (existing && existing.classList.contains('mynestai-message-character') && existing.dataset.messageId === targetId) {
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = messageMarkup(last, character, ctx);
+            const replacement = wrapper.firstElementChild;
+            existing.replaceWith(replacement);
+            if (replacement) bindMessageMenu(replacement);
+        } else {
+            renderChatWorkspace();
+            return;
+        }
+        stream.scrollTop = stream.scrollHeight;
     }
 
     function openChatWorkspace() {
@@ -356,19 +387,21 @@
         switchPanel('chat');
     }
 
-    function bindMessageMenus(stream) {
-        stream.querySelectorAll('.mynestai-message').forEach(message => {
-            message.addEventListener('contextmenu', event => {
-                event.preventDefault();
-                showMessageMenu(Number(message.dataset.messageId), event.clientX, event.clientY);
-            });
-            let holdTimer;
-            message.addEventListener('pointerdown', event => {
-                if (event.pointerType === 'mouse') return;
-                holdTimer = window.setTimeout(() => showMessageMenu(Number(message.dataset.messageId), event.clientX, event.clientY), 500);
-            });
-            ['pointerup', 'pointercancel', 'pointermove'].forEach(type => message.addEventListener(type, () => window.clearTimeout(holdTimer)));
+    function bindMessageMenu(message) {
+        message.addEventListener('contextmenu', event => {
+            event.preventDefault();
+            showMessageMenu(Number(message.dataset.messageId), event.clientX, event.clientY);
         });
+        let holdTimer;
+        message.addEventListener('pointerdown', event => {
+            if (event.pointerType === 'mouse') return;
+            holdTimer = window.setTimeout(() => showMessageMenu(Number(message.dataset.messageId), event.clientX, event.clientY), 500);
+        });
+        ['pointerup', 'pointercancel', 'pointermove'].forEach(type => message.addEventListener(type, () => window.clearTimeout(holdTimer)));
+    }
+
+    function bindMessageMenus(stream) {
+        stream.querySelectorAll('.mynestai-message').forEach(bindMessageMenu);
     }
 
     function showMessageMenu(messageId, x, y) {
@@ -541,13 +574,9 @@
     }
 
     function setCompanionMode(mode) {
-        const data = collectCompanionData();
-        data.mode = mode === 'companion' ? 'companion' : 'roleplay';
-        localStorage.setItem(companionStorageKey(), JSON.stringify(data));
-        companionDirty = false;
-        syncCompanionPrompt(data);
+        companionModeOverride = mode === 'companion' ? 'companion' : 'roleplay';
         renderCompanionMode();
-        window.toastr?.success?.(data.mode === 'companion' ? 'Companion Mode enabled.' : 'Roleplay Mode enabled.');
+        markCompanionDirty();
     }
 
     function renderCompanionMode() {
@@ -613,12 +642,14 @@
     function openCompanionMode() {
         hideChatMenu();
         companionDirty = false;
+        companionModeOverride = null;
         document.getElementById('mynestai-companion-page')?.classList.add('mynestai-visible');
         renderCompanionMode();
     }
 
     function closeCompanionMode() {
-        if (companionDirty) saveCompanionData();
+        companionDirty = false;
+        companionModeOverride = null;
         document.getElementById('mynestai-companion-page')?.classList.remove('mynestai-visible');
     }
 
@@ -627,10 +658,9 @@
         const container = document.createElement('main');
         container.id = 'mynestai-panels';
         container.innerHTML = `
-            <section id="mynestai-games-panel" class="mynestai-panel"><div class="mynestai-header"><h1>Games</h1><p>A little play space for you and your companions.</p></div><div class="mynestai-placeholder"><i class="fa-solid fa-gamepad"></i><h2>Games are coming later</h2><p>This area is reserved for MYnestAI games.</p></div></section>
             <section id="mynestai-characters-panel" class="mynestai-panel"><div class="mynestai-header"><h1>Characters</h1><p>Create, import, edit, and organise your characters.</p></div><div id="mynestai-characters-host" aria-live="polite"></div></section>
             <section id="mynestai-chat-panel" class="mynestai-panel active"><div class="mynestai-header"><h1>Chats</h1><p>Choose a character or group to continue a conversation.</p></div><div id="mynestai-chat-list"></div></section>
-            <section id="mynestai-browse-panel" class="mynestai-panel"><div class="mynestai-header"><h1>Browse</h1><p>Find new characters and add them to your collection.</p></div><div class="mynestai-browse-grid"><a class="mynestai-source-card" href="https://character-tavern.com" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-book-open"></i><span><strong>Character Tavern</strong><small>Discover community characters</small></span><i class="fa-solid fa-arrow-up-right-from-square"></i></a><a class="mynestai-source-card" href="https://chub.ai" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-compass"></i><span><strong>Chub</strong><small>Browse and download character cards</small></span><i class="fa-solid fa-arrow-up-right-from-square"></i></a></div></section>
+            <section id="mynestai-browse-panel" class="mynestai-panel"><div class="mynestai-header"><h1>Browse</h1><p>Find new characters and add them to your collection.</p></div><div id="mynestai-browse-toolbar" class="mynestai-browse-toolbar"><label class="mynestai-browse-search"><i class="fa-solid fa-magnifying-glass"></i><input id="mynestai-browse-query" type="search" placeholder="Search..."></label><select id="mynestai-browse-page" class="mynestai-browse-page" title="Page"><option value="1">Page 1</option></select><select id="mynestai-browse-tag" class="mynestai-browse-tag" title="Filter by tag"><option value="">Add a tag...</option></select><button id="mynestai-browse-refresh" class="mynestai-browse-refresh" type="button" title="Refresh"><i class="fa-solid fa-rotate"></i></button></div><div id="mynestai-browse-chips" class="mynestai-browse-chips"></div><div id="mynestai-browse-status" class="mynestai-browse-status"></div><div id="mynestai-browse-grid" class="mynestai-browse-grid" aria-live="polite"></div></section>
             <section id="mynestai-settings-panel" class="mynestai-panel"><div id="mynestai-settings-content"></div></section>`;
         document.body.appendChild(container);
 
@@ -638,7 +668,7 @@
         nav.id = 'mynestai-app-nav';
         nav.className = 'mynestai-start-hidden';
         nav.setAttribute('aria-label', 'MYnestAI navigation');
-        nav.innerHTML = [['games', 'Games', 'fa-gamepad'], ['characters', 'Characters', 'fa-user-group'], ['chat', 'Chats', 'fa-comments'], ['browse', 'Browse', 'fa-compass'], ['settings', 'Settings', 'fa-gear']].map(([panel, label, icon]) => `<button class="mynestai-nav-button" data-panel="${panel}" aria-label="${label}" title="${label}"><i class="fa-solid ${icon}"></i></button>`).join('');
+        nav.innerHTML = [['characters', 'Characters', 'fa-user-group'], ['chat', 'Chats', 'fa-comments'], ['browse', 'Browse', 'fa-compass'], ['settings', 'Settings', 'fa-gear']].map(([panel, label, icon]) => `<button class="mynestai-nav-button" data-panel="${panel}" aria-label="${label}" title="${label}"><i class="fa-solid ${icon}"></i></button>`).join('');
         document.body.appendChild(nav);
         const workspace = document.createElement('section');
         workspace.id = 'mynestai-chat-workspace';
@@ -651,11 +681,11 @@
         const chatMenu = document.createElement('div');
         chatMenu.id = 'mynestai-chat-menu';
         chatMenu.className = 'mynestai-overlay-menu';
-        chatMenu.innerHTML = '<div class="mynestai-menu-backdrop"></div><div class="mynestai-menu-panel"><header><strong>Chat options</strong><button type="button" data-menu-close aria-label="Close">×</button></header><button data-chat-action="companion_mode"><i class="fa-regular fa-heart"></i>Companion Mode</button><button data-chat-action="start_new_chat"><i class="fa-solid fa-plus"></i>Start New Chat</button><button data-chat-action="manage_chat_files"><i class="fa-solid fa-folder-open"></i>Manage Chat Files</button><button data-chat-action="import_chat"><i class="fa-solid fa-file-import"></i>Import Chat</button><button data-chat-action="export_chat"><i class="fa-solid fa-file-export"></i>Export Chat</button><button data-chat-action="duplicate_chat"><i class="fa-solid fa-copy"></i>Duplicate Chat</button></div>';
+        chatMenu.innerHTML = '<div class="mynestai-menu-backdrop"></div><div class="mynestai-menu-panel"><header><strong>Chat options</strong><button type="button" data-menu-close aria-label="Close">×</button></header><button data-chat-action="companion_mode"><i class="fa-regular fa-heart"></i>Companion Soul</button><button data-chat-action="start_new_chat"><i class="fa-solid fa-plus"></i>Start New Chat</button><button data-chat-action="manage_chat_files"><i class="fa-solid fa-folder-open"></i>Manage Chat Files</button><button data-chat-action="import_chat"><i class="fa-solid fa-file-import"></i>Import Chat</button><button data-chat-action="export_chat"><i class="fa-solid fa-file-export"></i>Export Chat</button><button data-chat-action="duplicate_chat"><i class="fa-solid fa-copy"></i>Duplicate Chat</button></div>';
         document.body.appendChild(chatMenu);
         const companionPage = document.createElement('section');
         companionPage.id = 'mynestai-companion-page';
-        companionPage.setAttribute('aria-label', 'Companion Mode');
+        companionPage.setAttribute('aria-label', 'Companion Soul');
         document.body.appendChild(companionPage);
         const messageMenu = document.createElement('div');
         messageMenu.id = 'mynestai-message-menu';
@@ -823,6 +853,222 @@
         }
     }
 
+    let browseCache = [];
+    let browseLoading = false;
+    let selectedBrowseTags = [];
+    let browsePage = 1;
+    let browseTotalPages = 1;
+
+    function browseRequestHeaders() {
+        const ctx = context();
+        const headers = ctx?.getRequestHeaders?.() || {};
+        headers['Content-Type'] = 'application/json';
+        return headers;
+    }
+
+    function formatBrowseRating(rating) {
+        if (rating === null || rating === undefined || isNaN(Number(rating))) return 'N/A';
+        return Number(rating).toFixed(1);
+    }
+
+    async function loadBrowseCards() {
+        if (browseLoading) return;
+        const grid = document.getElementById('mynestai-browse-grid');
+        const status = document.getElementById('mynestai-browse-status');
+        if (!grid || !status) return;
+        const query = document.getElementById('mynestai-browse-query')?.value.trim() || '';
+        const params = new URLSearchParams({ page: String(browsePage), per_page: '20', nsfw: 'true' });
+        if (query) params.set('search', query);
+        browseLoading = true;
+        status.textContent = 'Loading cards...';
+        grid.innerHTML = '';
+        try {
+            const response = await fetch(`/api/characters/browse?${params.toString()}`, { method: 'GET', headers: browseRequestHeaders(), cache: 'no-cache' });
+            const data = await response.json();
+            if (!response.ok || data.error) throw new Error(data.message || response.statusText);
+            browseCache = Array.isArray(data.nodes) ? data.nodes : [];
+            browseTotalPages = Math.max(1, Number(data.total_pages) || 1);
+            if (browsePage > browseTotalPages) browsePage = browseTotalPages;
+            populateBrowsePageOptions();
+            if (browseCache.length === 0) {
+                status.textContent = 'No characters found. Try a different search.';
+                return;
+            }
+            status.textContent = `${data.count ?? browseCache.length} cards found. Page ${browsePage} of ${browseTotalPages}.`;
+            selectedBrowseTags = selectedBrowseTags.filter((tag) => browseCache.some((card) => (card.tags || []).includes(tag)));
+            renderBrowseChips();
+            populateBrowseTagOptions();
+            renderBrowseGrid();
+        } catch (error) {
+            console.error('MYnestAI browse failed', error);
+            status.textContent = 'Could not load characters from Chub.';
+        } finally {
+            browseLoading = false;
+        }
+    }
+
+    function populateBrowsePageOptions() {
+        const select = document.getElementById('mynestai-browse-page');
+        if (!select) return;
+        const options = [];
+        for (let page = 1; page <= browseTotalPages; page++) {
+            options.push(`<option value="${page}">Page ${page}</option>`);
+        }
+        select.innerHTML = options.join('');
+        select.value = String(browsePage);
+    }
+
+    function populateBrowseTagOptions() {
+        const select = document.getElementById('mynestai-browse-tag');
+        if (!select) return;
+        const tags = [...new Set(browseCache.flatMap((card) => card.tags || []))].sort((a, b) => a.localeCompare(b));
+        select.innerHTML = '<option value="">Add a tag...</option>' + tags.map((tag) => `<option value="${escapeHtml(tag)}">${escapeHtml(tag)}</option>`).join('');
+        select.value = '';
+    }
+
+    function renderBrowseChips() {
+        const host = document.getElementById('mynestai-browse-chips');
+        if (!host) return;
+        host.innerHTML = selectedBrowseTags.map((tag) => `<button type="button" class="mynestai-browse-chip" data-tag="${escapeHtml(tag)}" title="Remove tag">${escapeHtml(tag)} ×</button>`).join('');
+        host.classList.toggle('mynestai-browse-chips-hidden', selectedBrowseTags.length === 0);
+    }
+
+    function renderBrowseGrid() {
+        const grid = document.getElementById('mynestai-browse-grid');
+        if (!grid) return;
+        const visible = selectedBrowseTags.length ? browseCache.filter((card) => selectedBrowseTags.every((tag) => (card.tags || []).includes(tag))) : browseCache;
+        grid.innerHTML = visible.map((card) => `
+            <article class="mynestai-browse-card" data-card-id="${escapeHtml(card.id)}" tabindex="0">
+                <div class="mynestai-browse-cover"><img src="${escapeHtml(card.avatarUrl || '')}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('mynestai-browse-cover-empty')"><span class="mynestai-browse-rating"><i class="fa-solid fa-star"></i>${escapeHtml(formatBrowseRating(card.rating))}</span></div>
+                <div class="mynestai-browse-body"><strong class="mynestai-browse-name">${escapeHtml(card.name)}</strong>${card.nsfw ? '<span class="mynestai-browse-nsfw-badge">NSFW</span>' : ''}<div class="mynestai-browse-tags">${(card.tags || []).slice(0, 3).map((tag) => `<span>${escapeHtml(tag)}</span>`).join('')}</div></div>
+                <footer class="mynestai-browse-actions"><button class="mynestai-browse-download" type="button" data-card-id="${escapeHtml(card.id)}"><i class="fa-solid fa-download"></i>Download</button></footer>
+            </article>`).join('');
+    }
+
+    function renderBrowseDetail(card) {
+        const ctx = context();
+        const host = document.createElement('div');
+        host.className = 'mynestai-detail-overlay';
+        host.setAttribute('role', 'dialog');
+        host.setAttribute('aria-modal', 'true');
+        host.setAttribute('aria-label', card.name);
+        host.innerHTML = `
+            <div class="mynestai-detail-backdrop" data-browse-close></div>
+            <div class="mynestai-detail">
+                <header><strong>${escapeHtml(card.name)}</strong><button type="button" data-browse-close aria-label="Close">x</button></header>
+                <div class="mynestai-detail-body">
+                    <div class="mynestai-detail-cover"><img src="${escapeHtml(card.avatarUrl || '')}" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></div>
+                    <div class="mynestai-detail-info">
+                        <div class="mynestai-detail-stats"><span><i class="fa-solid fa-star"></i>${escapeHtml(formatBrowseRating(card.rating))}</span><span><i class="fa-solid fa-heart"></i>${escapeHtml(card.favorites ?? '-')}</span>${card.nsfw ? '<span class="mynestai-browse-nsfw-badge">NSFW</span>' : ''}</div>
+                        ${(card.tags || []).length ? `<div class="mynestai-detail-tags">${card.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
+                        <div class="mynestai-detail-meta">${card.fullPath ? `<p>by <strong>${escapeHtml(card.fullPath.split('/')[0] || 'unknown')}</strong></p>` : ''}${card.lastActivityAt ? `<p>Updated ${escapeHtml(String(card.lastActivityAt).slice(0, 10))}</p>` : ''}<p>${card.cardUrl ? 'Character card (PNG) ready to import.' : 'Card file unavailable.'}</p></div>
+                    </div>
+                </div>
+                <footer><button type="button" data-browse-close>Cancel</button><button class="mynestai-browse-download" type="button" data-card-id="${escapeHtml(card.id)}" ${card.cardUrl ? '' : 'disabled'}><i class="fa-solid fa-download"></i>Download</button></footer>
+            </div>`;
+        const closeDetail = () => {
+            host.remove();
+            if (ctx?.eventSource && ctx.eventTypes?.MESSAGE_SENT) ctx.eventSource.emit(ctx.eventTypes.MESSAGE_SENT, { message: null });
+        };
+        host.querySelectorAll('[data-browse-close]').forEach((node) => node.addEventListener('click', closeDetail));
+        host.querySelectorAll('.mynestai-browse-download').forEach((button) => button.addEventListener('click', () => { downloadBrowseCard(button.dataset.cardId); closeDetail(); }));
+        document.body.appendChild(host);
+    }
+
+    async function downloadBrowseCard(id) {
+        const card = browseCache.find((c) => String(c.id) === String(id));
+        if (!card?.cardUrl) {
+            window.toastr?.error?.('This card has no downloadable file.', 'Download failed');
+            return;
+        }
+        const ctx = context();
+        const button = document.querySelector(`.mynestai-browse-download[data-card-id="${id}"]`);
+        if (button) { button.disabled = true; button.textContent = 'Importing...'; }
+        try {
+            const response = await fetch('/api/characters/browse/download', { method: 'POST', headers: browseRequestHeaders(), body: JSON.stringify({ cardUrl: card.cardUrl }), cache: 'no-cache' });
+            const data = await response.json();
+            if (!response.ok || data.error) throw new Error(data.message || response.statusText);
+            await ctx?.getCharacters?.();
+            const importedIndex = ctx?.characters?.findIndex((character) => character.avatar === `${data.file_name}.png`);
+            if (importedIndex >= 0) await ctx?.selectCharacterById?.(importedIndex);
+            window.toastr?.success?.(`${card.name} downloaded to your collection.`);
+            browseCache = browseCache.filter((c) => String(c.id) !== String(id));
+            renderBrowseGrid();
+            const status = document.getElementById('mynestai-browse-status');
+            if (status) status.textContent = `${browseCache.length} cards remain.`;
+        } catch (error) {
+            console.error('MYnestAI browse download failed', error);
+            window.toastr?.error?.(error.message || 'Could not download that card.', 'Download failed');
+            if (button) { button.disabled = false; button.textContent = 'Download'; }
+        }
+    }
+
+    function mountBrowse() {
+        const grid = document.getElementById('mynestai-browse-grid');
+        const query = document.getElementById('mynestai-browse-query');
+        const page = document.getElementById('mynestai-browse-page');
+        const tag = document.getElementById('mynestai-browse-tag');
+        const refresh = document.getElementById('mynestai-browse-refresh');
+        const status = document.getElementById('mynestai-browse-status');
+        if (!grid) return;
+        loadBrowseCards();
+        const debounce = (fn, wait) => { let timer; return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), wait); }; };
+        const scheduleReload = debounce(() => loadBrowseCards(), 400);
+        grid.addEventListener('click', (event) => {
+            const download = event.target.closest('.mynestai-browse-download');
+            if (download) {
+                downloadBrowseCard(download.dataset.cardId);
+                return;
+            }
+            const cardElement = event.target.closest('.mynestai-browse-card');
+            if (!cardElement) return;
+            const card = browseCache.find((c) => String(c.id) === String(cardElement.dataset.cardId));
+            if (card) renderBrowseDetail(card);
+        });
+        grid.addEventListener('keydown', (event) => {
+            if (event.key !== 'Enter' && event.key !== ' ') return;
+            const article = event.target.closest('.mynestai-browse-card');
+            if (!article) return;
+            const card = browseCache.find((c) => String(c.id) === String(article.dataset.cardId));
+            if (card) renderBrowseDetail(card);
+        });
+        query?.addEventListener('input', () => { browsePage = 1; scheduleReload(); });
+        page?.addEventListener('change', () => {
+            const next = Number(page.value) || 1;
+            if (next === browsePage) return;
+            browsePage = next;
+            loadBrowseCards();
+        });
+        tag?.addEventListener('change', () => {
+            if (!tag.value || selectedBrowseTags.includes(tag.value)) return;
+            selectedBrowseTags.push(tag.value);
+            tag.value = '';
+            renderBrowseChips();
+            renderBrowseGrid();
+        });
+        document.getElementById('mynestai-browse-chips')?.addEventListener('click', (event) => {
+            const chip = event.target.closest('.mynestai-browse-chip');
+            if (!chip) return;
+            selectedBrowseTags = selectedBrowseTags.filter((selected) => selected !== chip.dataset.tag);
+            renderBrowseChips();
+            renderBrowseGrid();
+        });
+        refresh?.addEventListener('click', loadBrowseCards);
+        if (status && browseCache.length === 0) status.textContent = 'Ready.';
+    }
+
+    function unmountBrowse() {
+        browseCache = [];
+        selectedBrowseTags = [];
+        browsePage = 1;
+        browseTotalPages = 1;
+        const status = document.getElementById('mynestai-browse-status');
+        if (status) status.textContent = '';
+        const grid = document.getElementById('mynestai-browse-grid');
+        if (grid) grid.innerHTML = '';
+        document.querySelector('.mynestai-detail-overlay')?.remove();
+    }
+
     // The native control already owns SillyTavern's delete confirmation and
     // request handler. Reposition it in the group details header so MYnestAI
     // keeps that behavior without duplicating it.
@@ -984,6 +1230,7 @@
         document.querySelectorAll('.mynestai-nav-button').forEach(button => button.classList.toggle('active', button.dataset.panel === name));
         if (name === 'characters') mountCharacterManager(); else unmountCharacterManager();
         if (name === 'chat') renderChats();
+        if (name === 'browse') mountBrowse(); else unmountBrowse();
     }
 
     function attachEvents() {
@@ -993,6 +1240,8 @@
         const refreshWorkspace = () => { if (document.getElementById('mynestai-chat-workspace')?.classList.contains('mynestai-visible')) renderChatWorkspace(); };
         ['CHARACTER_PAGE_LOADED', 'CHARACTER_EDITED', 'CHARACTER_DELETED', 'CHARACTER_DUPLICATED', 'GROUP_UPDATED', 'CHAT_CHANGED'].forEach(type => { const event = ctx.eventTypes?.[type]; if (event) ctx.eventSource.on(event, refresh); });
         ['MESSAGE_SENT', 'MESSAGE_RECEIVED', 'MESSAGE_UPDATED', 'MESSAGE_DELETED', 'CHARACTER_MESSAGE_RENDERED', 'USER_MESSAGE_RENDERED', 'CHAT_CHANGED'].forEach(type => { const event = ctx.eventTypes?.[type]; if (event) ctx.eventSource.on(event, refreshWorkspace); });
+        const streamingToken = ctx.eventTypes?.STREAM_TOKEN_RECEIVED;
+        if (streamingToken) ctx.eventSource.on(streamingToken, () => updateStreamingMessage());
         const messageReceived = ctx.eventTypes?.MESSAGE_RECEIVED;
         if (messageReceived) ctx.eventSource.on(messageReceived, recordCompanionReply);
         ['CHAT_LOADED', 'CHAT_CHANGED'].forEach(type => {

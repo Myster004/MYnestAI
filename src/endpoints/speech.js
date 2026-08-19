@@ -347,7 +347,7 @@ elevenlabs.post('/voices/add', async (req, res) => {
 
         const formData = new FormData();
         formData.append('name', name || 'Custom Voice');
-        formData.append('description', description || 'Uploaded via SillyTavern');
+        formData.append('description', description || 'Uploaded via MYnestAI');
         formData.append('labels', labels || '');
 
         for (const fileData of (files || [])) {

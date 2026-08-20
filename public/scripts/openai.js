@@ -4651,7 +4651,7 @@ function addLogitBiasPresetOption(name) {
 }
 
 function onImportPresetClick() {
-    $('#openai_preset_import_file').trigger('click');
+    $('#openai_preset_Import_file').trigger('click');
 }
 
 function onLogitBiasPresetImportClick() {
@@ -7237,12 +7237,12 @@ export function initOpenAI() {
     $('#openai_logit_bias_new_preset').on('click', createNewLogitBiasPreset);
     $('#openai_logit_bias_new_entry').on('click', createNewLogitBiasEntry);
     $('#openai_logit_bias_import_file').on('input', onLogitBiasPresetImportFileChange);
-    $('#openai_preset_import_file').on('input', onPresetImportFileChange);
+    $('#openai_preset_Import_file').on('input', onPresetImportFileChange);
     $('#export_oai_preset').on('click', onExportPresetClick);
     $('#openai_logit_bias_import_preset').on('click', onLogitBiasPresetImportClick);
     $('#openai_logit_bias_export_preset').on('click', onLogitBiasPresetExportClick);
     $('#openai_logit_bias_delete_preset').on('click', onLogitBiasPresetDeleteClick);
-    $('#import_oai_preset').on('click', onImportPresetClick);
+    $('#Import_oai_preset').on('click', onImportPresetClick);
     $('#openai_proxy_password_show').on('click', onProxyPasswordShowClick);
     $('#customize_additional_parameters').on('click', onCustomizeParametersClick);
     $('#openai_proxy_preset').on('change', onProxyPresetChange);

@@ -1082,6 +1082,905 @@ body.mynestai-in-chat #form_sheld {
     display: none !important;
 }
 
+/* =========================================================
+   MYNESTAI CHARACTER MANAGER
+   A friendlier, on-brand restyle of SillyTavern's borrowed
+   character manager. Every native control keeps its id, class,
+   handler and behaviour; only the visual chrome and some icon
+   glyphs are re-skimmed to match the MYnestAI design language.
+   ========================================================= */
+
+#mynestai-characters-panel #right-nav-panel {
+    flex-direction: column;
+    border-color: rgba(255, 255, 255, 0.14);
+    background: rgba(18, 18, 20, 0.94);
+}
+
+/* --- header strip: character name + token info + quick controls --- */
+
+#mynestai-characters-panel #rm_PinAndTabs {
+    flex: 0 0 auto;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--mynest-border);
+    background: rgba(0, 0, 0, 0.22);
+}
+
+#mynestai-characters-panel #right-nav-panel-tabs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#mynestai-characters-panel #rm_button_selected_ch {
+    opacity: 1;
+}
+
+#mynestai-characters-panel #rm_button_selected_ch h2 {
+    margin: 0;
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    color: var(--mynest-text);
+}
+
+#mynestai-characters-panel #result_info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--mynest-muted);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+#mynestai-characters-panel #result_info #result_info_text {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 4px 10px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.25);
+}
+
+#mynestai-characters-panel #right-nav-panel-tabs .right_menu_button,
+#mynestai-characters-panel #result_info .right_menu_button {
+    display: inline-grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    padding: 0;
+    border: 1px solid var(--mynest-border);
+    border-radius: 11px;
+    background: var(--mynest-panel-hover);
+    color: var(--mynest-muted);
+    font-size: 14px;
+    filter: none;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+#mynestai-characters-panel #right-nav-panel-tabs .right_menu_button:hover,
+#mynestai-characters-panel #result_info .right_menu_button:hover {
+    background: var(--mynest-accent-soft);
+    color: var(--mynest-text);
+    filter: none;
+    transform: translateY(-1px);
+}
+
+/* --- character list column --- */
+
+#mynestai-characters-panel #rm_characters_block {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+}
+
+#mynestai-characters-panel #charListFixedTop {
+    flex: 0 0 auto;
+    padding: 12px 14px 6px;
+}
+
+/* --- top action bar --- */
+
+#mynestai-characters-panel #rm_button_bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+#mynestai-characters-panel #rm_button_bar .menu_button {
+    display: inline-grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--mynest-border);
+    border-radius: 13px;
+    background: var(--mynest-accent-soft);
+    color: var(--mynest-text);
+    font-size: 15px;
+    filter: none;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+}
+
+#mynestai-characters-panel #rm_button_bar .menu_button:hover {
+    background: var(--mynest-accent);
+    color: #18191d;
+    border-color: transparent;
+    transform: translateY(-1px);
+}
+
+#mynestai-characters-panel #character_sort_order {
+    flex: 1;
+    min-width: 90px;
+    max-width: 170px;
+    height: 40px;
+    margin: 0;
+    padding: 0 30px 0 12px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 13px;
+    background-color: var(--mynest-panel);
+    background-image: url('/img/down-arrow.svg');
+    background-position: right 10px center;
+    color: var(--mynest-text);
+    font-family: inherit;
+    font-size: 13px;
+}
+
+#mynestai-characters-panel #rm_button_search {
+    display: inline-grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--mynest-border);
+    border-radius: 13px;
+    background: var(--mynest-panel-hover);
+    color: var(--mynest-muted);
+    font-size: 15px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+#mynestai-characters-panel #rm_button_search:hover {
+    background: var(--mynest-accent-soft);
+    color: var(--mynest-text);
+}
+
+/* --- search --- */
+
+#mynestai-characters-panel #form_character_search_form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+#mynestai-characters-panel #character_search_bar {
+    flex: 1;
+    height: 40px;
+    margin: 0;
+    padding: 0 14px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 13px;
+    background-color: rgba(0, 0, 0, 0.28);
+    color: var(--mynest-text);
+    font-family: inherit;
+    font-size: 14px;
+}
+
+#mynestai-characters-panel #character_search_bar:focus {
+    outline: 0;
+    border-color: rgba(217, 139, 158, 0.7);
+}
+
+/* --- tag filter chips --- */
+
+#mynestai-characters-panel .rm_tag_controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+#mynestai-characters-panel .rm_tag_controls .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 4px 11px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 16px;
+    background: var(--mynest-accent-soft);
+    color: var(--mynest-text);
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+#mynestai-characters-panel .rm_tag_controls .tag:hover {
+    background: var(--mynest-accent);
+    border-color: transparent;
+    color: #18191d;
+}
+
+#mynestai-characters-panel .rm_tag_controls .tag_name {
+    font-size: 12px;
+}
+
+#mynestai-characters-panel .rm_tag_controls .tag_remove {
+    color: var(--mynest-muted);
+}
+
+#mynestai-characters-panel .rm_tag_controls .tag:hover .tag_remove {
+    color: #18191d;
+}
+
+/* --- character list cards --- */
+
+#mynestai-characters-panel #rm_print_characters_block {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    height: auto;
+    padding: 10px 12px 16px;
+    box-sizing: border-box;
+}
+
+#mynestai-characters-panel #rm_print_characters_block::-webkit-scrollbar {
+    width: 8px;
+}
+
+#mynestai-characters-panel #rm_print_characters_block::-webkit-scrollbar-thumb {
+    background: var(--mynest-border);
+    border-radius: 8px;
+}
+
+#mynestai-characters-panel #rm_print_characters_block .character_select,
+#mynestai-characters-panel #rm_print_characters_block .group_select {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin: 0 0 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 20px;
+    background: var(--mynest-panel);
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+#mynestai-characters-panel #rm_print_characters_block .character_select:hover,
+#mynestai-characters-panel #rm_print_characters_block .group_select:hover {
+    transform: translateY(-2px);
+    background: var(--mynest-panel-hover);
+    border-color: rgba(255, 255, 255, 0.22);
+}
+
+#mynestai-characters-panel #rm_print_characters_block .character_select .avatar,
+#mynestai-characters-panel #rm_print_characters_block .group_select .avatar {
+    width: 58px;
+    height: 58px;
+    flex: 0 0 58px;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-radius: 50%;
+    overflow: hidden;
+    background: #222;
+}
+
+#mynestai-characters-panel #rm_print_characters_block .character_select .avatar img,
+#mynestai-characters-panel #rm_print_characters_block .group_select .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+#mynestai-characters-panel #rm_print_characters_block .character_select .character_select_container,
+#mynestai-characters-panel #rm_print_characters_block .group_select .group_select_container {
+    flex: 1;
+    min-width: 0;
+}
+
+#mynestai-characters-panel #rm_print_characters_block .character_select .character_name_block {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 3px;
+}
+
+#mynestai-characters-panel #rm_print_characters_block .character_select .ch_name,
+#mynestai-characters-panel #rm_print_characters_block .group_select .ch_name {
+    flex: 1;
+    min-width: 0;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--mynest-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#mynestai-characters-panel #rm_print_characters_block .character_select .ch_additional_info,
+#mynestai-characters-panel #rm_print_characters_block .group_select .group_select_counter {
+    color: var(--mynest-muted);
+    font-size: 11px;
+}
+
+#mynestai-characters-panel #rm_print_characters_block .character_select .ch_description {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin: 4px 0 0;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--mynest-muted);
+    white-space: normal;
+}
+
+#mynestai-characters-panel #rm_print_characters_block .character_select .ch_fav_icon {
+    color: var(--mynest-accent);
+    font-size: 13px;
+}
+
+#mynestai-characters-panel #rm_print_characters_block .character_select .tags_inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+#mynestai-characters-panel #rm_print_characters_block .character_select .tags_inline .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+    padding: 2px 8px;
+    border-radius: 8px;
+    background: var(--mynest-accent-soft);
+    color: var(--mynest-muted);
+    font-size: 11px;
+}
+
+#mynestai-characters-panel #rm_print_characters_block .character_select .tags_inline .tag_remove {
+    font-size: 10px;
+    color: var(--mynest-muted);
+}
+
+/* grid view */
+
+body.charListGrid #mynestai-characters-panel #rm_print_characters_block {
+    justify-content: center;
+    gap: 10px;
+}
+
+body.charListGrid #mynestai-characters-panel #rm_print_characters_block .character_select,
+body.charListGrid #mynestai-characters-panel #rm_print_characters_block .group_select {
+    width: 112px;
+    max-width: 112px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+    padding: 12px 10px;
+}
+
+body.charListGrid #mynestai-characters-panel #rm_print_characters_block .character_select .avatar,
+body.charListGrid #mynestai-characters-panel #rm_print_characters_block .group_select .avatar {
+    width: 74px;
+    height: 74px;
+    flex-basis: 74px;
+}
+
+body.charListGrid #mynestai-characters-panel #rm_print_characters_block .character_select .ch_description,
+body.charListGrid #mynestai-characters-panel #rm_print_characters_block .character_select .tags_inline,
+body.charListGrid #mynestai-characters-panel #rm_print_characters_block .character_select .ch_additional_info,
+body.charListGrid #mynestai-characters-panel #rm_print_characters_block .group_select .group_select_counter {
+    display: none;
+}
+
+/* --- pagination footer --- */
+
+#mynestai-characters-panel #rm_print_characters_pagination {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 10px 14px;
+    border-top: 1px solid var(--mynest-border);
+    color: var(--mynest-muted);
+    font-size: 12px;
+}
+
+#mynestai-characters-panel #rm_print_characters_pagination .menu_button {
+    display: inline-grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--mynest-border);
+    border-radius: 10px;
+    background: var(--mynest-panel);
+    color: var(--mynest-text);
+    font-size: 13px;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+#mynestai-characters-panel #rm_print_characters_pagination .menu_button:hover {
+    background: var(--mynest-accent-soft);
+    color: var(--mynest-text);
+    transform: translateY(-1px);
+}
+
+#mynestai-characters-panel #rm_print_characters_pagination .paginationjs-pages ul {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#mynestai-characters-panel #rm_print_characters_pagination .paginationjs-pages li a {
+    display: inline-grid;
+    place-items: center;
+    min-width: 30px;
+    height: 30px;
+    padding: 0 8px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 9px;
+    background: var(--mynest-panel);
+    color: var(--mynest-text);
+    font-size: 12px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+#mynestai-characters-panel #rm_print_characters_pagination .paginationjs-pages li a:hover {
+    background: var(--mynest-accent-soft);
+    color: var(--mynest-text);
+}
+
+#mynestai-characters-panel #rm_print_characters_pagination .paginationjs-pages li.active a {
+    background: var(--mynest-accent);
+    border-color: transparent;
+    color: #18191d;
+}
+
+#mynestai-characters-panel #rm_print_characters_pagination .paginationjs-pages li.disabled a {
+    opacity: 0.35;
+    cursor: default;
+}
+
+/* --- character editor panel --- */
+
+#mynestai-characters-panel #rm_ch_create_block {
+    height: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 16px 18px;
+    box-sizing: border-box;
+}
+
+#mynestai-characters-panel #avatar-and-name-block {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+#mynestai-characters-panel #name_div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#mynestai-characters-panel #character_name_pole {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    padding: 12px 14px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 14px;
+    background-color: rgba(0, 0, 0, 0.28);
+    color: var(--mynest-text);
+    font-family: inherit;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+#mynestai-characters-panel #character_name_pole:focus {
+    outline: 0;
+    border-color: rgba(217, 139, 158, 0.7);
+}
+
+#mynestai-characters-panel .extension_token_counter {
+    margin: 0;
+    color: var(--mynest-muted);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+#mynestai-characters-panel #avatar_div {
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+#mynestai-characters-panel #avatar_div_div.add_avatar {
+    width: 108px;
+    height: 108px;
+    flex: 0 0 108px;
+    border: 2px dashed rgba(255, 255, 255, 0.28);
+    border-radius: 22px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s ease, filter 0.2s ease;
+}
+
+#mynestai-characters-panel #avatar_div_div.add_avatar:hover {
+    border-color: var(--mynest-accent);
+    filter: brightness(1.08);
+}
+
+#mynestai-characters-panel #avatar_div_div.add_avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 18px;
+}
+
+#mynestai-characters-panel #avatar_controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+#mynestai-characters-panel #avatar_controls .menu_button {
+    display: inline-grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--mynest-border);
+    border-radius: 12px;
+    background: var(--mynest-panel-hover);
+    color: var(--mynest-muted);
+    font-size: 14px;
+    filter: none;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+}
+
+#mynestai-characters-panel #avatar_controls .menu_button:hover {
+    background: var(--mynest-accent-soft);
+    color: var(--mynest-text);
+    transform: translateY(-1px);
+}
+
+#mynestai-characters-panel #avatar_controls #create_button_label {
+    background: var(--mynest-accent);
+    border-color: transparent;
+    color: #18191d;
+}
+
+#mynestai-characters-panel #avatar_controls #create_button_label:hover {
+    background: var(--mynest-accent);
+    filter: brightness(1.12);
+}
+
+#mynestai-characters-panel #avatar_controls #delete_button {
+    background: transparent !important;
+    border-color: rgba(179, 38, 30, 0.45);
+    color: #ef9a9a;
+}
+
+#mynestai-characters-panel #avatar_controls #delete_button:hover {
+    background: #b3261e !important;
+    border-color: transparent;
+    color: #fff;
+}
+
+#mynestai-characters-panel #avatar_controls #char-management-dropdown {
+    height: 38px;
+    margin: 0;
+    padding: 0 26px 0 12px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 12px;
+    background-color: var(--mynest-panel);
+    background-image: url('/img/down-arrow.svg');
+    background-position: right 8px center;
+    color: var(--mynest-text);
+    font-family: inherit;
+    font-size: 13px;
+}
+
+#mynestai-characters-panel #tags_div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+#mynestai-characters-panel .tag_controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#mynestai-characters-panel #tagInput {
+    flex: 1;
+    min-width: 0;
+    height: 38px;
+    margin: 0;
+    padding: 0 12px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 12px;
+    background-color: rgba(0, 0, 0, 0.28);
+    color: var(--mynest-text);
+    font-family: inherit;
+    font-size: 13px;
+}
+
+#mynestai-characters-panel .tags_view.menu_button {
+    display: inline-grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--mynest-border);
+    border-radius: 12px;
+    background: var(--mynest-panel-hover);
+    color: var(--mynest-muted);
+    font-size: 13px;
+}
+
+#mynestai-characters-panel .tags_view.menu_button:hover {
+    background: var(--mynest-accent-soft);
+    color: var(--mynest-text);
+}
+
+#mynestai-characters-panel #tagList .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 6px 6px 0;
+    padding: 4px 10px;
+    border-radius: 14px;
+    background: var(--mynest-accent-soft);
+    color: var(--mynest-text);
+    font-size: 12px;
+}
+
+#mynestai-characters-panel #tagList .tag_remove {
+    color: var(--mynest-muted);
+}
+
+/* --- text sections: Creator's Notes / Description / First Message --- */
+
+#mynestai-characters-panel .inline-drawer-toggle {
+    border: 1px solid var(--mynest-border);
+    border-radius: 14px;
+    background: var(--mynest-panel);
+}
+
+#mynestai-characters-panel .standoutHeader {
+    padding: 10px 12px !important;
+    color: var(--mynest-text);
+    font-weight: 700;
+}
+
+#mynestai-characters-panel .inline-drawer-content {
+    padding: 6px 12px 12px;
+}
+
+#mynestai-characters-panel .title_restorable {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--mynest-text);
+}
+
+#mynestai-characters-panel .title_restorable .menu_button {
+    display: inline-grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--mynest-border);
+    border-radius: 9px;
+    background: var(--mynest-panel-hover);
+    color: var(--mynest-muted);
+    font-size: 12px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+#mynestai-characters-panel .title_restorable .menu_button:hover {
+    background: var(--mynest-accent-soft);
+    color: var(--mynest-text);
+}
+
+#mynestai-characters-panel .title_restorable .editor_maximize {
+    border: 0;
+    background: transparent;
+}
+
+#mynestai-characters-panel textarea.mdHotkeys {
+    width: 100%;
+    min-height: 120px;
+    margin: 0;
+    padding: 12px 14px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 14px;
+    background-color: rgba(0, 0, 0, 0.28);
+    color: var(--mynest-text);
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.5;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+#mynestai-characters-panel textarea.mdHotkeys:focus {
+    outline: 0;
+    border-color: rgba(217, 139, 158, 0.7);
+}
+
+#mynestai-characters-panel #descriptionWrapper,
+#mynestai-characters-panel #firstMessageWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* --- group members --- */
+
+#mynestai-characters-panel .group_member {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+    padding: 8px 10px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 14px;
+    background: var(--mynest-panel);
+}
+
+#mynestai-characters-panel .group_member .member_img {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+#mynestai-characters-panel .group_member .member_img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+#mynestai-characters-panel #rm_group_top_bar .add_avatar {
+    width: 108px;
+    height: 108px;
+    flex: 0 0 108px;
+    border: 2px dashed rgba(255, 255, 255, 0.28);
+    border-radius: 22px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s ease, filter 0.2s ease;
+}
+
+#mynestai-characters-panel #rm_group_top_bar .add_avatar:hover {
+    border-color: var(--mynest-accent);
+    filter: brightness(1.08);
+}
+
+#mynestai-characters-panel #rm_group_top_bar .add_avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 18px;
+}
+
+/* --- friendlier icon glyphs (classes and handlers stay untouched) --- */
+
+#mynestai-characters-panel #rm_button_back.fa-left-long::before,
+#mynestai-characters-panel #rm_button_back_from_group::before {
+    content: "\f060";
+    /* arrow-left */
+}
+
+#mynestai-characters-panel #advanced_div.fa-book::before {
+    content: "\f518";
+    /* book-open */
+}
+
+#mynestai-characters-panel #char_connections_button.fa-face-smile::before {
+    content: "\f500";
+    /* user-group */
+}
+
+#mynestai-characters-panel #create_button_label.fa-user-check::before {
+    content: "\f055";
+    /* circle-plus */
+}
+
+#mynestai-characters-panel #delete_button.fa-skull::before {
+    content: "\f2ed";
+    /* trash-can */
+}
+
+#mynestai-characters-panel #dupe_button.fa-clone::before {
+    content: "\f0c5";
+    /* copy */
+}
+
+#mynestai-characters-panel #rm_group_delete::before {
+    content: "\f2ed";
+    /* trash-can */
+}
+
+#mynestai-characters-panel #rm_group_scenario::before {
+    content: "\f70e";
+    /* scroll */
+}
+
+#mynestai-characters-panel #group_favorite_button::before {
+    content: "\f005";
+    /* star */
+}
+
+#mynestai-characters-panel #rm_group_submit::before {
+    content: "\f055";
+    /* circle-plus */
+}
+
+#mynestai-characters-panel #rm_group_restore_avatar::before {
+    content: "\f0e2";
+    /* rotate-left */
+}
+
+/* --- small screens --- */
+
+@media (max-width: 700px) {
+    #mynestai-characters-panel #rm_button_bar {
+        gap: 6px;
+    }
+
+    #mynestai-characters-panel #character_sort_order {
+        max-width: none;
+    }
+
+    #mynestai-characters-panel #rm_ch_create_block {
+        padding: 14px;
+    }
+
+    #mynestai-characters-panel #avatar_div_div.add_avatar {
+        width: 92px;
+        height: 92px;
+        flex-basis: 92px;
+    }
+}
+
 .mynestai-browse-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -1665,9 +2564,422 @@ body.mynestai-in-chat #form_sheld {
         grid-row: auto;
     }
 
-    #mynestai-settings-native-host > #rm_api_block > .wide100p:first-child {
+#mynestai-settings-native-host > #rm_api_block > .wide100p:first-child {
         position: static;
     }
+}
+
+/* =========================================================
+   CHAT GENERATION PAGE
+   A friendlier, consistent layout for the API connection
+   page (rm_api_block). Styling only; every native control,
+   ID, event, and value is left untouched.
+   ========================================================= */
+
+/* Page title ------------------------------------------------ */
+#mynestai-settings-native-host > #rm_api_block > #title_api {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin: 0 0 -8px;
+    color: var(--mynest-text);
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: .2px;
+}
+
+#mynestai-settings-native-host > #rm_api_block > #title_api::before {
+    content: "\f1e6"; /* fa-plug */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--mynest-accent);
+    font-size: 21px;
+}
+
+/* Provider selector ----------------------------------------- */
+#mynestai-settings-native-host > #rm_api_block #main-API-selector-block {
+    position: relative;
+}
+
+#mynestai-settings-native-host > #rm_api_block #main-API-selector-block::before {
+    content: "Connection type";
+    display: block;
+    margin-bottom: 7px;
+    color: var(--mynest-muted);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+}
+
+#mynestai-settings-native-host > #rm_api_block #main-API-selector-block #main_api {
+    width: 100%;
+    min-height: 46px;
+    padding: 0 42px 0 16px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 12px;
+    background: rgba(0, 0, 0, .2);
+    color: var(--mynest-text);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+#mynestai-settings-native-host > #rm_api_block #main-API-selector-block::after {
+    content: "\f078"; /* fa-chevron-down */
+    position: absolute;
+    right: 15px;
+    bottom: 13px;
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--mynest-accent);
+    font-size: 13px;
+    pointer-events: none;
+}
+
+/* Provider cards --------------------------------------------- */
+#mynestai-settings-native-host > #rm_api_block #kobold_horde,
+#mynestai-settings-native-host > #rm_api_block #kobold_api,
+#mynestai-settings-native-host > #rm_api_block #novel_api,
+#mynestai-settings-native-host > #rm_api_block #textgenerationwebui_api,
+#mynestai-settings-native-host > #rm_api_block #openai_api {
+    box-sizing: border-box;
+    width: 100%;
+    margin-bottom: 18px;
+    padding: 18px 20px 20px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 16px;
+    background: rgba(0, 0, 0, .12);
+}
+
+#mynestai-settings-native-host > #rm_api_block #kobold_horde ul {
+    margin: 0 0 14px;
+    padding-left: 18px;
+}
+
+/* Section labels --------------------------------------------- */
+#mynestai-settings-native-host > #rm_api_block h4 {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 18px 0 9px;
+    color: var(--mynest-accent);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+}
+
+#mynestai-settings-native-host > #rm_api_block h4:first-child {
+    margin-top: 0;
+}
+
+#mynestai-settings-native-host > #rm_api_block h4 + .flex-container {
+    margin-top: 10px;
+}
+
+/* Inputs & selects ------------------------------------------- */
+#mynestai-settings-native-host > #rm_api_block input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+#mynestai-settings-native-host > #rm_api_block select:not(#horde_model):not(.openrouter_providers):not(.openrouter_quantizations) {
+    min-height: 42px;
+    padding: 0 14px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 11px;
+    background: rgba(0, 0, 0, .18);
+    color: var(--mynest-text);
+    font-size: 14px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+#mynestai-settings-native-host > #rm_api_block input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+#mynestai-settings-native-host > #rm_api_block select:not(#horde_model):not(.openrouter_providers):not(.openrouter_quantizations):focus {
+    outline: none;
+    border-color: var(--mynest-accent);
+    box-shadow: 0 0 0 3px var(--mynest-accent-soft);
+}
+
+#mynestai-settings-native-host > #rm_api_block select:not(#main_api):not(#horde_model):not(.openrouter_providers):not(.openrouter_quantizations) {
+    cursor: pointer;
+}
+
+#mynestai-settings-native-host > #rm_api_block #horde_model,
+#mynestai-settings-native-host > #rm_api_block .openrouter_providers,
+#mynestai-settings-native-host > #rm_api_block .openrouter_quantizations {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 11px;
+    background: rgba(0, 0, 0, .18);
+    color: var(--mynest-text);
+    font-size: 14px;
+}
+
+#mynestai-settings-native-host > #rm_api_block input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--mynest-accent);
+    cursor: pointer;
+}
+
+/* Buttons: Connect / Cancel ---------------------------------- */
+#mynestai-settings-native-host > #rm_api_block .api_button {
+    min-height: 42px;
+    padding: 0 22px;
+    border: 1px solid var(--mynest-accent);
+    border-radius: 12px;
+    background: var(--mynest-accent);
+    color: #141114;
+    font-weight: 800;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 4px 16px rgba(217, 139, 158, .22);
+    transition: filter .15s ease, transform .1s ease;
+}
+
+#mynestai-settings-native-host > #rm_api_block .api_button::before {
+    content: "\f1e6"; /* fa-plug */
+    margin-right: 8px;
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 14px;
+}
+
+#mynestai-settings-native-host > #rm_api_block .api_button:hover {
+    filter: brightness(1.1);
+}
+
+#mynestai-settings-native-host > #rm_api_block .api_button:active {
+    transform: translateY(1px);
+}
+
+#mynestai-settings-native-host > #rm_api_block .api_loading {
+    min-height: 42px;
+    padding: 0 20px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .06);
+    color: var(--mynest-muted);
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+#mynestai-settings-native-host > #rm_api_block .api_loading::before {
+    content: "\f00d"; /* fa-xmark */
+    margin-right: 8px;
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 13px;
+}
+
+#mynestai-settings-native-host > #rm_api_block .api_loading:hover {
+    background: rgba(255, 255, 255, .1);
+    color: var(--mynest-text);
+}
+
+/* Buttons: secondary actions ---------------------------------- */
+#mynestai-settings-native-host > #rm_api_block #test_api_button,
+#mynestai-settings-native-host > #rm_api_block #customize_additional_parameters,
+#mynestai-settings-native-host > #rm_api_block .openrouter_authorize {
+    min-height: 42px;
+    padding: 0 18px;
+    border: 1px solid var(--mynest-accent);
+    border-radius: 12px;
+    background: var(--mynest-accent-soft);
+    color: var(--mynest-accent);
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .15s ease;
+}
+
+#mynestai-settings-native-host > #rm_api_block #test_api_button::before {
+    content: "\f492"; /* fa-vial */
+    margin-right: 8px;
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
+
+#mynestai-settings-native-host > #rm_api_block #customize_additional_parameters::before {
+    content: "\f1de"; /* fa-sliders */
+    margin-right: 8px;
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
+
+#mynestai-settings-native-host > #rm_api_block .openrouter_authorize::before {
+    content: "\f4fc"; /* fa-user-check */
+    margin-right: 8px;
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
+
+#mynestai-settings-native-host > #rm_api_block #test_api_button:hover,
+#mynestai-settings-native-host > #rm_api_block #customize_additional_parameters:hover,
+#mynestai-settings-native-host > #rm_api_block .openrouter_authorize:hover {
+    background: rgba(217, 139, 158, .35);
+}
+
+/* Icon-only buttons ------------------------------------------- */
+#mynestai-settings-native-host > #rm_api_block .manage-api-keys,
+#mynestai-settings-native-host > #rm_api_block #horde_api_key_button,
+#mynestai-settings-native-host > #rm_api_block #horde_refresh,
+#mynestai-settings-native-host > #rm_api_block #view_connection_profile,
+#mynestai-settings-native-host > #rm_api_block #create_connection_profile,
+#mynestai-settings-native-host > #rm_api_block #update_connection_profile,
+#mynestai-settings-native-host > #rm_api_block #edit_connection_profile,
+#mynestai-settings-native-host > #rm_api_block #reload_connection_profile,
+#mynestai-settings-native-host > #rm_api_block #delete_connection_profile {
+    display: inline-grid;
+    place-items: center;
+    box-sizing: border-box;
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+    min-height: 42px;
+    padding: 0;
+    border: 1px solid var(--mynest-border);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, .05);
+    color: var(--mynest-muted);
+    font-size: 15px;
+    cursor: pointer;
+    transition: color .15s ease, border-color .15s ease, background .15s ease;
+}
+
+#mynestai-settings-native-host > #rm_api_block .manage-api-keys:hover,
+#mynestai-settings-native-host > #rm_api_block #horde_api_key_button:hover,
+#mynestai-settings-native-host > #rm_api_block #horde_refresh:hover,
+#mynestai-settings-native-host > #rm_api_block #view_connection_profile:hover,
+#mynestai-settings-native-host > #rm_api_block #create_connection_profile:hover,
+#mynestai-settings-native-host > #rm_api_block #update_connection_profile:hover,
+#mynestai-settings-native-host > #rm_api_block #edit_connection_profile:hover,
+#mynestai-settings-native-host > #rm_api_block #reload_connection_profile:hover {
+    color: var(--mynest-accent);
+    border-color: var(--mynest-accent);
+}
+
+#mynestai-settings-native-host > #rm_api_block #delete_connection_profile {
+    color: #e0736e;
+}
+
+#mynestai-settings-native-host > #rm_api_block #delete_connection_profile:hover {
+    color: #ff8f88;
+    border-color: #e0736e;
+    background: rgba(224, 115, 110, .12);
+}
+
+/* Connection profile column ----------------------------------- */
+#mynestai-settings-native-host > #rm_api_block > .wide100p:first-child {
+    padding: 20px;
+    border-radius: 16px;
+}
+
+#mynestai-settings-native-host > #rm_api_block > .wide100p:first-child h3 {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 12px;
+    color: var(--mynest-text);
+    font-size: 16px;
+    font-weight: 800;
+}
+
+#mynestai-settings-native-host > #rm_api_block > .wide100p:first-child h3::before {
+    content: "\f1c0"; /* fa-database */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--mynest-accent);
+    font-size: 15px;
+}
+
+#mynestai-settings-native-host > #rm_api_block > .wide100p:first-child .flex-container {
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+/* Status pill ------------------------------------------------ */
+#mynestai-settings-native-host > #rm_api_block .online_status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 14px 0 0;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, .18);
+}
+
+#mynestai-settings-native-host > #rm_api_block .online_status_indicator {
+    width: 10px;
+    height: 10px;
+    box-shadow: 0 0 0 3px rgba(255, 60, 60, .14);
+}
+
+#mynestai-settings-native-host > #rm_api_block .online_status_indicator.success {
+    box-shadow: 0 0 0 3px rgba(0, 190, 95, .16);
+}
+
+#mynestai-settings-native-host > #rm_api_block .online_status_text {
+    margin: 0;
+    color: var(--mynest-muted);
+    font-size: 13px;
+}
+
+/* Warnings, links, helpers ------------------------------------ */
+#mynestai-settings-native-host > #rm_api_block .neutral_warning {
+    margin-top: 8px;
+    color: #e8b64c;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+#mynestai-settings-native-host > #rm_api_block a {
+    color: var(--mynest-accent);
+}
+
+#mynestai-settings-native-host > #rm_api_block .notes-link,
+#mynestai-settings-native-host > #rm_api_block .openrouter_view_credits {
+    margin-left: 2px;
+}
+
+#mynestai-settings-native-host > #rm_api_block code,
+#mynestai-settings-native-host > #rm_api_block .monospace {
+    padding: 2px 6px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, .2);
+    font-family: Consolas, monospace;
+    font-size: 12.5px;
+}
+
+#mynestai-settings-native-host > #rm_api_block .checkbox_label {
+    gap: 8px;
+    color: var(--mynest-text);
+    font-size: 14px;
+}
+
+#mynestai-settings-native-host > #rm_api_block #viewSecrets {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--mynest-accent);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+#mynestai-settings-native-host > #rm_api_block #viewSecrets::before {
+    content: "\f06e"; /* fa-eye */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 14px;
 }
 
 #mynestai-settings-native-host .scrollableInner {
@@ -1698,6 +3010,378 @@ body.mynestai-in-chat #form_sheld {
     display: block !important;
 }
 
+/* =========================================================
+   IMAGE GENERATION PAGE
+   Friendlier, consistent UI for the SD settings page.
+   Styling only; every native control, ID, event, and value
+   is left untouched.
+   ========================================================= */
+
+/* Always-open section headers --------------------------------- */
+#mynestai-settings-native-host #sd_container .mynestai-static-drawer b {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--mynest-accent);
+    font-size: 17px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+#mynestai-settings-native-host #sd_container .mynestai-static-drawer b::before {
+    content: "\f1de"; /* fa-sliders */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 16px;
+}
+
+#mynestai-settings-native-host #sd_container .inline-drawer:last-child .mynestai-static-drawer b::before {
+    content: "\f03e"; /* fa-image */
+}
+
+/* Top feature toggles as tidy cards ---------------------------- */
+#mynestai-settings-native-host #sd_container .inline-drawer:first-child .inline-drawer-content > .checkbox_label {
+    display: inline-flex;
+    box-sizing: border-box;
+    width: calc(50% - 8px);
+    margin: 3px;
+    padding: 10px 12px;
+    gap: 10px;
+    align-items: center;
+    vertical-align: top;
+    border: 1px solid var(--mynest-border);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .03);
+    transition: border-color .15s ease, background .15s ease;
+}
+
+#mynestai-settings-native-host #sd_container .checkbox_label:hover {
+    border-color: rgba(217, 139, 158, .45);
+    background: rgba(217, 139, 158, .06);
+}
+
+#mynestai-settings-native-host #sd_container .checkbox_label > span {
+    flex: 1;
+}
+
+#mynestai-settings-native-host #sd_container .checkbox_label > small {
+    flex-basis: 100%;
+    margin-left: 26px;
+    color: var(--mynest-muted);
+    font-size: 12px;
+}
+
+#mynestai-settings-native-host #sd_container input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--mynest-accent);
+    cursor: pointer;
+}
+
+/* Provider / section cards ------------------------------------- */
+#mynestai-settings-native-host #sd_container .inline-drawer:first-child .inline-drawer-content > [data-sd-source] {
+    padding: 12px 14px;
+    margin: 8px 0;
+    border: 1px solid var(--mynest-border);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .03);
+}
+
+/* Labels ------------------------------------------------------- */
+#mynestai-settings-native-host #sd_container .sd_settings label:not(.checkbox_label) {
+    color: var(--mynest-muted);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+/* Inputs, selects, textareas ----------------------------------- */
+#mynestai-settings-native-host #sd_container input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+#mynestai-settings-native-host #sd_container select:not(#sd_source),
+#mynestai-settings-native-host #sd_container textarea {
+    border: 1px solid var(--mynest-border);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, .18);
+    color: var(--mynest-text);
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+#mynestai-settings-native-host #sd_container input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+#mynestai-settings-native-host #sd_container select:not(#sd_source):focus,
+#mynestai-settings-native-host #sd_container textarea:focus {
+    outline: none;
+    border-color: var(--mynest-accent);
+    box-shadow: 0 0 0 3px var(--mynest-accent-soft);
+}
+
+/* Source selector ---------------------------------------------- */
+#mynestai-settings-native-host #sd_container #sd_source {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 40px 0 14px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background: rgba(0, 0, 0, .2) url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23d98b9e' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 14px center / 12px auto;
+}
+
+#mynestai-settings-native-host #sd_container #sd_source:focus {
+    outline: none;
+    border-color: var(--mynest-accent);
+    box-shadow: 0 0 0 3px var(--mynest-accent-soft);
+}
+
+/* Connect (validate) buttons ----------------------------------- */
+#mynestai-settings-native-host #sd_container .menu_button_icon:has(> i.fa-check) {
+    min-height: 40px;
+    padding: 0 18px;
+    border: 1px solid var(--mynest-accent);
+    border-radius: 11px;
+    background: var(--mynest-accent);
+    color: #141114;
+    font-weight: 800;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(217, 139, 158, .22);
+    transition: filter .15s ease, transform .1s ease;
+}
+
+#mynestai-settings-native-host #sd_container .menu_button_icon:has(> i.fa-check) > i {
+    display: none;
+}
+
+#mynestai-settings-native-host #sd_container .menu_button_icon:has(> i.fa-check)::before {
+    content: "\f1e6"; /* fa-plug */
+    margin-right: 8px;
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 14px;
+}
+
+#mynestai-settings-native-host #sd_container .menu_button_icon:has(> i.fa-check):hover {
+    filter: brightness(1.1);
+}
+
+#mynestai-settings-native-host #sd_container .menu_button_icon:has(> i.fa-check):active {
+    transform: translateY(1px);
+}
+
+/* View my Anlas ------------------------------------------------ */
+#mynestai-settings-native-host #sd_container #sd_novel_view_anlas {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 0 16px;
+    border: 1px solid var(--mynest-accent);
+    border-radius: 11px;
+    background: var(--mynest-accent-soft);
+    color: var(--mynest-accent);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s ease;
+}
+
+#mynestai-settings-native-host #sd_container #sd_novel_view_anlas::before {
+    content: "\f51e"; /* fa-coins */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 14px;
+}
+
+#mynestai-settings-native-host #sd_container #sd_novel_view_anlas:hover {
+    background: rgba(217, 139, 158, .35);
+}
+
+/* API key buttons (icon + "Click to set") ---------------------- */
+#mynestai-settings-native-host #sd_container .manage-api-keys {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 0 14px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, .05);
+    color: var(--mynest-accent);
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease;
+}
+
+#mynestai-settings-native-host #sd_container .manage-api-keys i {
+    font-size: 13px;
+}
+
+#mynestai-settings-native-host #sd_container .manage-api-keys:hover {
+    border-color: var(--mynest-accent);
+    background: var(--mynest-accent-soft);
+}
+
+/* Icon-only buttons -------------------------------------------- */
+#mynestai-settings-native-host #sd_container #sd_models_refresh,
+#mynestai-settings-native-host #sd_container #sd_swap_dimensions,
+#mynestai-settings-native-host #sd_container #sd_save_style,
+#mynestai-settings-native-host #sd_container #sd_rename_style,
+#mynestai-settings-native-host #sd_container #sd_delete_style,
+#mynestai-settings-native-host #sd_container #sd_comfy_open_workflow_editor,
+#mynestai-settings-native-host #sd_container #sd_comfy_new_workflow,
+#mynestai-settings-native-host #sd_container #sd_comfy_rename_workflow,
+#mynestai-settings-native-host #sd_container #sd_comfy_delete_workflow {
+    display: inline-grid;
+    place-items: center;
+    box-sizing: border-box;
+    min-width: 40px;
+    min-height: 40px;
+    padding: 0;
+    border: 1px solid var(--mynest-border);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, .05);
+    color: var(--mynest-muted);
+    cursor: pointer;
+    transition: color .15s ease, border-color .15s ease, background .15s ease;
+}
+
+#mynestai-settings-native-host #sd_container #sd_models_refresh {
+    min-width: 34px;
+    min-height: 34px;
+}
+
+#mynestai-settings-native-host #sd_container #sd_swap_dimensions {
+    align-self: end;
+    margin-bottom: 2px;
+}
+
+#mynestai-settings-native-host #sd_container #sd_models_refresh:hover,
+#mynestai-settings-native-host #sd_container #sd_swap_dimensions:hover,
+#mynestai-settings-native-host #sd_container #sd_save_style:hover,
+#mynestai-settings-native-host #sd_container #sd_rename_style:hover,
+#mynestai-settings-native-host #sd_container #sd_comfy_open_workflow_editor:hover,
+#mynestai-settings-native-host #sd_container #sd_comfy_new_workflow:hover,
+#mynestai-settings-native-host #sd_container #sd_comfy_rename_workflow:hover {
+    color: var(--mynest-accent);
+    border-color: var(--mynest-accent);
+}
+
+#mynestai-settings-native-host #sd_container #sd_delete_style,
+#mynestai-settings-native-host #sd_container #sd_comfy_delete_workflow {
+    color: #e0736e;
+}
+
+#mynestai-settings-native-host #sd_container #sd_delete_style:hover,
+#mynestai-settings-native-host #sd_container #sd_comfy_delete_workflow:hover {
+    color: #ff8f88;
+    border-color: #e0736e;
+    background: rgba(224, 115, 110, .12);
+}
+
+/* Section titles, separators, hints ---------------------------- */
+#mynestai-settings-native-host #sd_container .inline-drawer-content h4 {
+    margin: 20px 0 8px;
+    color: var(--mynest-accent);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+}
+
+#mynestai-settings-native-host #sd_container .inline-drawer-content hr {
+    border: none;
+    border-top: 1px solid var(--mynest-border);
+    margin: 18px 0;
+}
+
+#mynestai-settings-native-host #sd_container .inline-drawer-content > small,
+#mynestai-settings-native-host #sd_container [data-sd-source] > i,
+#mynestai-settings-native-host #sd_container [data-sd-source] > small {
+    color: var(--mynest-muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+#mynestai-settings-native-host #sd_container a {
+    color: var(--mynest-accent);
+}
+
+/* Range sliders ------------------------------------------------- */
+#mynestai-settings-native-host #sd_container input[type="range"] {
+    min-height: 0;
+}
+
+#mynestai-settings-native-host #sd_container .neo-range-slider::-webkit-slider-thumb {
+    background: var(--mynest-accent) !important;
+    border-color: var(--mynest-accent) !important;
+    box-shadow: 0 0 6px rgba(217, 139, 158, .6) !important;
+}
+
+#mynestai-settings-native-host #sd_container .neo-range-slider::-moz-range-thumb {
+    background: var(--mynest-accent) !important;
+    border-color: var(--mynest-accent) !important;
+}
+
+/* Prompt templates drawer -------------------------------------- */
+#mynestai-settings-native-host #sd_container #sd_prompt_templates {
+    padding-top: 12px;
+}
+
+#mynestai-settings-native-host #sd_container #sd_prompt_templates .title_restorable {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+#mynestai-settings-native-host #sd_container #sd_prompt_templates .title_restorable:first-child {
+    margin-top: 0;
+}
+
+#mynestai-settings-native-host #sd_container #sd_prompt_templates .title_restorable label {
+    color: var(--mynest-muted);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+#mynestai-settings-native-host #sd_container #sd_prompt_templates .title_restorable .menu_button {
+    display: inline-grid;
+    place-items: center;
+    min-width: 34px;
+    min-height: 34px;
+    padding: 0;
+    border: 1px solid var(--mynest-border);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .05);
+    color: var(--mynest-muted);
+    cursor: pointer;
+}
+
+#mynestai-settings-native-host #sd_container #sd_prompt_templates .title_restorable .menu_button:hover {
+    color: var(--mynest-accent);
+    border-color: var(--mynest-accent);
+}
+
+/* Glyphs placed directly on <button> via fa-solid lose the Font Awesome font
+   because of the global Nunito !important on button; force it back. */
+#mynestai-settings-native-host button.fa-solid::before {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900;
+}
+
+/* Hide the "Chat Message Visibility (by source)" block on the Image Generation page. */
+#mynestai-settings-native-host #sd_container .inline-drawer-content hr:has(+ h4[data-i18n="Chat Message Visibility (by source)"]),
+#mynestai-settings-native-host #sd_container .inline-drawer-content h4[data-i18n="Chat Message Visibility (by source)"],
+#mynestai-settings-native-host #sd_container .inline-drawer-content h4[data-i18n="Chat Message Visibility (by source)"] + small,
+#mynestai-settings-native-host #sd_container .inline-drawer-content .flex-container.flexFlowColumn.marginTopBot5.flexGap10 {
+    display: none !important;
+}
+
 /* Image Generation belongs to its dedicated MYnestAI page, not Extensions. */
 #mynestai-settings-native-host > #rm_extensions_block #sd_container,
 #mynestai-settings-native-host > #rm_extensions_block .extensions_block > hr,
@@ -1723,6 +3407,1945 @@ body.mynestai-in-chat #form_sheld {
 #mynestai-settings-native-host > #Backgrounds .bg-header-row-1 #add_background_button_top {
     display: flex !important;
     margin-left: auto;
+}
+
+/* =========================================================
+   PERSONA MANAGEMENT PAGE
+   A friendlier, consistent layout for the Persona Management
+   panel (PersonaManagement). Styling only; every native
+   control, ID, event, and value is left untouched.
+   ========================================================= */
+
+/* Page title ------------------------------------------------ */
+#mynestai-settings-native-host > #PersonaManagement h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 16px;
+    color: var(--mynest-text);
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: .2px;
+}
+
+#mynestai-settings-native-host > #PersonaManagement h3::before {
+    content: "\f4fe"; /* fa-user-gear */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--mynest-accent);
+    font-size: 21px;
+}
+
+/* Header action pills (Usage Stats / Backup / Restore) ------ */
+#mynestai-settings-native-host > #PersonaManagement .menu_button_icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 0 14px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, .05);
+    color: var(--mynest-text);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
+}
+
+#mynestai-settings-native-host > #PersonaManagement .menu_button_icon > i:not(.icon) {
+    color: var(--mynest-accent);
+    font-size: 14px;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #persona_connections_buttons .menu_button_icon:not(.locked) .icon {
+    color: var(--mynest-accent);
+}
+
+/* Preserve the native locked-state icon colors. */
+#mynestai-settings-native-host > #PersonaManagement #lock_persona_default.locked i.icon {
+    color: var(--golden);
+}
+
+#mynestai-settings-native-host > #PersonaManagement #lock_persona_to_char.locked i.icon {
+    color: var(--active);
+}
+
+#mynestai-settings-native-host > #PersonaManagement #lock_user_name.locked i.icon {
+    color: var(--SmartThemeQuoteColor);
+}
+
+#mynestai-settings-native-host > #PersonaManagement .menu_button_icon:not(#create_dummy_persona):hover {
+    background: rgba(217, 139, 158, .1);
+    border-color: var(--mynest-accent);
+    color: var(--mynest-text);
+}
+
+/* Create persona button -------------------------------------- */
+#mynestai-settings-native-host > #PersonaManagement #create_dummy_persona {
+    background: var(--mynest-accent);
+    border-color: transparent;
+    color: #141114;
+    font-weight: 800;
+    box-shadow: 0 4px 16px rgba(217, 139, 158, .22);
+}
+
+#mynestai-settings-native-host > #PersonaManagement #create_dummy_persona > i {
+    color: #141114;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #create_dummy_persona:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+}
+
+/* Toolbar (search / sort / grid toggle) --------------------- */
+#mynestai-settings-native-host > #PersonaManagement .flex-container.marginBot10 {
+    gap: 10px;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #persona_search_bar {
+    flex: 1;
+    min-width: 140px;
+    min-height: 40px;
+    padding: 0 14px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 11px;
+    background: rgba(0, 0, 0, .2);
+    color: var(--mynest-text);
+    font-size: 14px;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #persona_search_bar:focus {
+    outline: none;
+    border-color: var(--mynest-accent);
+    box-shadow: 0 0 0 3px var(--mynest-accent-soft);
+}
+
+#mynestai-settings-native-host > #PersonaManagement #persona_sort_order {
+    max-width: 8em;
+    min-height: 40px;
+    padding: 0 32px 0 12px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 11px;
+    background: rgba(0, 0, 0, .2) url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23d98b9e' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 11px center / 11px auto;
+    color: var(--mynest-text);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* Grid view toggle (icon was missing from the loaded icon set). */
+#mynestai-settings-native-host > #PersonaManagement #persona_grid_toggle {
+    display: inline-grid;
+    place-items: center;
+    min-width: 40px;
+    min-height: 40px;
+    padding: 0;
+    border: 1px solid var(--mynest-border);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, .05);
+    color: var(--mynest-muted);
+    font-size: 14px;
+    cursor: pointer;
+    transition: color .15s ease, border-color .15s ease, background .15s ease;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #persona_grid_toggle::before {
+    content: "\f009"; /* fa-th-large */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #persona_grid_toggle:hover {
+    color: var(--mynest-accent);
+    border-color: var(--mynest-accent);
+    background: rgba(217, 139, 158, .08);
+}
+
+/* Pagination ------------------------------------------------ */
+#mynestai-settings-native-host > #PersonaManagement #persona_pagination_container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #persona_pagination_container .paginationjs-page > a,
+#mynestai-settings-native-host > #PersonaManagement #persona_pagination_container .paginationjs-prev > a,
+#mynestai-settings-native-host > #PersonaManagement #persona_pagination_container .paginationjs-next > a {
+    display: inline-grid;
+    place-items: center;
+    min-width: 30px;
+    height: 30px;
+    padding: 0 8px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .05);
+    color: var(--mynest-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #persona_pagination_container .paginationjs-page.active > a {
+    background: var(--mynest-accent);
+    border-color: transparent;
+    color: #141114;
+}
+
+/* Persona avatar list --------------------------------------- */
+#mynestai-settings-native-host > #PersonaManagement #user_avatar_block {
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 14px;
+    background: rgba(0, 0, 0, .14);
+    box-sizing: border-box;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #user_avatar_block .avatar_upload {
+    width: 72px;
+    height: 72px;
+    border: 1px dashed var(--mynest-accent);
+    border-radius: 14px;
+    background: rgba(217, 139, 158, .1);
+    color: var(--mynest-accent);
+    font-size: 2.4rem;
+    transition: background .15s ease, transform .15s ease, border-color .15s ease;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #user_avatar_block .avatar_upload:hover {
+    background: rgba(217, 139, 158, .2);
+    border-color: var(--mynest-accent);
+    transform: scale(1.04);
+}
+
+#mynestai-settings-native-host > #PersonaManagement #user_avatar_block .avatar-container {
+    padding: 8px;
+    border: 1px solid transparent;
+    border-radius: 14px;
+    background: transparent;
+    transition: background .15s ease, border-color .15s ease;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #user_avatar_block .avatar-container:hover {
+    background: rgba(255, 255, 255, .05);
+    border-color: var(--mynest-border);
+}
+
+#mynestai-settings-native-host > #PersonaManagement #user_avatar_block .avatar-container.selected {
+    border-color: var(--mynest-accent);
+    background: rgba(217, 139, 158, .08);
+}
+
+#mynestai-settings-native-host > #PersonaManagement #user_avatar_block .avatar-container .avatar img {
+    border-radius: 12px;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #user_avatar_block .character_name_block .ch_name {
+    color: var(--mynest-text);
+    font-weight: 700;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #user_avatar_block .avatar_container_states .menu_button_icon {
+    min-height: 26px;
+    padding: 0 8px;
+    border-radius: 8px;
+    font-size: 11px;
+}
+
+/* Right column cards ---------------------------------------- */
+#mynestai-settings-native-host > #PersonaManagement .persona_management_right_column {
+    min-width: 0;
+}
+
+#mynestai-settings-native-host > #PersonaManagement .persona_management_current_persona,
+#mynestai-settings-native-host > #PersonaManagement .persona_management_global_settings {
+    box-sizing: border-box;
+    margin-bottom: 16px;
+    padding: 18px 20px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 16px;
+    background: rgba(0, 0, 0, .12);
+}
+
+/* Section headings ------------------------------------------ */
+#mynestai-settings-native-host > #PersonaManagement .standoutHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 14px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    color: var(--mynest-accent);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+}
+
+#mynestai-settings-native-host > #PersonaManagement .persona_management_current_persona > .standoutHeader::before {
+    content: "\f007"; /* fa-user */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
+
+#mynestai-settings-native-host > #PersonaManagement .persona_management_global_settings > .standoutHeader::before {
+    content: "\f085"; /* fa-gears */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
+
+#mynestai-settings-native-host > #PersonaManagement h4 {
+    color: var(--mynest-accent);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+}
+
+/* Current persona header ------------------------------------- */
+#mynestai-settings-native-host > #PersonaManagement #persona_controls {
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #your_name {
+    margin: 0;
+    color: var(--mynest-accent);
+    font-size: 21px;
+    font-weight: 800;
+    opacity: 1;
+}
+
+#mynestai-settings-native-host > #PersonaManagement .persona_controls_buttons_block {
+    flex: 0 0 auto;
+}
+
+#mynestai-settings-native-host > #PersonaManagement .persona_controls_buttons_block .menu_button {
+    display: inline-grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid var(--mynest-border);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, .05);
+    color: var(--mynest-muted);
+    font-size: 15px;
+    filter: none;
+    transition: color .15s ease, border-color .15s ease, background .15s ease, transform .1s ease;
+}
+
+#mynestai-settings-native-host > #PersonaManagement .persona_controls_buttons_block .menu_button:hover {
+    color: var(--mynest-accent);
+    border-color: var(--mynest-accent);
+    background: rgba(217, 139, 158, .1);
+    transform: translateY(-1px);
+}
+
+#mynestai-settings-native-host > #PersonaManagement #persona_delete_button {
+    background: rgba(224, 115, 110, .14) !important;
+    border-color: rgba(224, 115, 110, .4);
+    color: #e0736e;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #persona_delete_button:hover {
+    background: rgba(224, 115, 110, .22) !important;
+    border-color: #e0736e;
+    color: #ff8f88;
+}
+
+/* "More..." dropdown ----------------------------------------- */
+#mynestai-settings-native-host > #PersonaManagement label[for="persona-management-dropdown"] {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #persona-management-dropdown {
+    width: 100%;
+    min-height: 40px;
+    padding: 0 34px 0 12px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 11px;
+    background: rgba(0, 0, 0, .2) url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23d98b9e' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 12px center / 11px auto;
+    color: var(--mynest-text);
+    font-size: 13px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* Editor maximize -------------------------------------------- */
+#mynestai-settings-native-host > #PersonaManagement .editor_maximize {
+    display: inline-grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    margin-left: auto;
+    padding: 0;
+    border: 1px solid var(--mynest-border);
+    border-radius: 9px;
+    background: rgba(255, 255, 255, .05);
+    color: var(--mynest-muted);
+    font-size: 12px;
+    cursor: pointer;
+    transition: color .15s ease, border-color .15s ease, background .15s ease;
+}
+
+#mynestai-settings-native-host > #PersonaManagement .editor_maximize:hover {
+    color: var(--mynest-accent);
+    border-color: var(--mynest-accent);
+    background: rgba(217, 139, 158, .1);
+}
+
+/* Persona description ---------------------------------------- */
+#mynestai-settings-native-host > #PersonaManagement #persona_description {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 150px;
+    padding: 12px 14px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 12px;
+    background: rgba(0, 0, 0, .18);
+    color: var(--mynest-text);
+    font-size: 14px;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #persona_description:focus {
+    outline: none;
+    border-color: var(--mynest-accent);
+    box-shadow: 0 0 0 3px var(--mynest-accent-soft);
+}
+
+#mynestai-settings-native-host > #PersonaManagement .flex-container.justifySpaceBetween {
+    gap: 10px;
+    margin: 14px 0 10px;
+}
+
+#mynestai-settings-native-host > #PersonaManagement .extension_token_counter {
+    padding: 4px 12px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .04);
+    color: var(--mynest-muted);
+    font-size: 12px;
+}
+
+/* Position / depth ------------------------------------------- */
+#mynestai-settings-native-host > #PersonaManagement #persona_description_position {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 42px;
+    padding: 0 38px 0 14px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 11px;
+    background: rgba(0, 0, 0, .2) url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23d98b9e' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 13px center / 11px auto;
+    color: var(--mynest-text);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #persona_depth_position_settings {
+    gap: 14px;
+    margin-top: 10px;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #persona_depth_position_settings label {
+    display: block;
+    margin: 0 0 6px;
+    color: var(--mynest-muted);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #persona_depth_value,
+#mynestai-settings-native-host > #PersonaManagement #persona_depth_role {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, .18);
+    color: var(--mynest-text);
+    font-size: 13px;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #persona_depth_value:focus,
+#mynestai-settings-native-host > #PersonaManagement #persona_depth_role:focus {
+    outline: none;
+    border-color: var(--mynest-accent);
+    box-shadow: 0 0 0 3px var(--mynest-accent-soft);
+}
+
+/* Connections ------------------------------------------------ */
+#mynestai-settings-native-host > #PersonaManagement #persona_connections_buttons {
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #persona_connections_buttons .menu_button.locked {
+    background: rgba(217, 139, 158, .12);
+}
+
+#mynestai-settings-native-host > #PersonaManagement #lock_persona_default.locked {
+    border-color: var(--golden);
+}
+
+#mynestai-settings-native-host > #PersonaManagement #lock_persona_to_char.locked,
+#mynestai-settings-native-host > #PersonaManagement #lock_user_name.locked {
+    border-color: var(--mynest-accent);
+}
+
+#mynestai-settings-native-host > #PersonaManagement #persona_connections_info_block {
+    margin: 4px 0 8px;
+    color: var(--mynest-muted);
+    font-size: 13px;
+}
+
+#mynestai-settings-native-host > #PersonaManagement #persona_connections_list {
+    margin-top: 8px;
+}
+
+/* Global settings checkboxes --------------------------------- */
+#mynestai-settings-native-host > #PersonaManagement .persona_management_global_settings .range-block {
+    margin: 0 0 4px;
+    padding: 9px 12px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: transparent;
+}
+
+#mynestai-settings-native-host > #PersonaManagement .persona_management_global_settings .range-block:hover {
+    background: rgba(255, 255, 255, .03);
+}
+
+#mynestai-settings-native-host > #PersonaManagement .persona_management_global_settings .checkbox_label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 30px;
+    cursor: pointer;
+}
+
+#mynestai-settings-native-host > #PersonaManagement .persona_management_global_settings .checkbox_label span {
+    color: var(--mynest-text);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+#mynestai-settings-native-host > #PersonaManagement .persona_management_global_settings input[type="checkbox"] {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--mynest-accent);
+    cursor: pointer;
+}
+
+/* Responsive ------------------------------------------------- */
+@media (max-width: 900px) {
+    #mynestai-settings-native-host > #PersonaManagement #persona-management-block {
+        flex-direction: column;
+    }
+
+    #mynestai-settings-native-host > #PersonaManagement .persona_management_left_column,
+    #mynestai-settings-native-host > #PersonaManagement .persona_management_right_column {
+        width: 100%;
+    }
+
+    #mynestai-settings-native-host > #PersonaManagement #persona_controls {
+        flex-wrap: wrap;
+    }
+}
+
+/* =========================================================
+   WORLDS / LOREBOOK PAGE
+   A friendlier, consistent layout for the Worlds / Lorebook
+   panel (WorldInfo). Styling only; every native control,
+   ID, event, and value is left untouched.
+   ========================================================= */
+
+/* Page title ------------------------------------------------ */
+#mynestai-settings-native-host > #WorldInfo h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 16px;
+    color: var(--mynest-text);
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: .2px;
+}
+
+#mynestai-settings-native-host > #WorldInfo h3::before {
+    content: "\f518"; /* fa-book-open */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--mynest-accent);
+    font-size: 21px;
+}
+
+/* The drag grabber does nothing on this page; the pin stays. */
+#mynestai-settings-native-host > #WorldInfo #WorldInfoheader {
+    display: none;
+}
+
+#mynestai-settings-native-host > #WorldInfo #WI_panel_pin_div label {
+    cursor: pointer;
+}
+
+#mynestai-settings-native-host > #WorldInfo #WI_panel_pin_div .checked {
+    color: var(--mynest-accent);
+}
+
+#mynestai-settings-native-host > #WorldInfo #WI_panel_pin_div .unchecked {
+    color: var(--mynest-muted);
+}
+
+/* Top block: stack the two cards vertically ------------------ */
+#mynestai-settings-native-host > #WorldInfo #wiTopBlock {
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+#mynestai-settings-native-host > #WorldInfo #wiTopBlock > .range-block {
+    width: 100%;
+    margin: 0;
+}
+
+#mynestai-settings-native-host > #WorldInfo #wiTopBlock .range-block-title small {
+    display: block;
+    color: var(--mynest-muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .9px;
+    text-transform: uppercase;
+}
+
+/* Active World(s) multi-select -------------------------------- */
+#mynestai-settings-native-host > #WorldInfo #world_info {
+    width: 100%;
+    min-height: 110px;
+    padding: 6px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, .25);
+    color: var(--mynest-text);
+    font-size: 13px;
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_info option {
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_info option:checked {
+    background: var(--mynest-accent);
+    color: #141114;
+}
+
+/* Global activation settings: always open, no "Click to expand" */
+#mynestai-settings-native-host > #WorldInfo #wiTopBlock .range-block:has(> .inline-drawer) .standoutHeader.inline-drawer-toggle {
+    display: none;
+}
+
+#mynestai-settings-native-host > #WorldInfo #wiTopBlock .range-block:has(> .inline-drawer) .inline-drawer-content {
+    display: block !important;
+}
+
+#mynestai-settings-native-host > #WorldInfo #wiTopBlock .range-block:has(> .inline-drawer) > .inline-drawer {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+}
+
+/* Slider chips ------------------------------------------------ */
+#mynestai-settings-native-host > #WorldInfo #wiSliders {
+    gap: 12px;
+}
+
+#mynestai-settings-native-host > #WorldInfo #wiSliders > div {
+    padding: 10px 12px 12px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 12px;
+    background: rgba(0, 0, 0, .12);
+    box-sizing: border-box;
+}
+
+#mynestai-settings-native-host > #WorldInfo #wiSliders > div > small {
+    margin-bottom: 2px;
+    color: var(--mynest-muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+#mynestai-settings-native-host > #WorldInfo #wiSliders .fa-circle-info,
+#mynestai-settings-native-host > #WorldInfo #wiSliders .fa-triangle-exclamation {
+    color: var(--mynest-muted);
+    font-size: 12px;
+}
+
+#mynestai-settings-native-host > #WorldInfo #wiSliders .fa-circle-info:hover,
+#mynestai-settings-native-host > #WorldInfo #wiSliders .fa-triangle-exclamation:hover {
+    color: var(--mynest-accent);
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_info_character_strategy {
+    width: 100%;
+    min-height: 38px;
+    margin: 0;
+    padding: 0 30px 0 12px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, .25) url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23d98b9e' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 11px center / 11px auto;
+    color: var(--mynest-text);
+    font-size: 13px;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* Activation checkboxes ---------------------------------------- */
+#mynestai-settings-native-host > #WorldInfo #wiCheckboxes {
+    gap: 6px;
+}
+
+#mynestai-settings-native-host > #WorldInfo #wiCheckboxes .checkbox_label {
+    padding: 8px 10px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    transition: background .15s ease, border-color .15s ease;
+}
+
+#mynestai-settings-native-host > #WorldInfo #wiCheckboxes .checkbox_label:hover {
+    background: rgba(217, 139, 158, .08);
+    border-color: var(--mynest-border);
+}
+
+#mynestai-settings-native-host > #WorldInfo #wiCheckboxes input[type="checkbox"] {
+    accent-color: var(--mynest-accent);
+}
+
+/* Divider above the editor -------------------------------------- */
+#mynestai-settings-native-host > #WorldInfo #world_popup > hr {
+    margin: 14px 0;
+    border: 0;
+    border-top: 1px solid var(--mynest-border);
+}
+
+/* Editor toolbar rows -------------------------------------------- */
+#mynestai-settings-native-host > #WorldInfo #world_popup > .flex-container {
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_popup > .flex-container > small {
+    color: var(--mynest-muted);
+    font-size: 12px;
+    font-style: italic;
+}
+
+/* Create world button (accent pill) ------------------------------- */
+#mynestai-settings-native-host > #WorldInfo #world_create_button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 38px;
+    margin: 0;
+    padding: 0 16px;
+    border: 1px solid transparent;
+    border-radius: 11px;
+    background: var(--mynest-accent);
+    color: #141114;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(217, 139, 158, .22);
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_create_button > i {
+    color: #141114;
+    font-size: 14px;
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_create_button:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+}
+
+/* Icon-only toolbar buttons (rows 1 + 2) --------------------------- */
+#mynestai-settings-native-host > #WorldInfo #world_popup > .flex-container > .menu_button:not(#world_create_button) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--mynest-border);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, .05);
+    color: var(--mynest-text);
+    font-size: 15px;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_popup > .flex-container > .menu_button:not(#world_create_button):hover {
+    background: rgba(217, 139, 158, .1);
+    border-color: var(--mynest-accent);
+    color: var(--mynest-accent);
+    transform: translateY(-1px);
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_popup_delete {
+    background: rgba(255, 77, 77, .14) !important;
+    border-color: rgba(255, 77, 77, .35) !important;
+    color: #ff7b7b !important;
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_popup_delete:hover {
+    background: rgba(255, 77, 77, .28) !important;
+    border-color: rgba(255, 77, 77, .55) !important;
+    color: #ff8f8f !important;
+}
+
+/* "Refresh" icon is missing from the loaded icon set; use fa-rotate */
+#mynestai-settings-native-host > #WorldInfo #world_refresh::before {
+    content: "\f2f1"; /* fa-rotate / fa-sync-alt */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
+
+/* Editor select ----------------------------------------------- */
+#mynestai-settings-native-host > #WorldInfo #world_editor_select {
+    max-width: 11em;
+    min-height: 38px;
+    padding: 0 32px 0 12px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 11px;
+    background: rgba(0, 0, 0, .2) url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23d98b9e' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 11px center / 11px auto;
+    color: var(--mynest-text);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* Search + sort row --------------------------------------------- */
+#mynestai-settings-native-host > #WorldInfo #world_info_search {
+    flex: 1;
+    min-width: 150px;
+    min-height: 40px;
+    padding: 0 14px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 11px;
+    background: rgba(0, 0, 0, .2);
+    color: var(--mynest-text);
+    font-size: 14px;
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_info_search:focus {
+    outline: none;
+    border-color: var(--mynest-accent);
+    box-shadow: 0 0 0 3px var(--mynest-accent-soft);
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_info_sort_order {
+    max-width: 10em;
+    min-height: 40px;
+    padding: 0 32px 0 12px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 11px;
+    background: rgba(0, 0, 0, .2) url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23d98b9e' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 11px center / 11px auto;
+    color: var(--mynest-text);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* Pagination -------------------------------------------------- */
+#mynestai-settings-native-host > #WorldInfo #world_info_pagination {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-left: auto;
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_info_pagination .paginationjs-page > a,
+#mynestai-settings-native-host > #WorldInfo #world_info_pagination .paginationjs-prev > a,
+#mynestai-settings-native-host > #WorldInfo #world_info_pagination .paginationjs-next > a,
+#mynestai-settings-native-host > #WorldInfo #world_info_pagination .paginationjs-ellipsis > a {
+    display: inline-grid;
+    place-items: center;
+    min-width: 30px;
+    height: 30px;
+    padding: 0 8px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .05);
+    color: var(--mynest-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_info_pagination .paginationjs-page.active > a {
+    background: var(--mynest-accent);
+    border-color: transparent;
+    color: #141114;
+}
+
+/* Entry list -------------------------------------------------- */
+#mynestai-settings-native-host > #WorldInfo #world_popup_entries_list .world_entry {
+    margin-bottom: 10px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 14px;
+    background: rgba(0, 0, 0, .14);
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_popup_entries_list .world_entry .inline-drawer {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_popup_entries_list .world_entry .inline-drawer-header {
+    min-height: 44px;
+    padding: 6px 8px;
+    background: rgba(255, 255, 255, .02);
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_popup_entries_list .world_entry .inline-drawer-icon {
+    color: var(--mynest-accent);
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_popup_entries_list .world_entry .drag-handle {
+    color: var(--mynest-muted);
+    cursor: move;
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_popup_entries_list .world_entry textarea.text_pole[name="comment"] {
+    min-height: 32px;
+    padding: 6px 10px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 9px;
+    background: rgba(0, 0, 0, .25);
+    color: var(--mynest-text);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.4;
+    resize: vertical;
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_popup_entries_list .world_entry .world_entry_thin_controls select,
+#mynestai-settings-native-host > #WorldInfo #world_popup_entries_list .world_entry .world_entry_thin_controls input.text_pole {
+    min-height: 30px;
+    padding: 0 8px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, .25);
+    color: var(--mynest-text);
+    font-size: 12px;
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_popup_entries_list .world_entry .world_entry_form_control label {
+    color: var(--mynest-muted);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+/* Entry row action buttons -------------------------------------- */
+#mynestai-settings-native-host > #WorldInfo #world_popup_entries_list .world_entry .move_entry_button,
+#mynestai-settings-native-host > #WorldInfo #world_popup_entries_list .world_entry .duplicate_entry_button,
+#mynestai-settings-native-host > #WorldInfo #world_popup_entries_list .world_entry .delete_entry_button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--mynest-border);
+    border-radius: 9px;
+    background: rgba(255, 255, 255, .05);
+    color: var(--mynest-text);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_popup_entries_list .world_entry .move_entry_button:hover,
+#mynestai-settings-native-host > #WorldInfo #world_popup_entries_list .world_entry .duplicate_entry_button:hover {
+    background: rgba(217, 139, 158, .1);
+    border-color: var(--mynest-accent);
+    color: var(--mynest-accent);
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_popup_entries_list .world_entry .delete_entry_button {
+    background: rgba(255, 77, 77, .14);
+    border-color: rgba(255, 77, 77, .35);
+    color: #ff7b7b;
+}
+
+#mynestai-settings-native-host > #WorldInfo #world_popup_entries_list .world_entry .delete_entry_button:hover {
+    background: rgba(255, 77, 77, .28);
+    border-color: rgba(255, 77, 77, .55);
+    color: #ff8f8f;
+}
+
+/* Responsive -------------------------------------------------- */
+@media (max-width: 900px) {
+    #mynestai-settings-native-host > #WorldInfo #wiSliders {
+        flex-direction: column;
+    }
+
+    #mynestai-settings-native-host > #WorldInfo #wiCheckboxes {
+        flex-direction: column;
+    }
+
+    #mynestai-settings-native-host > #WorldInfo #world_popup_entries_list .world_entry_thin_controls {
+        flex-wrap: wrap;
+    }
+}
+
+/* =========================================================
+   CHAT COMPILATION PRESETS PAGE
+   A friendlier, consistent layout for the Chat Compilation
+   Presets panel (ai_response_configuration). Styling only;
+   every native control, ID, event, and value is untouched.
+   ========================================================= */
+
+/* Page layout ------------------------------------------------ */
+#mynestai-settings-native-host > #ai_response_configuration {
+    gap: 18px;
+}
+
+/* Section titles inside cards -------------------------------- */
+#mynestai-settings-native-host > #ai_response_configuration .range-block-title {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    text-align: left;
+    color: var(--mynest-muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .7px;
+    text-transform: uppercase;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration .range-block-title .menu_button,
+#mynestai-settings-native-host > #ai_response_configuration .range-block-title .right_menu_button {
+    text-transform: none;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration .toggle-description {
+    color: var(--mynest-muted);
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration .note-link-span {
+    color: var(--mynest-muted);
+    font-size: 12px;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration .note-link-span:hover {
+    color: var(--mynest-accent);
+}
+
+#mynestai-settings-native-host > #ai_response_configuration input[type="checkbox"] {
+    accent-color: var(--mynest-accent);
+}
+
+/* Restore (clock) buttons -------------------------------------- */
+#mynestai-settings-native-host > #ai_response_configuration .right_menu_button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    margin: 0 0 0 auto;
+    padding: 0;
+    border: 1px solid var(--mynest-border);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .05);
+    color: var(--mynest-muted);
+    font-size: 12px;
+    filter: none;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration .right_menu_button:hover {
+    background: rgba(217, 139, 158, .1);
+    border-color: var(--mynest-accent);
+    color: var(--mynest-accent);
+    filter: none;
+}
+
+/* Keep the native Sampler Order checkbox toggles as-is. */
+#mynestai-settings-native-host > #ai_response_configuration .prompt_order .toggle_button.right_menu_button {
+    flex: none;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--mynest-text);
+    font-size: 14px;
+}
+
+/* Dividers and drawer headers ----------------------------------- */
+#mynestai-settings-native-host > #ai_response_configuration hr {
+    border: 0;
+    border-top: 1px solid var(--mynest-border);
+    margin: 4px 0 14px;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration .inline-drawer-icon {
+    color: var(--mynest-accent);
+}
+
+#mynestai-settings-native-host > #ai_response_configuration .inline-drawer-toggle b {
+    color: var(--mynest-text);
+    font-size: 14px;
+    font-weight: 800;
+}
+
+/* Preset manager cards ------------------------------------------ */
+#mynestai-settings-native-host > #ai_response_configuration #respective-presets-block {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 14px;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #respective-presets-block > div[id$="-presets"] {
+    border: 1px solid var(--mynest-border);
+    border-radius: 14px;
+    background: rgba(0, 0, 0, .14);
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #openai_api-presets > div {
+    display: contents;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #respective-presets-block .standoutHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 0;
+    padding: 12px 14px;
+    border: 0;
+    border-bottom: 1px solid var(--mynest-border);
+    border-radius: 0;
+    background: rgba(255, 255, 255, .04);
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #respective-presets-block .standoutHeader strong {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--mynest-text);
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: .2px;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #respective-presets-block .standoutHeader strong::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--mynest-accent);
+    font-size: 16px;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #kobold_api-presets .standoutHeader strong::before {
+    content: "\f013"; /* fa-gear */
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #novel_api-presets .standoutHeader strong::before {
+    content: "\f521"; /* fa-crown */
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #openai_api-presets .standoutHeader strong::before {
+    content: "\f544"; /* fa-robot */
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #textgenerationwebui_api-presets .standoutHeader strong::before {
+    content: "\f2db"; /* fa-microchip */
+}
+
+/* Preset body (select + actions) -------------------------------- */
+#mynestai-settings-native-host > #ai_response_configuration #respective-presets-block .standoutHeader + .flex-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #respective-presets-block select {
+    flex: 1;
+    min-width: 0;
+    min-height: 38px;
+    margin: 0;
+    padding: 0 30px 0 12px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, .25) url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23d98b9e' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 11px center / 11px auto;
+    color: var(--mynest-text);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* Preset manager icon buttons ----------------------------------- */
+#mynestai-settings-native-host > #ai_response_configuration #respective-presets-block .menu_button_icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--mynest-border);
+    border-radius: 9px;
+    background: rgba(255, 255, 255, .05);
+    color: var(--mynest-text);
+    font-size: 14px;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #respective-presets-block .menu_button_icon:hover {
+    background: rgba(217, 139, 158, .1);
+    border-color: var(--mynest-accent);
+    color: var(--mynest-accent);
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #respective-presets-block [data-preset-manager-delete],
+#mynestai-settings-native-host > #ai_response_configuration #delete_oai_preset {
+    background: rgba(255, 77, 77, .14);
+    border-color: rgba(255, 77, 77, .35);
+    color: #ff7b7b;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #respective-presets-block [data-preset-manager-delete]:hover,
+#mynestai-settings-native-host > #ai_response_configuration #delete_oai_preset:hover {
+    background: rgba(255, 77, 77, .28);
+    border-color: rgba(255, 77, 77, .55);
+    color: #ff8f8f;
+}
+
+/* Bind presets to connections toggle ---------------------------- */
+#mynestai-settings-native-host > #ai_response_configuration #respective-presets-block label[for="bind_preset_to_connection"]:has(input:checked) {
+    color: var(--mynest-accent);
+}
+
+/* Fix native case mismatch: HTML ships "fa-file-Import" (capital I) but the
+   stylesheet only defines ".fa-file-import", so the import glyph never renders. */
+#mynestai-settings-native-host .fa-file-Import::before {
+    content: "\f56f";
+}
+
+/* Common generation sliders (Response / Context) ---------------- */
+#mynestai-settings-native-host > #ai_response_configuration #pro-settings-block {
+    gap: 12px;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #pro-settings-block > .range-block-range-and-counter {
+    border: 1px solid var(--mynest-border);
+    border-radius: 12px;
+    background: rgba(0, 0, 0, .12);
+    padding: 12px;
+    box-sizing: border-box;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #pro-settings-block > .range-block-range-and-counter > small {
+    color: var(--mynest-muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #pro-settings-block .checkbox_label {
+    color: var(--mynest-text);
+    font-size: 12px;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #prompt_cost_block {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 2px 0 0;
+    color: var(--mynest-muted);
+    font-size: 12px;
+}
+
+/* Advanced AI config: sampler chips ----------------------------- */
+#mynestai-settings-native-host > #ai_response_configuration #advanced-ai-config-block {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #advanced-ai-config-block [class*="flexBasis"] {
+    border: 1px solid var(--mynest-border);
+    border-radius: 12px;
+    background: rgba(0, 0, 0, .12);
+    padding: 10px 12px 12px;
+    box-sizing: border-box;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #advanced-ai-config-block [class*="flexBasis"] > small {
+    margin-bottom: 2px;
+    color: var(--mynest-muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #advanced-ai-config-block .fa-circle-info {
+    color: var(--mynest-muted);
+    font-size: 12px;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #advanced-ai-config-block .fa-circle-info:hover {
+    color: var(--mynest-accent);
+}
+
+/* Sampler action pills ------------------------------------------ */
+#mynestai-settings-native-host > #ai_response_configuration #samplerResetButton,
+#mynestai-settings-native-host > #ai_response_configuration #samplerSelectButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    margin: 0;
+    padding: 0 14px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .05);
+    color: var(--mynest-text);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #samplerResetButton:hover,
+#mynestai-settings-native-host > #ai_response_configuration #samplerSelectButton:hover {
+    background: rgba(217, 139, 158, .1);
+    border-color: var(--mynest-accent);
+    color: var(--mynest-accent);
+}
+
+/* Per-API ranges: responsive card grid -------------------------- */
+#mynestai-settings-native-host > #ai_response_configuration #respective-ranges-and-temps > div[id^="range_block_"] {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 12px;
+    align-items: stretch;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #respective-ranges-and-temps > div[id^="range_block_"] > .range-block,
+#mynestai-settings-native-host > #ai_response_configuration #respective-ranges-and-temps > div[id^="range_block_"] > .inline-drawer {
+    margin: 0;
+}
+
+/* Loose elements and wide cards span the full grid width. */
+#mynestai-settings-native-host > #ai_response_configuration #respective-ranges-and-temps > div[id^="range_block_"] > :not(.range-block):not(.inline-drawer),
+#mynestai-settings-native-host > #ai_response_configuration #respective-ranges-and-temps .range-block:has(textarea),
+#mynestai-settings-native-host > #ai_response_configuration #respective-ranges-and-temps .range-block:has(.logit_bias_list),
+#mynestai-settings-native-host > #ai_response_configuration #respective-ranges-and-temps .inline-drawer {
+    grid-column: 1 / -1;
+}
+
+/* Logit Bias "Add" button --------------------------------------- */
+#mynestai-settings-native-host > #ai_response_configuration #novelai_logit_bias_new_entry {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-height: 28px;
+    margin: 0 0 0 auto;
+    padding: 0 10px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .05);
+    color: var(--mynest-text);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+
+#mynestai-settings-native-host > #ai_response_configuration #novelai_logit_bias_new_entry:hover {
+    background: rgba(217, 139, 158, .1);
+    border-color: var(--mynest-accent);
+    color: var(--mynest-accent);
+}
+
+/* Responsive -------------------------------------------------- */
+@media (max-width: 900px) {
+    #mynestai-settings-native-host > #ai_response_configuration #respective-presets-block {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================================
+   ADVANCED FORMATTING PAGE
+   A friendlier, consistent layout for the Advanced Formatting
+   panel (#AdvancedFormatting). Styling only; every native
+   control, ID, event, and value is left untouched.
+   ========================================================= */
+
+/* Page header ------------------------------------------------ */
+#mynestai-settings-native-host > #AdvancedFormatting > .flex-container:first-child {
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting > .flex-container:first-child > h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    color: var(--mynest-text);
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: .2px;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting > .flex-container:first-child > h3::before {
+    content: "\f1de"; /* fa-sliders */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--mynest-accent);
+    font-size: 20px;
+}
+
+/* Master Import / Export pills ------------------------------- */
+#mynestai-settings-native-host > #AdvancedFormatting > .flex-container:first-child > .flex-container {
+    gap: 8px;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting #af_master_Import,
+#mynestai-settings-native-host > #AdvancedFormatting #af_master_export {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 38px;
+    margin: 0;
+    padding: 0 16px;
+    border-radius: 11px;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: background .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting #af_master_Import {
+    border: 1px solid transparent;
+    background: var(--mynest-accent);
+    color: #141114;
+    box-shadow: 0 4px 16px rgba(217, 139, 158, .22);
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting #af_master_Import > i {
+    color: #141114;
+    font-size: 14px;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting #af_master_Import:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting #af_master_export {
+    border: 1px solid var(--mynest-border);
+    background: rgba(255, 255, 255, .05);
+    color: var(--mynest-text);
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting #af_master_export > i {
+    color: var(--mynest-accent);
+    font-size: 14px;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting #af_master_export:hover {
+    background: rgba(217, 139, 158, .1);
+    border-color: var(--mynest-accent);
+    color: var(--mynest-accent);
+}
+
+/* Chat-completion notice -------------------------------------- */
+#mynestai-settings-native-host > #AdvancedFormatting #advanced-formatting-cc-notice {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 16px;
+    padding: 12px 16px;
+    border: 1px solid rgba(217, 139, 158, .35);
+    border-radius: 12px;
+    background: rgba(217, 139, 158, .08);
+    color: var(--mynest-muted);
+    font-size: 12.5px;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting #advanced-formatting-cc-notice > i {
+    color: var(--mynest-accent);
+    font-size: 15px;
+}
+
+/* Three column cards ------------------------------------------ */
+#mynestai-settings-native-host > #AdvancedFormatting > .flex-container.spaceEvenly {
+    gap: 16px;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting > .flex-container.spaceEvenly > div {
+    border: 1px solid var(--mynest-border);
+    border-radius: 14px;
+    background: rgba(0, 0, 0, .14);
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting #ContextSettings,
+#mynestai-settings-native-host > #AdvancedFormatting #InstructSettingsColumn,
+#mynestai-settings-native-host > #AdvancedFormatting #SystemPromptColumn {
+    gap: 14px !important;
+}
+
+/* Section titles ---------------------------------------------- */
+#mynestai-settings-native-host > #AdvancedFormatting h4.standoutHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 0 0 10px;
+    padding: 0 0 10px;
+    border: 0;
+    border-bottom: 1px solid var(--mynest-border);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    color: var(--mynest-text);
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: .2px;
+}
+
+/* Accent icon for section titles */
+#mynestai-settings-native-host > #AdvancedFormatting h4.standoutHeader > span::before,
+#mynestai-settings-native-host > #AdvancedFormatting h4.standoutHeader > div > span::before,
+#mynestai-settings-native-host > #AdvancedFormatting h4.standoutHeader b > span::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--mynest-accent);
+    font-size: 13px;
+    margin-right: 8px;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting #ContextSettings > div > h4.standoutHeader > div > span::before {
+    content: "\f5fd"; /* fa-layer-group - Context Template */
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting #ContextSettings h4.standoutHeader > span::before {
+    content: "\f036"; /* fa-align-left - Context Formatting */
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting #InstructSettingsColumn > h4.standoutHeader > div > span::before {
+    content: "\f120"; /* fa-terminal - Instruct Template */
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting #InstructSequencesColumn > h4.standoutHeader b > span::before {
+    content: "\f0ca"; /* fa-list-ul - Instruct Sequences */
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting #SystemPromptColumn > h4.standoutHeader > div > span::before {
+    content: "\f15c"; /* fa-file-lines - System Prompt */
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting #SystemPromptColumn > div > h4.range-block-title > span::before {
+    content: "\f0ae"; /* fa-list-check - Custom Stopping Strings */
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting #SystemPromptColumn div[name="tokenizerSelectorBlock"] h4 > span::before {
+    content: "\f121"; /* fa-code - Tokenizer */
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting #SystemPromptColumn > div:has(#reasoning_auto_parse) > h4.standoutHeader > span::before {
+    content: "\f5dc"; /* fa-brain - Reasoning */
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting #SystemPromptColumn > div:has(#bind_model_templates) > h4.standoutHeader::before {
+    content: "\f12e"; /* fa-puzzle-piece - Miscellaneous */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--mynest-accent);
+    font-size: 13px;
+    margin-right: 8px;
+}
+
+/* Template selector rows -------------------------------------- */
+#mynestai-settings-native-host > #AdvancedFormatting .flex-container[title*="Select your current"] {
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting [data-preset-manager-for] {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Selects ----------------------------------------------------- */
+#mynestai-settings-native-host > #AdvancedFormatting select {
+    min-height: 38px;
+    padding: 0 30px 0 12px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, .25) url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23d98b9e' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 11px center / 11px auto;
+    color: var(--mynest-text);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* Inputs & textareas ------------------------------------------ */
+#mynestai-settings-native-host > #AdvancedFormatting input[type="text"].text_pole,
+#mynestai-settings-native-host > #AdvancedFormatting input[type="number"].text_pole,
+#mynestai-settings-native-host > #AdvancedFormatting textarea.text_pole {
+    border: 1px solid var(--mynest-border);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, .25);
+    color: var(--mynest-text);
+    padding: 8px 10px;
+    box-sizing: border-box;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting textarea.text_pole {
+    min-height: 64px;
+    resize: vertical;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting input[type="text"].text_pole:focus,
+#mynestai-settings-native-host > #AdvancedFormatting input[type="number"].text_pole:focus,
+#mynestai-settings-native-host > #AdvancedFormatting textarea.text_pole:focus,
+#mynestai-settings-native-host > #AdvancedFormatting select:focus {
+    outline: none;
+    border-color: var(--mynest-accent);
+    box-shadow: 0 0 0 3px rgba(217, 139, 158, .15);
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting textarea.monospace {
+    font-family: "JetBrains Mono", "Fira Code", Consolas, monospace;
+    font-size: 12px;
+}
+
+/* Field labels ------------------------------------------------ */
+#mynestai-settings-native-host > #AdvancedFormatting small:not(.fa-solid):not(.fa-regular):not(.fa-brands) {
+    display: block;
+    color: var(--mynest-muted);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: .4px;
+}
+
+/* Checkbox rows ----------------------------------------------- */
+#mynestai-settings-native-host > #AdvancedFormatting .checkbox_label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: var(--mynest-text);
+    font-size: 12.5px;
+    box-sizing: border-box;
+    transition: background .15s ease, border-color .15s ease;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting .checkbox_label:hover {
+    background: rgba(217, 139, 158, .08);
+    border-color: var(--mynest-border);
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting .checkbox_label input[type="checkbox"] {
+    accent-color: var(--mynest-accent);
+    margin: 0;
+    flex: 0 0 auto;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting .checkbox_label small {
+    display: inline;
+    color: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting .checkbox_label .fa-exclamation-triangle,
+#mynestai-settings-native-host > #AdvancedFormatting .checkbox_label .warning {
+    color: #ffd166;
+    margin-left: auto;
+}
+
+/* Header toggle chips (bolt / link / power) ------------------- */
+#mynestai-settings-native-host > #AdvancedFormatting .standoutHeader .checkbox_label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    border-radius: 0;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting .standoutHeader .checkbox_label > small {
+    display: inline-flex;
+    line-height: 1;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting .standoutHeader .checkbox_label i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--mynest-border);
+    border-radius: 9px;
+    background: rgba(255, 255, 255, .05);
+    color: var(--mynest-muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting .standoutHeader .checkbox_label i:hover {
+    background: rgba(217, 139, 158, .1);
+    border-color: var(--mynest-accent);
+    color: var(--mynest-accent);
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting .standoutHeader .checkbox_label:has(input:checked) i {
+    background: rgba(217, 139, 158, .15);
+    border-color: var(--mynest-accent);
+    color: var(--mynest-accent);
+}
+
+/* Preset manager icon buttons ---------------------------------- */
+#mynestai-settings-native-host > #AdvancedFormatting [data-preset-manager-update],
+#mynestai-settings-native-host > #AdvancedFormatting [data-preset-manager-rename],
+#mynestai-settings-native-host > #AdvancedFormatting [data-preset-manager-new],
+#mynestai-settings-native-host > #AdvancedFormatting [data-preset-manager-import],
+#mynestai-settings-native-host > #AdvancedFormatting [data-preset-manager-export],
+#mynestai-settings-native-host > #AdvancedFormatting [data-preset-manager-restore],
+#mynestai-settings-native-host > #AdvancedFormatting [data-preset-manager-delete] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--mynest-border);
+    border-radius: 9px;
+    background: rgba(255, 255, 255, .05);
+    color: var(--mynest-text);
+    font-size: 14px;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting [data-preset-manager-update]:hover,
+#mynestai-settings-native-host > #AdvancedFormatting [data-preset-manager-rename]:hover,
+#mynestai-settings-native-host > #AdvancedFormatting [data-preset-manager-new]:hover,
+#mynestai-settings-native-host > #AdvancedFormatting [data-preset-manager-import]:hover,
+#mynestai-settings-native-host > #AdvancedFormatting [data-preset-manager-export]:hover,
+#mynestai-settings-native-host > #AdvancedFormatting [data-preset-manager-restore]:hover,
+#mynestai-settings-native-host > #AdvancedFormatting [data-preset-manager-delete]:hover {
+    background: rgba(217, 139, 158, .1);
+    border-color: var(--mynest-accent);
+    color: var(--mynest-accent);
+    transform: translateY(-1px);
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting [data-preset-manager-delete] {
+    background: rgba(255, 77, 77, .14);
+    border-color: rgba(255, 77, 77, .35);
+    color: #ff7b7b;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting [data-preset-manager-delete]:hover {
+    background: rgba(255, 77, 77, .28);
+    border-color: rgba(255, 77, 77, .55);
+    color: #ff8f8f;
+}
+
+/* Sub-cards: details groups ----------------------------------- */
+#mynestai-settings-native-host > #AdvancedFormatting details {
+    margin: 0 0 12px;
+    border: 1px solid var(--mynest-border);
+    border-radius: 12px;
+    background: rgba(0, 0, 0, .10);
+    padding: 14px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting details > summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 0 13px;
+    color: var(--mynest-text);
+    font-size: 13.5px;
+    font-weight: 800;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting details > summary::-webkit-details-marker {
+    display: none;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting details > summary::before {
+    content: "\f078"; /* fa-chevron-down */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 10px;
+    color: var(--mynest-accent);
+    transition: transform .18s ease;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting details[open] > summary::before {
+    transform: rotate(180deg);
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting details[open] > summary {
+    margin-bottom: 12px;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting details > summary small.fa-solid {
+    color: var(--mynest-muted);
+    font-size: 12px;
+    display: inline;
+}
+
+/* Expand-editor buttons ---------------------------------------- */
+#mynestai-settings-native-host > #AdvancedFormatting .editor_maximize {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 26px;
+    width: 26px;
+    height: 26px;
+    margin: 0 0 0 auto !important;
+    padding: 0;
+    border: 1px solid var(--mynest-border);
+    border-radius: 7px;
+    background: rgba(255, 255, 255, .05);
+    color: var(--mynest-muted);
+    font-size: 11px;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+
+#mynestai-settings-native-host > #AdvancedFormatting .editor_maximize:hover {
+    background: rgba(217, 139, 158, .1);
+    border-color: var(--mynest-accent);
+    color: var(--mynest-accent);
+}
+
+/* Token padding row ------------------------------------------- */
+#mynestai-settings-native-host > #AdvancedFormatting [name="tokenPaddingBlock"] input[type="number"] {
+    width: 140px;
+    min-height: 34px;
+    margin-left: auto;
+    text-align: right;
+}
+
+/* Instruct / System Prompt inner blocks ------------------------ */
+#mynestai-settings-native-host > #AdvancedFormatting #instructSettingsBlock,
+#mynestai-settings-native-host > #AdvancedFormatting #SystemPromptBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Responsive: stack the three columns -------------------------- */
+@media (max-width: 1400px) {
+    #mynestai-settings-native-host > #AdvancedFormatting > .flex-container.spaceEvenly {
+        flex-direction: column;
+    }
 }
 
 /* Consistent MYnestAI treatment for every native settings page.  These rules
@@ -1886,6 +5509,154 @@ body.mynestai-in-chat #form_sheld {
 .mynestai-message-context-target {
     filter: blur(3px);
     transition: filter .15s ease;
+}
+
+/* =========================================================
+   CHAT MENU BACKGROUND PICKER
+   ========================================================= */
+
+#mynestai-bg-picker .mynestai-bg-panel {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    width: min(680px, 94vw);
+    max-height: 84vh;
+    overflow: hidden;
+    border: 1px solid var(--mynest-border);
+    border-radius: 20px;
+    background: #18191d;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .55);
+    color: var(--mynest-text);
+}
+
+#mynestai-bg-picker .mynestai-bg-panel > header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--mynest-border);
+    background: rgba(30, 30, 33, .9);
+}
+
+#mynestai-bg-picker .mynestai-bg-panel > header strong {
+    font-size: 16px;
+}
+
+#mynestai-bg-picker .mynestai-bg-subtitle {
+    flex: 1;
+    color: var(--mynest-muted);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+#mynestai-bg-picker .mynestai-bg-panel > header button {
+    border: 0;
+    background: transparent;
+    color: var(--mynest-muted);
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+#mynestai-bg-host {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 10px 14px;
+}
+
+#mynestai-bg-picker .mynestai-bg-panel > footer {
+    display: flex;
+    justify-content: center;
+    flex: 0 0 auto;
+    padding: 10px 14px;
+    border-top: 1px solid var(--mynest-border);
+    background: rgba(30, 30, 33, .9);
+}
+
+#mynestai-bg-reset {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border: 1px solid rgba(217, 139, 158, .5);
+    border-radius: 12px;
+    background: transparent;
+    color: var(--mynest-accent);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, transform .15s ease;
+}
+
+#mynestai-bg-reset:hover {
+    background: var(--mynest-accent-soft);
+}
+
+#mynestai-bg-reset.mynestai-bg-reset-disabled {
+    opacity: .45;
+    cursor: default;
+}
+
+/* Native backgrounds panel once mounted inside the picker host */
+
+#mynestai-bg-host .drawer-content {
+    position: static;
+    top: auto;
+    left: auto;
+    right: auto;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+}
+
+#mynestai-bg-host #bg-header-fixed {
+    position: sticky;
+    top: -10px;
+    z-index: 5;
+    flex-shrink: 0;
+    padding: 0 2px 10px;
+    background: #18191d;
+    border-bottom: 1px solid var(--mynest-border);
+}
+
+#mynestai-bg-host #bg_tabs {
+    height: auto;
+    flex-grow: 0;
+    overflow-y: visible;
+}
+
+#mynestai-bg-host .bg_tab_panel {
+    height: auto;
+    overflow-y: visible;
+    padding: 6px 2px;
+}
+
+#mynestai-bg-host .bg_example {
+    border-radius: 14px;
+}
+
+#mynestai-bg-host .bg_example.selected-background {
+    outline: 2px solid var(--mynest-accent);
+    outline-offset: 1px;
+}
+
+#mynestai-bg-host .bg_example.locked-background {
+    outline: 2px solid var(--mynest-accent);
+    outline-offset: 1px;
 }
 
 /* =========================================================

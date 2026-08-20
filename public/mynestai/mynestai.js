@@ -13,7 +13,6 @@
         ['chat-presets', 'Chat Compilation Presets', 'Control how chats are assembled', 'fa-file-lines'],
         ['formatting', 'Advanced Formatting', 'Tune prompts and response formatting', 'fa-sliders'],
         ['worlds', 'Worlds / Lorebook', 'Manage world information and lorebooks', 'fa-book-open'],
-        ['backgrounds', 'Backgrounds', 'Choose and customise chat backgrounds', 'fa-image'],
     ];
     let rightPanelHome = null;
     let activePanel = 'chat';
@@ -23,6 +22,11 @@
     let mountedSettingsClassName = null;
     let groupDeleteObserver = null;
     let characterDetailObserver = null;
+    let mountedBackgroundsNode = null;
+    let mountedBackgroundsHome = null;
+    let mountedBackgroundsNextSibling = null;
+    let mountedBackgroundsClassName = null;
+    let mountedBackgroundsObserver = null;
     let activeMessageMenu = null;
     let companionDirty = false;
     let companionModeOverride = null;
@@ -460,6 +464,9 @@
             case 'manage_chat_files':
                 document.getElementById('option_select_chat')?.click();
                 break;
+            case 'backgrounds':
+                openBackgroundPicker();
+                break;
             case 'import_chat':
                 document.getElementById('option_select_chat')?.click();
                 window.setTimeout(() => document.getElementById('chat_Import_button')?.click(), 250);
@@ -472,6 +479,94 @@
                 window.setTimeout(() => document.querySelector('.chat-menu-item[data-action="duplicate_chat"]')?.click(), 80);
                 break;
         }
+    }
+
+    function openBackgroundPicker() {
+        hideChatMenu();
+        const node = document.getElementById('Backgrounds');
+        const home = document.getElementById('backgrounds-button');
+        const host = document.getElementById('mynestai-bg-host');
+        const picker = document.getElementById('mynestai-bg-picker');
+        if (!node || !home || !host || !picker || mountedBackgroundsNode) return;
+        mountedBackgroundsNode = node;
+        mountedBackgroundsHome = home;
+        mountedBackgroundsNextSibling = node.nextSibling;
+        mountedBackgroundsClassName = node.className;
+        node.classList.remove('closedDrawer');
+        node.classList.add('openDrawer', 'mynestai-bg-native');
+        host.appendChild(node);
+        picker.classList.add('mynestai-visible');
+        host.addEventListener('click', forceLockChatBackground, true);
+        if (!mountedBackgroundsObserver) {
+            mountedBackgroundsObserver = new MutationObserver(updateBackgroundPickerState);
+        }
+        mountedBackgroundsObserver.observe(host, { childList: true, subtree: true });
+        updateBackgroundPickerState();
+    }
+
+    function closeBackgroundPicker() {
+        const picker = document.getElementById('mynestai-bg-picker');
+        const host = document.getElementById('mynestai-bg-host');
+        if (!mountedBackgroundsNode || !mountedBackgroundsHome) {
+            picker?.classList.remove('mynestai-visible');
+            return;
+        }
+        host?.removeEventListener('click', forceLockChatBackground, true);
+        mountedBackgroundsObserver?.disconnect();
+        if (mountedBackgroundsNextSibling?.parentElement === mountedBackgroundsHome) mountedBackgroundsHome.insertBefore(mountedBackgroundsNode, mountedBackgroundsNextSibling);
+        else mountedBackgroundsHome.appendChild(mountedBackgroundsNode);
+        mountedBackgroundsNode.className = mountedBackgroundsClassName;
+        mountedBackgroundsNode = null;
+        mountedBackgroundsHome = null;
+        mountedBackgroundsNextSibling = null;
+        mountedBackgroundsClassName = null;
+        picker?.classList.remove('mynestai-visible');
+    }
+
+    function bgExampleUrl(example) {
+        return window.jQuery?.(example).data?.('url') ?? example.dataset.url;
+    }
+
+    function forceLockChatBackground(event) {
+        if (event.target.closest('.jg-menu, .jg-button')) return;
+        const example = event.target.closest('.bg_example');
+        if (!example) return;
+        const url = bgExampleUrl(example);
+        const ctx = context();
+        if (!url || !ctx?.chatMetadata) return;
+        if (ctx.chatMetadata.custom_background !== url) {
+            ctx.chatMetadata.custom_background = url;
+            ctx.saveMetadataDebounced?.();
+        }
+        const bg1 = document.getElementById('bg1');
+        if (bg1) bg1.style.backgroundImage = url;
+        updateBackgroundPickerState();
+        window.setTimeout(updateBackgroundPickerState, 250);
+    }
+
+    function resetChatBackground() {
+        const ctx = context();
+        if (!ctx?.chatMetadata) return;
+        const wasLocked = Boolean(ctx.chatMetadata.custom_background);
+        const unlock = document.querySelector('#mynestai-bg-picker .bg_example.locked-background .jg-unlock');
+        if (unlock) unlock.click();
+        if (wasLocked) {
+            delete ctx.chatMetadata.custom_background;
+            ctx.saveMetadataDebounced?.();
+            const globalUrl = bgExampleUrl(document.querySelector('#mynestai-bg-picker #bg_menu_content .bg_example.selected'));
+            const bg1 = document.getElementById('bg1');
+            if (bg1) bg1.style.backgroundImage = globalUrl || '';
+            updateBackgroundPickerState();
+        }
+    }
+
+    function updateBackgroundPickerState() {
+        const reset = document.getElementById('mynestai-bg-reset');
+        const lock = context()?.chatMetadata?.custom_background;
+        if (reset) reset.classList.toggle('mynestai-bg-reset-disabled', !lock);
+        document.querySelectorAll('#mynestai-bg-picker .bg_example').forEach(example => {
+            example.classList.toggle('locked-background', bgExampleUrl(example) === lock);
+        });
     }
 
     async function handleMessageMenuAction(action) {
@@ -681,7 +776,7 @@
         const chatMenu = document.createElement('div');
         chatMenu.id = 'mynestai-chat-menu';
         chatMenu.className = 'mynestai-overlay-menu';
-        chatMenu.innerHTML = '<div class="mynestai-menu-backdrop"></div><div class="mynestai-menu-panel"><header><strong>Chat options</strong><button type="button" data-menu-close aria-label="Close">×</button></header><button data-chat-action="companion_mode"><i class="fa-regular fa-heart"></i>Companion Soul</button><button data-chat-action="start_new_chat"><i class="fa-solid fa-plus"></i>Start New Chat</button><button data-chat-action="manage_chat_files"><i class="fa-solid fa-folder-open"></i>Manage Chat Files</button><button data-chat-action="import_chat"><i class="fa-solid fa-file-import"></i>Import Chat</button><button data-chat-action="export_chat"><i class="fa-solid fa-file-export"></i>Export Chat</button><button data-chat-action="duplicate_chat"><i class="fa-solid fa-copy"></i>Duplicate Chat</button></div>';
+        chatMenu.innerHTML = '<div class="mynestai-menu-backdrop"></div><div class="mynestai-menu-panel"><header><strong>Chat options</strong><button type="button" data-menu-close aria-label="Close">×</button></header><button data-chat-action="companion_mode"><i class="fa-regular fa-heart"></i>Companion Soul</button><button data-chat-action="start_new_chat"><i class="fa-solid fa-plus"></i>Start New Chat</button><button data-chat-action="manage_chat_files"><i class="fa-solid fa-folder-open"></i>Manage Chat Files</button><button data-chat-action="backgrounds"><i class="fa-solid fa-image"></i>Background</button><button data-chat-action="import_chat"><i class="fa-solid fa-file-import"></i>Import Chat</button><button data-chat-action="export_chat"><i class="fa-solid fa-file-export"></i>Export Chat</button><button data-chat-action="duplicate_chat"><i class="fa-solid fa-copy"></i>Duplicate Chat</button></div>';
         document.body.appendChild(chatMenu);
         const companionPage = document.createElement('section');
         companionPage.id = 'mynestai-companion-page';
@@ -692,20 +787,33 @@
         messageMenu.className = 'mynestai-overlay-menu';
         messageMenu.innerHTML = '<div class="mynestai-menu-backdrop"></div><div class="mynestai-menu-panel"><button data-message-action="generate_image"><i class="fa-solid fa-image"></i>Generate Image</button><button data-message-action="edit_message"><i class="fa-solid fa-pencil"></i>Edit Message</button><button class="mynestai-menu-danger" data-message-action="delete_message"><i class="fa-solid fa-trash-can"></i>Delete Message</button></div>';
         document.body.appendChild(messageMenu);
+        const bgPicker = document.createElement('div');
+        bgPicker.id = 'mynestai-bg-picker';
+        bgPicker.className = 'mynestai-overlay-menu';
+        bgPicker.setAttribute('aria-label', 'Background picker');
+        bgPicker.innerHTML = '<div class="mynestai-menu-backdrop"></div><div class="mynestai-bg-panel"><header><strong>Background</strong><span class="mynestai-bg-subtitle">applies to this chat</span><button type="button" data-menu-close aria-label="Close">×</button></header><div id="mynestai-bg-host" class="mynestai-bg-host"></div><footer><button type="button" id="mynestai-bg-reset" class="mynestai-bg-reset"><i class="fa-solid fa-rotate-left"></i>Reset to default</button></footer></div>';
+        document.body.appendChild(bgPicker);
         document.getElementById('mynestai-workspace-back').addEventListener('click', closeChatWorkspace);
         workspace.querySelector('.mynestai-chat-more').addEventListener('click', openChatMenu);
         document.getElementById('mynestai-composer').addEventListener('submit', sendMessage);
         chatMenu.addEventListener('click', event => { if (event.target.closest('.mynestai-menu-backdrop,[data-menu-close]')) hideChatMenu(); const button = event.target.closest('[data-chat-action]'); if (button) handleChatMenuAction(button.dataset.chatAction); });
         messageMenu.addEventListener('click', event => { if (event.target.closest('.mynestai-menu-backdrop')) hideMessageMenu(); const button = event.target.closest('[data-message-action]'); if (button) handleMessageMenuAction(button.dataset.messageAction); });
+        bgPicker.addEventListener('click', event => {
+            if (event.target.closest('.mynestai-menu-backdrop,[data-menu-close]')) closeBackgroundPicker();
+            if (event.target.closest('.mynestai-bg-panel')) window.setTimeout(updateBackgroundPickerState, 0);
+        });
+        document.getElementById('mynestai-bg-reset').addEventListener('click', resetChatBackground);
         document.addEventListener('pointerdown', event => {
-            if (event.target.closest('.mynestai-menu-panel, .mynestai-chat-more')) return;
+            if (event.target.closest('.mynestai-menu-panel, .mynestai-bg-panel, .mynestai-chat-more')) return;
             if (document.getElementById('mynestai-chat-menu')?.classList.contains('mynestai-visible')) hideChatMenu();
             if (document.getElementById('mynestai-message-menu')?.classList.contains('mynestai-visible')) hideMessageMenu();
+            if (document.getElementById('mynestai-bg-picker')?.classList.contains('mynestai-visible')) closeBackgroundPicker();
         });
         document.addEventListener('keydown', event => {
             if (event.key !== 'Escape') return;
             hideChatMenu();
             hideMessageMenu();
+            closeBackgroundPicker();
             if (document.getElementById('mynestai-companion-page')?.classList.contains('mynestai-visible')) closeCompanionMode();
         });
         prepareChatImport();
@@ -1137,7 +1245,6 @@
             'chat-presets': document.getElementById('ai_response_configuration'),
             formatting: document.getElementById('AdvancedFormatting'),
             worlds: document.getElementById('WorldInfo'),
-            backgrounds: document.getElementById('Backgrounds'),
         };
         return nodes[id] ?? null;
     }
@@ -1157,7 +1264,6 @@
         node.classList.add('mynestai-native-settings');
         host.appendChild(node);
         if (id === 'image-generation') configureImageGenerationPage(node);
-        if (id === 'backgrounds') configureBackgroundsPage(node);
     }
 
     function configureImageGenerationPage(node) {
@@ -1175,11 +1281,6 @@
                 else label.textContent = labels[index];
             }
         });
-    }
-
-    function configureBackgroundsPage(node) {
-        const addLabel = node.querySelector('#add_background_button_top span');
-        if (addLabel) addLabel.textContent = 'Add';
     }
 
     function unmountNativeSettings() {

@@ -1210,11 +1210,11 @@ export async function initPresetManager() {
         }
     });
 
-    $('#af_master_import').on('click', () => {
-        $('#af_master_import_file').trigger('click');
+    $('#af_master_Import').on('click', () => {
+        $('#af_master_Import_file').trigger('click');
     });
 
-    $('#af_master_import_file').on('change', async function (e) {
+    $('#af_master_Import_file').on('change', async function (e) {
         if (!(e.target instanceof HTMLInputElement)) {
             return;
         }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="file" path="sillytavern/node_modules/"/>
+        <exclude domain="file" path="node/"/>
+        <exclude domain="file" path="node.log"/>
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="file" path="sillytavern/node_modules/"/>
+        <exclude domain="file" path="node.log"/>
+    </device-transfer>
+</data-extraction-rules>

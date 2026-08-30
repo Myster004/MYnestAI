@@ -1,0 +1,7 @@
+<resources>
+    <!-- Tablets / foldables unfolded -->
+    <dimen name="splash_padding">48dp</dimen>
+    <dimen name="splash_logo_size">72dp</dimen>
+    <dimen name="splash_text_size">20sp</dimen>
+    <dimen name="splash_log_size">13sp</dimen>
+</resources>

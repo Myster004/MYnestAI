@@ -1,0 +1,26 @@
+<resources>
+    <!-- Base theme: DayNight Material3, edge-to-edge, supports all models -->
+    <style name="Theme.SillyTavern" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <!-- Allow drawing into display cutout (notch/punch-hole) – we pad via insets so nothing is obscured -->
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <!-- Edge-to-edge on all API levels -->
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">false</item>
+        <!-- Splash screen (Android 12+) – falls back to windowBackground on older -->
+        <item name="android:windowBackground">@drawable/bg_splash</item>
+        <!-- Surface colors use Material You when available -->
+        <item name="colorPrimary">@color/st_primary</item>
+        <item name="colorOnPrimary">@color/st_on_primary</item>
+        <item name="colorSurface">@color/st_surface</item>
+    </style>
+
+    <!-- Splash overlay theme variant for fast startup -->
+    <style name="Theme.SillyTavern.Splash" parent="Theme.SillyTavern">
+        <item name="postSplashScreenTheme">@style/Theme.SillyTavern</item>
+    </style>
+</resources>

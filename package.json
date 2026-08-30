@@ -128,7 +128,13 @@
         "lint": "eslint \"src/**/*.js\" \"public/**/*.js\" ./*.js",
         "lint:fix": "eslint \"src/**/*.js\" \"public/**/*.js\" ./*.js --fix",
         "plugins:update": "node plugins update",
-        "plugins:install": "node plugins install"
+        "plugins:install": "node plugins install",
+        "android:prepare": "node android/scripts/prepare-assets.mjs",
+        "android:prepare:clean": "node android/scripts/prepare-assets.mjs --clean",
+        "android:node": "node android/scripts/download-node.mjs",
+        "android:build": "node android/scripts/build.mjs",
+        "android:build:release": "node android/scripts/build.mjs --release",
+        "android:clean": "node -e \"import('node:fs').then(fs=>{ fs.rmSync('android/app/src/main/assets/sillytavern',{recursive:true,force:true}); fs.rmSync('android/app/build',{recursive:true,force:true}); console.log('cleaned'); })\""
     },
     "bin": {
         "sillytavern": "./src/server-global.js"

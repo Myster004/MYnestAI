@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Exclude huge runtime data from Auto Backup (fits low-storage models) -->
+    <exclude domain="file" path="sillytavern/node_modules/" />
+    <exclude domain="file" path="node/" />
+    <exclude domain="file" path="node.log" />
+    <exclude domain="file" path="_uploads/" />
+    <!-- Keep user data -->
+</full-backup-content>

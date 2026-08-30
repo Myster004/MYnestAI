@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeRefresh"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- WebView: edge-to-edge, fits cutouts & gesture nav -->
+        <WebView
+            android:id="@+id/webView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none"
+            tools:ignore="WebViewLayout" />
+
+        <!-- Splash / loading overlay – scrollable on tiny screens (320dp), centered on tablets -->
+        <ScrollView
+            android:id="@+id/splashScroll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:id="@+id/splash"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="400dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@color/st_splash_bg"
+                android:padding="@dimen/splash_padding">
+
+                <ProgressBar
+                    android:layout_width="@dimen/splash_logo_size"
+                    android:layout_height="@dimen/splash_logo_size"
+                    android:indeterminate="true"
+                    android:indeterminateTint="?attr/colorPrimary" />
+
+                <TextView
+                    android:id="@+id/splashText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/loading"
+                    android:textColor="@color/st_text_primary"
+                    android:textSize="@dimen/splash_text_size"
+                    android:gravity="center"
+                    android:maxLines="3"
+                    android:ellipsize="end" />
+
+                <TextView
+                    android:id="@+id/splashLog"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:textColor="@color/st_text_secondary"
+                    android:textSize="@dimen/splash_log_size"
+                    android:fontFamily="monospace"
+                    android:maxWidth="@dimen/splash_log_max_width"
+                    android:layout_gravity="center"
+                    android:maxLines="12"
+                    android:ellipsize="end"
+                    android:visibility="gone"
+                    tools:text="Copying SillyTavern files…"
+                    tools:visibility="visible" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/retryButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/retry"
+                    style="@style/Widget.Material3.Button"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <!-- Small footer for low-storage / permission hint -->
+                <TextView
+                    android:id="@+id/splashHint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:textColor="@color/st_text_secondary"
+                    android:textSize="12sp"
+                    android:gravity="center"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

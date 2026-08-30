@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">SillyTavern</string>
+    <string name="loading">Starting SillyTavern server…</string>
+    <string name="server_start_failed">Failed to start local server</string>
+    <string name="notification_channel">SillyTavern Server</string>
+    <string name="notification_title">SillyTavern is running</string>
+    <string name="notification_text">Local server on 127.0.0.1:8000 • Tap to open</string>
+    <string name="retry">Retry</string>
+    <string name="error_extract_assets">Failed to extract app assets. Check storage free space.</string>
+</resources>

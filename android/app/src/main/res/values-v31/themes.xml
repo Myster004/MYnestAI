@@ -1,0 +1,12 @@
+<resources>
+    <!-- Android 12+ Material You: use dynamic color where available, still fits older models via fallback -->
+    <style name="Theme.SillyTavern" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="android:windowBackground">@drawable/bg_splash</item>
+        <!-- Dynamic color is auto-applied by Material3 on v31+ when enabled -->
+    </style>
+</resources>

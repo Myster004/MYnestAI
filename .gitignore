@@ -58,3 +58,13 @@ public/scripts/extensions/third-party
 yarn.lock
 *.code-workspace
 test-results/
+
+# Android embedded
+/android/app/build/
+/android/app/release.keystore
+/android/app/src/main/assets/sillytavern/*
+!/android/app/src/main/assets/sillytavern/.gitkeep
+/android/app/src/main/assets/node/*
+!/android/app/src/main/assets/node/.gitkeep
+/android/local.properties
+/android/.gradle/

@@ -1,0 +1,12 @@
+<resources>
+    <!-- Universal palette – works on all screens / densities, desaturated for OLED/LCD -->
+    <color name="st_primary">#7C4DFF</color>
+    <color name="st_on_primary">#FFFFFF</color>
+    <color name="st_surface">#121212</color>
+    <color name="st_surface_light">#F5F5F5</color>
+    <color name="st_splash_bg">#121212</color>
+    <color name="st_splash_bg_light">#FFFFFF</color>
+    <color name="st_text_primary">#FFFFFF</color>
+    <color name="st_text_secondary">#AAAAAA</color>
+    <color name="st_accent">#03DAC6</color>
+</resources>

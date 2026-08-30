@@ -1,0 +1,10 @@
+<resources>
+    <!-- Universal dimens – scale with screen size via sw600dp overrides -->
+    <dimen name="splash_padding">24dp</dimen>
+    <dimen name="splash_logo_size">48dp</dimen>
+    <dimen name="splash_text_size">16sp</dimen>
+    <dimen name="splash_log_size">11sp</dimen>
+    <dimen name="splash_log_max_width">640dp</dimen>
+    <!-- WebView bottom inset for gesture nav -->
+    <dimen name="webview_bottom_padding">0dp</dimen>
+</resources>

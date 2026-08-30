@@ -1,0 +1,6 @@
+<resources>
+    <!-- Large tablets / ChromeOS -->
+    <dimen name="splash_padding">64dp</dimen>
+    <dimen name="splash_logo_size">96dp</dimen>
+    <dimen name="splash_text_size">22sp</dimen>
+</resources>

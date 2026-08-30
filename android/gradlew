@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+#
+# Gradle start up script for UN*X
+#
+# This file is the standard Gradle wrapper script. If you have Gradle installed
+# you can also just run `gradle` instead. For a full wrapper, run:
+#   gradle wrapper
+# on a machine with Gradle installed.
+#
+# For this project we keep the wrapper jar out of git; the script will
+# download it via the wrapper properties URL on first run if needed.
+
+set -e
+APP_NAME="Gradle"
+APP_BASE_NAME=$(basename "$0")
+DIRNAME=$(dirname "$0")
+
+# Use wrapper jar if present, else fall back to system gradle
+WRAPPER_JAR="$DIRNAME/gradle/wrapper/gradle-wrapper.jar"
+if [ -f "$WRAPPER_JAR" ]; then
+  exec java -jar "$WRAPPER_JAR" "$@"
+elif command -v gradle >/dev/null 2>&1; then
+  exec gradle "$@"
+else
+  echo "Gradle not found. Install Gradle 8.7+ or run: gradle wrapper"
+  echo "Download: https://gradle.org/install/"
+  exit 1
+fi

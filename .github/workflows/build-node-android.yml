@@ -142,7 +142,7 @@ jobs:
             --dest-os=android \
             --openssl-no-asm \
             --cross-compiling \
-            --with-intl=small-icu
+            --with-intl=none
 
       - name: Build Node.js
         working-directory: node-v20.18.1

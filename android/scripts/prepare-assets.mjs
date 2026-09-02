@@ -128,6 +128,6 @@ const mb = (bytes / 1024 / 1024).toFixed(1);
 console.log(`Done in ${elapsed}s – ${mb} MB copied to ${destRoot}`);
 console.log('');
 console.log('Next:');
-console.log('  1) Download Node runtime:  node android/scripts/download-node.mjs');
+console.log('  1) Prepare Node runtime:    npm run android:node:prepare');
 console.log('  2) Build APK:              cd android && ./gradlew assembleDebug');
 console.log('     Or via npm:            npm run android:build');

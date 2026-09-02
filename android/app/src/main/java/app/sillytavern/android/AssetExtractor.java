@@ -33,8 +33,7 @@ public final class AssetExtractor {
             File versionFile = new File(ctx.getFilesDir(), AppConstants.VERSION_FILE);
             if (!versionFile.exists()) return true;
             String installed = readFile(versionFile).trim();
-            boolean coreMissing = !AppConstants.getServerEntry(ctx.getFilesDir()).exists()
-                    || AppConstants.findAnyNodeBinary(ctx.getFilesDir()) == null;
+            boolean coreMissing = !AppConstants.getServerEntry(ctx.getFilesDir()).exists();
             if (coreMissing) return true;
             return !apkVersion.equals(installed);
         } catch (Exception e) {
@@ -83,11 +82,11 @@ public final class AssetExtractor {
         if (cb != null) cb.onProgress("Extracting app files…");
 
         String[] top = am.list("");
-        boolean hasST = false, hasNode = false;
+        boolean hasST = false, hasNodeLibs = false;
         if (top != null) {
             for (String t : top) {
                 if (AppConstants.ASSET_ST_ROOT.equals(t)) hasST = true;
-                if (AppConstants.ASSET_NODE_ROOT.equals(t)) hasNode = true;
+                if (AppConstants.ASSET_NODE_LIBS_ROOT.equals(t)) hasNodeLibs = true;
             }
         }
 
@@ -97,32 +96,19 @@ public final class AssetExtractor {
 
         // Keep data/ – never wipe user chats
         deleteRecursive(new File(filesDir, AppConstants.ST_DIR_NAME));
-        deleteRecursive(new File(filesDir, AppConstants.NODE_DIR_NAME));
 
         if (hasST) {
             if (cb != null) cb.onProgress("Copying SillyTavern files… (may take ~30s on slow storage)");
             copyAssetDir(am, AppConstants.ASSET_ST_ROOT, new File(filesDir, AppConstants.ST_DIR_NAME), cb);
         }
-        if (hasNode) {
-            if (cb != null) cb.onProgress("Copying Node runtime…");
-            copyAssetDir(am, AppConstants.ASSET_NODE_ROOT, new File(filesDir, AppConstants.NODE_DIR_NAME), cb);
+
+        // Copy dependent native libraries (e.g. libc++_shared.so, libz.so) as assets
+        deleteRecursive(new File(filesDir, AppConstants.NODE_LIBS_DIR_NAME));
+        if (hasNodeLibs) {
+            if (cb != null) cb.onProgress("Copying Node shared libraries…");
+            copyAssetDir(am, AppConstants.ASSET_NODE_LIBS_ROOT, new File(filesDir, AppConstants.NODE_LIBS_DIR_NAME), cb);
         } else {
-            Log.w(TAG, "No assets/node found – will rely on system node (not recommended for standalone)");
-        }
-
-        // chmod all possible binaries – fits SELinux enforcing devices
-        for (String abi : new String[]{"arm64-v8a", "armeabi-v7a", "x86_64", "x86"}) {
-            File bin = new File(filesDir, AppConstants.NODE_DIR_NAME + "/" + abi + "/bin/node");
-            makeExecutable(bin);
-        }
-        makeExecutable(new File(filesDir, AppConstants.NODE_DIR_NAME + "/bin/node"));
-        // Also chmod any node found via fallback search
-        File any = AppConstants.findAnyNodeBinary(filesDir);
-        if (any != null) makeExecutable(any);
-
-        // Verify at least one binary is executable after extraction
-        if (AppConstants.findAnyNodeBinary(filesDir) == null) {
-            Log.w(TAG, "No executable node binary after extraction – APK may have been built without node assets for this ABI (" + getCurrentAbi() + ")");
+            Log.i(TAG, "No assets/nodelibs found – dependent .so files bundled in jniLibs only");
         }
 
         try {
@@ -135,17 +121,6 @@ public final class AssetExtractor {
             if (cb != null) cb.onProgress("Ready");
         } catch (Exception e) {
             Log.w(TAG, "Failed to write version file", e);
-        }
-    }
-
-    private static void makeExecutable(File bin) {
-        if (bin == null || !bin.exists()) return;
-        try {
-            boolean ok = bin.setExecutable(true, false);
-            Log.i(TAG, "chmod +x " + bin + " -> " + ok);
-            try { Runtime.getRuntime().exec(new String[]{"chmod", "755", bin.getAbsolutePath()}).waitFor(); } catch (Exception ignored) {}
-        } catch (Exception e) {
-            Log.w(TAG, "chmod failed for " + bin, e);
         }
     }
 

@@ -1,191 +1,73 @@
-name: Build Node.js for Android
+name: Build Android APK (prebuilt libnode.so)
+
+# Replaces the old source-build workflow (node-v20.18.1 source + NDK + make),
+# which failed during the ICU step with an "Exec format error" because a
+# host-built icupkg was executed in the Android build environment.
+#
+# New approach: download a PREBUILT libnode.so (no source compile, no make,
+# no ICU build), then build the APK entirely on a Linux x64 runner.
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
 
 permissions:
   contents: read
 
 jobs:
-  build-node-android:
-    name: Build Node 20.18.1 - Android ARM64
-    runs-on: ubuntu-22.04
-
-    env:
-      NODE_VERSION: "20.18.1"
-      ANDROID_API: "33"
-      NDK_VERSION: "28.2.13676358"
-      ABI: "arm64-v8a"
+  build-apk:
+    name: Build Android APK (arm64-v8a)
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout MYnestAI
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: "3.10"
+          node-version: "22"
 
-      - name: Install build dependencies
+      - name: Prepare prebuilt Android Node (libnode.so + headers)
+        # Downloads the prebuilt libnode.so from gmaclennan/nodejs-mobile.
+        # Does NOT compile Node.js, does NOT run make or ICU tools.
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential \
-            make \
-            g++ \
-            gcc \
-            python3 \
-            python3-pip \
-            curl \
-            wget \
-            git \
-            tar \
-            xz-utils \
-            patch
+          npm run android:node:prepare
 
-      - name: Install Android SDK command-line tools
+      - name: Validate libnode.so (ARM64 Android ELF)
+        # Verifies libnode.so is ELF64/AArch64 without executing it on the x64 host.
         run: |
-          mkdir -p "$HOME/android-sdk/cmdline-tools"
+          npm run android:node:validate
 
-          cd "$HOME"
-
-          wget -q \
-            https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip \
-            -O commandlinetools.zip
-
-          unzip -q commandlinetools.zip \
-            -d "$HOME/android-sdk/cmdline-tools"
-
-          mkdir -p "$HOME/android-sdk/cmdline-tools/latest"
-
-          mv "$HOME/android-sdk/cmdline-tools/cmdline-tools/"* \
-             "$HOME/android-sdk/cmdline-tools/latest/"
-
-          rm -rf "$HOME/android-sdk/cmdline-tools/cmdline-tools"
-          rm commandlinetools.zip
-
-      - name: Configure Android SDK
+      - name: Prepare Android dependencies
         run: |
-          export ANDROID_HOME="$HOME/android-sdk"
-          export ANDROID_SDK_ROOT="$ANDROID_HOME"
+          npm install
 
-          echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
-          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
-
-          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
-          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
-
-      - name: Install Android SDK platform and NDK
+      - name: Prepare assets
         run: |
-          yes | sdkmanager --licenses >/dev/null || true
+          npm run android:prepare
 
-          sdkmanager \
-            "platform-tools" \
-            "platforms;android-${ANDROID_API}" \
-            "ndk;${NDK_VERSION}"
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
 
-      - name: Verify Android toolchain
+      - name: Set up Android SDK + NDK
+        uses: android-actions/setup-android@v3
+
+      - name: Build debug APK
+        working-directory: android
         run: |
-          echo "ANDROID_HOME=$ANDROID_HOME"
+          ./gradlew assembleDebug --no-daemon
 
-          ls -la \
-            "$ANDROID_HOME/ndk/${NDK_VERSION}/toolchains/llvm/prebuilt/linux-x86_64/bin/" \
-            | head -30
-
-          test -x \
-            "$ANDROID_HOME/ndk/${NDK_VERSION}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android${ANDROID_API}-clang"
-
-      - name: Download Node.js source
-        run: |
-          curl -L \
-            "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}.tar.gz" \
-            -o "node-v${NODE_VERSION}.tar.gz"
-
-          tar -xzf "node-v${NODE_VERSION}.tar.gz"
-
-      - name: Configure Node.js for Android ARM64
-        working-directory: node-v20.18.1
-        env:
-          NDK_ROOT: ${{ env.ANDROID_HOME }}/ndk/${{ env.NDK_VERSION }}
-        run: |
-          export TOOLCHAIN="$NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64"
-
-          export PATH="$TOOLCHAIN/bin:$PATH"
-
-          export CC="$TOOLCHAIN/bin/aarch64-linux-android${ANDROID_API}-clang"
-          export CXX="$TOOLCHAIN/bin/aarch64-linux-android${ANDROID_API}-clang++"
-          export AR="$TOOLCHAIN/bin/llvm-ar"
-          export LD="$TOOLCHAIN/bin/ld"
-          export STRIP="$TOOLCHAIN/bin/llvm-strip"
-
-          export GYP_DEFINES="\
-          target_arch=arm64 \
-          v8_target_arch=arm64 \
-          android_target_arch=arm64 \
-          host_os=linux \
-          OS=android \
-          android_ndk_path=$NDK_ROOT"
-
-          echo "CC=$CC"
-          echo "CXX=$CXX"
-
-          "$CC" --version
-
-          ./configure \
-            --dest-cpu=arm64 \
-            --dest-os=android \
-            --openssl-no-asm \
-            --cross-compiling \
-            --with-intl=small-icu
-
-      - name: Build Node.js
-        working-directory: node-v20.18.1
-        run: |
-          make -j2
-
-      - name: Validate Node binary
-        working-directory: node-v20.18.1
-        run: |
-          file out/Release/node
-
-          readelf -h out/Release/node
-
-          test -f out/Release/node
-
-          test "$(uname -m)" = "x86_64"
-
-      - name: Prepare MYnestAI Node asset
-        run: |
-          mkdir -p \
-            "android/app/src/main/assets/node/${ABI}/bin"
-
-          cp \
-            "node-v${NODE_VERSION}/out/Release/node" \
-            "android/app/src/main/assets/node/${ABI}/bin/node"
-
-          chmod 755 \
-            "android/app/src/main/assets/node/${ABI}/bin/node"
-
-          file \
-            "android/app/src/main/assets/node/${ABI}/bin/node"
-
-          ls -lh \
-            "android/app/src/main/assets/node/${ABI}/bin/node"
-
-      - name: Validate generated asset
-        run: |
-          file \
-            "android/app/src/main/assets/node/${ABI}/bin/node"
-
-          readelf -h \
-            "android/app/src/main/assets/node/${ABI}/bin/node" \
-            | grep -E \
-              "Class:|Machine:|Type:"
-
-      - name: Upload Android Node binary
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: node-${{ env.NODE_VERSION }}-android-${{ env.ABI }}
-          path: android/app/src/main/assets/node/${{ env.ABI }}/bin/node
+          name: mynestai-android-arm64
+          path: android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 30

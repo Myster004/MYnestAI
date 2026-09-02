@@ -2,7 +2,7 @@
 /**
  * Helper to run the full Android build pipeline:
  *   1) prepare assets (copy sillytavern payload)
- *   2) optional: ensure node binaries present (warn if missing)
+ *   2) validate prebuilt libnode.so + headers are present
  *   3) invoke gradle assemble
  *
  * Usage:
@@ -29,14 +29,56 @@ if (!noPrepare) {
     console.log('Skipping asset prepare (--no-prepare)');
 }
 
-// Check node binaries
-const nodeBin = path.join(androidDir, 'app/src/main/assets/node/arm64-v8a/bin/node');
-const genericBin = path.join(androidDir, 'app/src/main/assets/node/bin/node');
-if (!fs.existsSync(nodeBin) && !fs.existsSync(genericBin)) {
-    console.warn('\nWARNING: No Node binary found in assets/node/');
-    console.warn('  Run: node android/scripts/download-node.mjs');
-    console.warn('  Or place binaries manually. APK will build but will FAIL at runtime.\n');
+// Validate prebuilt libnode.so before packaging – fail early rather than producing broken APK
+const libnode = path.join(androidDir, 'app/src/main/jniLibs/arm64-v8a/libnode.so');
+const nodeHeader = path.join(androidDir, 'app/src/main/node/include/node/node.h');
+
+if (!fs.existsSync(libnode)) {
+    console.error('\nERROR: Prebuilt libnode.so is missing.');
+    console.error('');
+    console.error('Expected:');
+    console.error(`  android/app/src/main/jniLibs/arm64-v8a/libnode.so`);
+    console.error('');
+    console.error('Run the Node preparation step first:');
+    console.error('  npm run android:node:prepare');
+    console.error('  # or: node android/scripts/prepare-node-android.mjs');
+    console.error('');
+    console.error('See android/README.md for details.');
+    console.error('The APK build is aborted to avoid producing a broken standalone APK.');
+    process.exit(1);
 }
+
+if (!fs.existsSync(nodeHeader)) {
+    console.error('\nERROR: Node headers (node.h) are missing.');
+    console.error('');
+    console.error('Expected:');
+    console.error(`  android/app/src/main/node/include/node/node.h`);
+    console.error('');
+    console.error('Run: npm run android:node:prepare');
+    process.exit(1);
+}
+
+const stat = fs.statSync(libnode);
+if (stat.size < 10 * 1024 * 1024) {
+    console.error(`\nERROR: libnode.so too small (${stat.size} bytes) – likely not a full Node library.`);
+    console.error('Re-run: npm run android:node:prepare -- --force');
+    process.exit(1);
+}
+
+const fd = fs.openSync(libnode, 'r');
+const buf = Buffer.alloc(4);
+fs.readSync(fd, buf, 0, 4, 0);
+fs.closeSync(fd);
+if (buf[0] === 0x4d && buf[1] === 0x5a) {
+    console.error('\nERROR: libnode.so is Windows PE (MZ) – cannot run on Android.');
+    process.exit(1);
+}
+if (buf[0] !== 0x7f || buf[1] !== 0x45 || buf[2] !== 0x4c || buf[3] !== 0x46) {
+    console.error('\nERROR: libnode.so is not an ELF binary – likely Windows/Linux binary.');
+    process.exit(1);
+}
+console.log(`\n✓ Prebuilt libnode.so validated: ${path.relative(repoRoot, libnode)} (${(stat.size/1024/1024).toFixed(1)} MB, ELF)`);
+console.log(`✓ Node headers present: ${path.relative(repoRoot, nodeHeader)}`);
 
 console.log(`\n=== Building APK (${variant}) ===`);
 const gradleCmd = process.platform === 'win32' ? 'gradlew.bat' : './gradlew';
@@ -56,3 +98,4 @@ try {
     console.error('  See android/README.md');
     process.exit(1);
 }
+

@@ -13,12 +13,8 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,10 +25,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Foreground service that hosts Node – fits all Android models.
- * - ABI fallback (tries all bundled ABIs)
+ * Foreground service that hosts Node via the embedded libnode.so (JNI).
+ *
+ * - Prebuilt libnode.so loaded through NativeNode (System.loadLibrary)
  * - Port fallback (8000→8010)
- * - Log rotation (2MB cap for low-storage)
+ * - Log to logcat + notification
  * - Doze/OEM kill resilience
  */
 public class NodeService extends Service {
@@ -50,7 +47,6 @@ public class NodeService extends Service {
     private final ExecutorService exec = Executors.newSingleThreadExecutor();
     private volatile State state = State.IDLE;
     private volatile String lastMessage = "";
-    private volatile Process nodeProcess;
     private final AtomicBoolean shouldStop = new AtomicBoolean(false);
     private volatile int actualPort = AppConstants.ST_PORT;
 
@@ -83,9 +79,7 @@ public class NodeService extends Service {
         stopNode();
         exec.shutdownNow();
         super.onDestroy();
-    }
-
-    public State getState() { return state; }
+    }    public State getState() { return state; }
     public String getLastMessage() { return lastMessage; }
     public int getActualPort() { return actualPort; }
 
@@ -124,6 +118,9 @@ public class NodeService extends Service {
                 });
                 if (shouldStop.get()) return;
 
+                // Prepare dependent native libraries (copy from assets to filesDir if present)
+                prepareNativeLibs();
+
                 setState(State.STARTING, "Starting server…");
                 // Try ports sequentially – fits OEMs that reserve 8000
                 IOException lastErr = null;
@@ -137,17 +134,15 @@ public class NodeService extends Service {
                             setState(State.RUNNING, AppConstants.getBaseUrl(port));
                             return;
                         }
-                        // Port likely busy or Node died – kill and try next
+                        // Port likely busy or Node died – tell the runtime to stop and try next
                         Log.w(TAG, "Port " + port + " not ready, trying next");
                         stopNode();
                         Thread.sleep(400);
                     } catch (IOException e) {
                         lastErr = e;
-                        Log.w(TAG, "Port " + port + " spawn failed", e);
+                        Log.w(TAG, "Port " + port + " start failed", e);
                         stopNode();
                         if (e.getMessage() != null && e.getMessage().contains("EADDRINUSE")) continue;
-                        // Other errors (missing binary) shouldn’t retry ports
-                        if (e.getMessage() != null && e.getMessage().contains("Node binary missing")) throw e;
                     }
                 }
                 // All ports failed
@@ -162,17 +157,42 @@ public class NodeService extends Service {
         });
     }
 
+    /**
+     * Copy dependent native libraries (.so files) from assets/nodelibs to filesDir.
+     * The app's libnode.so is already in nativeLibraryDir via jniLibs, but if the
+     * build bundles additional libs as assets, make them available.
+     */
+    private void prepareNativeLibs() {
+        try {
+            android.content.res.AssetManager am = getAssets();
+            String[] libs = am.list(AppConstants.ASSET_NODE_LIBS_ROOT);
+            if (libs == null || libs.length == 0) return;
+            File libsDir = AppConstants.getNodeLibsDir(getFilesDir());
+            if (!libsDir.exists() && !libsDir.mkdirs()) return;
+            for (String lib : libs) {
+                if (!lib.endsWith(".so")) continue;
+                try (java.io.InputStream in = am.open(AppConstants.ASSET_NODE_LIBS_ROOT + "/" + lib);
+                     java.io.FileOutputStream out = new java.io.FileOutputStream(new File(libsDir, lib))) {
+                    byte[] buf = new byte[64 * 1024];
+                    int n;
+                    while ((n = in.read(buf)) != -1) out.write(buf, 0, n);
+                    out.getFD().sync();
+                }
+            }
+            Log.i(TAG, "Copied " + libs.length + " native lib(s) to " + libsDir);
+        } catch (Exception e) {
+            Log.w(TAG, "prepareNativeLibs failed: " + e.getMessage());
+        }
+    }
+
     private void spawnNode(int port) throws Exception {
         File filesDir = getFilesDir();
-        // ABI fallback: try primary, then any
-        File nodeBin = AppConstants.getNodeBinary(filesDir, AssetExtractor.getCurrentAbi());
-        if (!nodeBin.exists() || !nodeBin.canExecute()) {
-            File any = AppConstants.findAnyNodeBinary(filesDir);
-            if (any != null) nodeBin = any;
+
+        // Check native library is loaded
+        if (!NativeNode.isLoaded()) {
+            throw new IOException("Native Node library (libnode.so) failed to load. Rebuild APK with prebuilt libnode.so for arm64-v8a. See android/README.md.");
         }
-        if (nodeBin == null || !nodeBin.exists() || !nodeBin.canExecute()) {
-            throw new IOException("Node binary missing or not executable: " + (nodeBin != null ? nodeBin.getAbsolutePath() : "null") + " (abi=" + AssetExtractor.getCurrentAbi() + "). Built APK missing node for this device – rebuild with `npm run android:node` or use universal APK.");
-        }
+
         File stDir = AppConstants.getSillyTavernDir(filesDir);
         File serverJs = AppConstants.getServerEntry(filesDir);
         if (!serverJs.exists()) throw new IOException("server.js missing: " + serverJs.getAbsolutePath() + " – assets extraction failed.");
@@ -180,87 +200,67 @@ public class NodeService extends Service {
         if (!dataDir.exists()) //noinspection ResultOfMethodCallIgnored
             dataDir.mkdirs();
 
-        File logFile = new File(filesDir, AppConstants.NODE_LOG);
-        if (!logFile.exists()) //noinspection ResultOfMethodCallIgnored
-            logFile.createNewFile();
-        // Rotate if too large (fits low-storage)
-        if (logFile.length() > AppConstants.NODE_LOG_MAX_BYTES) {
-            try { new RandomAccessFile(logFile, "rw").setLength(0); } catch (Exception ignored) {}
-        }
+        // Prepare supporting env
+        try { new File(filesDir, "tmp").mkdirs(); } catch (Exception ignored) {}
 
+        // Construct Node arguments (same as the old `node server.js --dataRoot ... --port ...`)
         List<String> cmd = new ArrayList<>();
-        cmd.add(nodeBin.getAbsolutePath());
         cmd.add(serverJs.getAbsolutePath());
         cmd.add("--dataRoot"); cmd.add(dataDir.getAbsolutePath());
         cmd.add("--port"); cmd.add(String.valueOf(port));
 
-        Log.i(TAG, "Spawning: " + String.join(" ", cmd) + " cwd=" + stDir.getAbsolutePath());
-        emitLog("$ " + String.join(" ", cmd) + " (abi=" + AssetExtractor.getCurrentAbi() + ")");
+        String[] argv = cmd.toArray(new String[0]);
+        Log.i(TAG, "Starting embedded Node: " + String.join(" ", argv) + " cwd=" + stDir.getAbsolutePath());
+        emitLog("$ node " + String.join(" ", argv));
 
-        ProcessBuilder pb = new ProcessBuilder(cmd);
-        pb.directory(stDir);
-        pb.environment().put("HOME", filesDir.getAbsolutePath());
-        pb.environment().put("NODE_ENV", "production");
-        pb.environment().put("ANDROID_FILES_DIR", filesDir.getAbsolutePath());
-        pb.environment().put("ANDROID_DATA_ROOT", dataDir.getAbsolutePath());
-        // Some Node native modules need TMPDIR writable
-        pb.environment().put("TMPDIR", filesDir.getAbsolutePath() + "/tmp");
-        new File(filesDir, "tmp").mkdirs();
-        pb.redirectErrorStream(true);
+        // Set environment variables used by SillyTavern / Node native modules
+        setNodeEnvironment(filesDir, dataDir);
 
-        nodeProcess = pb.start();
+        // Run embedded Node on a background thread (blocking call into node::Start)
+        startEmbeddedNode(argv, stDir, port);
+    }
 
-        Thread logThread = new Thread(() -> {
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(nodeProcess.getInputStream()))) {
-                String line;
-                FileOutputStream fos = new FileOutputStream(logFile, true);
-                long written = logFile.length();
-                while ((line = br.readLine()) != null) {
-                    Log.i(TAG, "[node] " + line);
-                    emitLog(line);
-                    byte[] b = (line + "\n").getBytes();
-                    // Simple rotation: if over cap, truncate
-                    if (written + b.length > AppConstants.NODE_LOG_MAX_BYTES) {
-                        fos.close();
-                        try { new RandomAccessFile(logFile, "rw").setLength(0); } catch (Exception ignored) {}
-                        fos = new FileOutputStream(logFile, true);
-                        written = 0;
-                    }
-                    fos.write(b); fos.flush();
-                    written += b.length;
-                    if (shouldStop.get()) break;
+    private void setNodeEnvironment(File filesDir, File dataDir) {
+        // Embedded Node reads environment variables from the process. The native bridge
+        // sets the working directory (chdir). For TMPDIR/HOME we rely on the native
+        // bridge defaults and ensure the directories exist so native modules can write.
+        try {
+            File tmpDir = new File(filesDir, "tmp");
+            if (!tmpDir.exists()) //noinspection ResultOfMethodCallIgnored
+                tmpDir.mkdirs();
+            File logFile = new File(filesDir, AppConstants.NODE_LOG);
+            if (!logFile.exists()) //noinspection ResultOfMethodCallIgnored
+                logFile.createNewFile();
+            if (logFile.length() > AppConstants.NODE_LOG_MAX_BYTES) {
+                try { java.io.RandomAccessFile raf = new java.io.RandomAccessFile(logFile, "rw"); raf.setLength(0); raf.close(); } catch (Exception ignored) {}
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "setNodeEnvironment: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Run embedded Node.js via NativeNode JNI on a dedicated daemon thread.
+     * node::Start is blocking; we run it in a background thread and track its exit.
+     */
+    private void startEmbeddedNode(String[] argv, File stDir, int port) {
+        // Keep reference for stopNode() – we stop by requesting the runtime to stop,
+        // but node::Start has no clean async stop; we rely on waitForServer + port retry.
+        NativeNode.startNodeAsync(argv, stDir.getAbsolutePath(), exitCode -> {
+            Log.w(TAG, "Embedded Node exited with code " + exitCode + " port=" + port);
+            if (!shouldStop.get() && state != State.FAILED) {
+                emitLog("[node] exited with code " + exitCode);
+                if (state != State.STARTING) {
+                    setState(State.FAILED, "Server stopped unexpectedly (code " + exitCode + "). Tap Retry.");
                 }
-                fos.close();
-            } catch (Exception e) { Log.e(TAG, "Log reader died", e); }
-        }, "node-log");
-        logThread.setDaemon(true); logThread.start();
-
-        Thread exitThread = new Thread(() -> {
-            try {
-                int code = nodeProcess.waitFor();
-                Log.w(TAG, "Node exited with " + code + " port=" + port);
-                if (!shouldStop.get() && state != State.FAILED) {
-                    emitLog("[node] exited with code " + code);
-                    // If we’re still in STARTING, let the port loop retry; otherwise fail
-                    if (state == State.STARTING) {
-                        // Don’t set FAILED here – caller will retry next port
-                    } else {
-                        setState(State.FAILED, "Server stopped unexpectedly (code " + code + "). Tap Retry.");
-                    }
-                }
-            } catch (InterruptedException ignored) {}
-        }, "node-exit");
-        exitThread.setDaemon(true); exitThread.start();
+            }
+        });
     }
 
     private boolean waitForServer(int port) {
         long deadline = System.currentTimeMillis() + AppConstants.SERVER_START_TIMEOUT_MS;
         while (System.currentTimeMillis() < deadline && !shouldStop.get()) {
             if (isServerUp(port)) return true;
-            if (nodeProcess != null && !nodeProcess.isAlive()) {
-                Log.w(TAG, "Node died before ready on port " + port);
-                return false;
-            }
             try { Thread.sleep(AppConstants.SERVER_POLL_INTERVAL_MS); } catch (InterruptedException e) { return false; }
         }
         return false;
@@ -280,15 +280,12 @@ public class NodeService extends Service {
     }
 
     private void stopNode() {
-        if (nodeProcess != null) {
-            Log.i(TAG, "Stopping node pid=" + (Build.VERSION.SDK_INT >= 23 ? nodeProcess.pid() : "unknown"));
-            try {
-                nodeProcess.destroy();
-                Thread.sleep(500);
-                if (nodeProcess.isAlive()) nodeProcess.destroyForcibly();
-            } catch (Exception ignored) {}
-            nodeProcess = null;
-        }
+        // With embedded libnode fulfilled via a blocking node::Start on a background thread,
+        // there is no Process to destroy. We cancel processing by setting shouldStop and
+        // letting the server-failure/retry path move on. The daemon thread keeps running
+        // with the runtime until the process exits; we can't force-kill in-process safely.
+        shouldStop.set(true);
+        Log.i(TAG, "stopNode requested (embedded – no external process to kill)");
     }
 
     private void createChannel() {

@@ -21,15 +21,16 @@ public final class AppConstants {
 
     /** Relative path inside filesDir where SillyTavern is extracted */
     public static final String ST_DIR_NAME = "sillytavern";
-    public static final String NODE_DIR_NAME = "node";
     public static final String DATA_DIR_NAME = "data";
+    /** Relative path inside filesDir where dependent native libs are copied */
+    public static final String NODE_LIBS_DIR_NAME = "nodelibs";
 
     /** File that tracks installed payload version to know when to re-extract */
     public static final String VERSION_FILE = ".st_installed_version";
 
     /** Asset roots inside APK */
     public static final String ASSET_ST_ROOT = "sillytavern";
-    public static final String ASSET_NODE_ROOT = "node";
+    public static final String ASSET_NODE_LIBS_ROOT = "nodelibs";
 
     /** Node log file – capped (see NodeService) */
     public static final String NODE_LOG = "node.log";
@@ -50,42 +51,12 @@ public final class AppConstants {
         return new File(filesDir, ST_DIR_NAME);
     }
 
-    public static File getNodeDir(File filesDir) {
-        return new File(filesDir, NODE_DIR_NAME);
+    public static File getNodeLibsDir(File filesDir) {
+        return new File(filesDir, NODE_LIBS_DIR_NAME);
     }
 
     public static File getDataDir(File filesDir) {
         return new File(filesDir, DATA_DIR_NAME);
-    }
-
-    /**
-     * Get Node binary – tries primary ABI, then any supported ABI, then generic fallback.
-     * Fits devices where Build.SUPPORTED_ABIS[0] may not match bundled asset (e.g. ChromeOS x86 on arm).
-     */
-    public static File getNodeBinary(File filesDir, String abi) {
-        File abiPath = new File(getNodeDir(filesDir), abi + "/bin/node");
-        if (abiPath.exists()) return abiPath;
-        // Try any other ABI we may have bundled
-        String[] fallbacks = {"arm64-v8a", "armeabi-v7a", "x86_64", "x86"};
-        for (String f : fallbacks) {
-            File alt = new File(getNodeDir(filesDir), f + "/bin/node");
-            if (alt.exists() && alt.canExecute()) return alt;
-        }
-        return new File(getNodeDir(filesDir), "bin/node");
-    }
-
-    /**
-     * Find best available node binary across all ABIs, or null if none.
-     */
-    public static File findAnyNodeBinary(File filesDir) {
-        String[] abis = {"arm64-v8a", "armeabi-v7a", "x86_64", "x86"};
-        for (String abi : abis) {
-            File f = new File(getNodeDir(filesDir), abi + "/bin/node");
-            if (f.exists()) return f;
-        }
-        File generic = new File(getNodeDir(filesDir), "bin/node");
-        if (generic.exists()) return generic;
-        return null;
     }
 
     public static File getServerEntry(File filesDir) {

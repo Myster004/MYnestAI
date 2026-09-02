@@ -16,25 +16,31 @@ android {
         applicationId "app.sillytavern.android"
         minSdk 24
         targetSdk 34
-        versionCode 1
-        versionName "1.18.0"
+        versionCode 2
+        versionName "2.0.0"
 
         // SillyTavern server config for embedded mode
         buildConfigField "int", "ST_PORT", "8000"
         buildConfigField "String", "ST_HOST", '"127.0.0.1"'
 
+        // ARM64 only – the prebuilt libnode.so is ARM64 Android
         ndk {
-            abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'
+            abiFilters 'arm64-v8a'
         }
         resourceConfigurations += ['en']
+
+        externalNativeBuild {
+            cmake {
+                cppFlags '-std=c++17'
+                arguments '-DANDROID_STL=c++_shared'
+            }
+        }
     }
 
+    // Single-ABI APK (arm64-v8a only – Node.js runtime is ARM64)
     splits {
         abi {
-            enable true
-            reset()
-            include 'arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'
-            universalApk true
+            enable false
         }
     }
 
@@ -56,7 +62,21 @@ android {
         }
         resources {
             excludes += []
-            pickFirsts += ['META-INF/*', '**/LICENSE*']
+            pickFirsts += ['META-INF/*', '**/LICENSE*', '**/libc++_shared.so']
+        }
+    }
+
+    // Compile the JNI bridge and import prebuilt libnode.so via CMake
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version "3.22.1"
+        }
+    }
+
+    sourceSets {
+        main {
+            // jniLibs already at src/main/jniLibs – libnode.so is picked up automatically
         }
     }
 
@@ -72,10 +92,6 @@ android {
         }
     }
 
-    androidResources {
-        generateLocaleConfig true
-    }
-
     buildFeatures {
         buildConfig true
     }
@@ -85,6 +101,35 @@ android {
         checkReleaseBuilds false
     }
 }
+
+// Validate prebuilt libnode.so before packaging – fail early rather than producing broken APK
+tasks.register('validateNodeLib') {
+    doLast {
+        def lib = file('src/main/jniLibs/arm64-v8a/libnode.so')
+        if (!lib.exists()) {
+            throw new GradleException(
+                "\nERROR: Prebuilt Node.js libnode.so is missing.\n" +
+                "Expected: android/app/src/main/jniLibs/arm64-v8a/libnode.so\n" +
+                "Run: npm run android:node:prepare  (downloads prebuilt libnode.so + headers)\n" +
+                "See android/README.md for details.\n" +
+                "The APK build is aborted to avoid producing a broken standalone APK."
+            )
+        }
+        if (lib.length() < 10 * 1024 * 1024) {
+            throw new GradleException("libnode.so too small (${lib.length()} bytes) – likely not a full Node library: ${lib}")
+        }
+        def bytes = new byte[4]
+        lib.withInputStream { it.read(bytes) }
+        if (bytes[0] == 0x4d && bytes[1] == 0x5a) {
+            throw new GradleException("libnode.so is Windows PE (MZ) – cannot run on Android: ${lib}")
+        }
+        if (bytes[0] != 0x7f || bytes[1] != 0x45 || bytes[2] != 0x4c || bytes[3] != 0x46) {
+            throw new GradleException("libnode.so is not ELF (missing \\x7FELF) – likely Windows/Linux binary, not Bionic Android: ${lib}")
+        }
+        println "✓ libnode.so validated: ${lib} (${lib.length()/1024/1024} MB, ELF)"
+    }
+}
+tasks.named('preBuild').configure { dependsOn 'validateNodeLib' }
 
 dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'

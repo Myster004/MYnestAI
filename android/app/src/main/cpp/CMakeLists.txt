@@ -15,8 +15,9 @@
 cmake_minimum_required(VERSION 3.22)
 project(native-node LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Android log library
 find_library(log-lib log)
@@ -52,6 +53,12 @@ endif()
 # ─── JNI bridge library ─────────────────────────────────────────────────────
 add_library(native-node SHARED
     native-node.cpp
+)
+
+set_target_properties(native-node PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS OFF
 )
 
 target_include_directories(native-node PRIVATE

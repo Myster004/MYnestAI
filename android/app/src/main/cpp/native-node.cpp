@@ -43,7 +43,7 @@ Java_app_sillytavern_android_NativeNode_startNode(
     if (argc <= 0) return -1;
 
     // Allocate argv array: node binary name + user args + null terminator
-    char** argv = new char*[argc + 1];
+    char** argv = new char*[argc + 2];
 
     // argv[0] is the program name – use "node" as convention
     argv[0] = strdup("node");

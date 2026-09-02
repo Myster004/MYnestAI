@@ -1,11 +1,7 @@
 name: Build Android APK (prebuilt libnode.so)
 
-# Replaces the old source-build workflow (node-v20.18.1 source + NDK + make),
-# which failed during the ICU step with an "Exec format error" because a
-# host-built icupkg was executed in the Android build environment.
-#
-# New approach: download a PREBUILT libnode.so (no source compile, no make,
-# no ICU build), then build the APK entirely on a Linux x64 runner.
+# Uses a prebuilt Android Node.js shared library.
+# No Node.js source compilation, make, or ICU build is required.
 
 on:
   workflow_dispatch:
@@ -32,13 +28,10 @@ jobs:
           node-version: "22"
 
       - name: Prepare prebuilt Android Node (libnode.so + headers)
-        # Downloads the prebuilt libnode.so from gmaclennan/nodejs-mobile.
-        # Does NOT compile Node.js, does NOT run make or ICU tools.
         run: |
           npm run android:node:prepare
 
       - name: Validate libnode.so (ARM64 Android ELF)
-        # Verifies libnode.so is ELF64/AArch64 without executing it on the x64 host.
         run: |
           npm run android:node:validate
 
@@ -46,7 +39,7 @@ jobs:
         run: |
           npm install
 
-      - name: Prepare assets
+      - name: Prepare Android project
         run: |
           npm run android:prepare
 

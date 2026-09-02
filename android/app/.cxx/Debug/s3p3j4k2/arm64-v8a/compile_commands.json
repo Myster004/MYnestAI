@@ -1,0 +1,7 @@
+[
+{
+  "directory": "D:/MYnestAI/android/app/.cxx/Debug/s3p3j4k2/arm64-v8a",
+  "command": "C:\\Users\\user\\AppData\\Local\\Android\\Sdk\\ndk\\26.1.10909125\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=aarch64-none-linux-android24 --sysroot=C:/Users/user/AppData/Local/Android/Sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dnative_node_EXPORTS -ID:/MYnestAI/android/app/src/main/cpp/../node/include/node -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC -std=c++20 -o CMakeFiles\\native-node.dir\\native-node.cpp.o -c D:\\MYnestAI\\android\\app\\src\\main\\cpp\\native-node.cpp",
+  "file": "D:\\MYnestAI\\android\\app\\src\\main\\cpp\\native-node.cpp"
+}
+]

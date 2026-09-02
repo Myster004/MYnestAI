@@ -1,0 +1,1 @@
+D:\MYnestAI\android\app\src\main\cpp\CMakeLists.txt

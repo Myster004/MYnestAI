@@ -121,34 +121,26 @@ public class NodeService extends Service {
                 // Prepare dependent native libraries (copy from assets to filesDir if present)
                 prepareNativeLibs();
 
-                setState(State.STARTING, "Starting server…");
-                // Try ports sequentially – fits OEMs that reserve 8000
-                IOException lastErr = null;
-                for (int port = AppConstants.ST_PORT; port <= AppConstants.ST_PORT_MAX; port++) {
-                    actualPort = port;
-                    try {
-                        spawnNode(port);
-                        boolean ready = waitForServer(port);
-                        if (shouldStop.get()) return;
-                        if (ready) {
-                            setState(State.RUNNING, AppConstants.getBaseUrl(port));
-                            return;
-                        }
-                        // Port likely busy or Node died – tell the runtime to stop and try next
-                        Log.w(TAG, "Port " + port + " not ready, trying next");
-                        stopNode();
-                        Thread.sleep(400);
-                    } catch (IOException e) {
-                        lastErr = e;
-                        Log.w(TAG, "Port " + port + " start failed", e);
-                        stopNode();
-                        if (e.getMessage() != null && e.getMessage().contains("EADDRINUSE")) continue;
+                setState(State.STARTING, "Starting server...");
+                actualPort = AppConstants.ST_PORT;
+                try {
+                    spawnNode(actualPort);
+                    boolean ready = waitForServer(actualPort);
+                    if (shouldStop.get()) return;
+                    if (ready) {
+                        setState(State.RUNNING, AppConstants.getBaseUrl(actualPort));
+                        return;
                     }
+                    Log.w(TAG, "Server did not become ready on port " + actualPort);
+                } catch (IOException e) {
+                    Log.w(TAG, "Node start failed on port " + actualPort, e);
                 }
-                // All ports failed
-                String errMsg = lastErr != null ? lastErr.getMessage() : "Server did not become ready in time. Check logs.";
-                setState(State.FAILED, errMsg);
+                // Embedded Node (node::Start) is not safely re-entrant in the same
+                // process. On failure we must restart the whole process rather than
+                // retry in-process, or the app aborts with SIGABRT.
+                setState(State.FAILED, "Server failed to start. Restarting...");
                 stopNode();
+                android.os.Process.killProcess(android.os.Process.myPid());
             } catch (Exception e) {
                 Log.e(TAG, "Failed to start node", e);
                 setState(State.FAILED, e.getMessage() != null ? e.getMessage() : e.toString());

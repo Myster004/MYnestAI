@@ -117,33 +117,51 @@ public class MainActivity extends AppCompatActivity {
         retryBtn = findViewById(R.id.retryButton);
         swipe = findViewById(R.id.swipeRefresh);
 
-        // Apply window insets so NOTHING is under status/nav bars or display cutout.
-        // This guarantees buttons/tabs inside the WebView (ST's top bar, bottom input) never overlap the status bar.
-        View root = swipe; // SwipeRefresh is root
+        // Edge-to-edge WindowInsets handling – single source of truth.
+        // Strategy (pure Android, no ST UI rewrite):
+        //  * Window is edge-to-edge (decorFitsSystemWindows=false, transparent bars, shortEdges)
+        //    so the activity draws behind status/nav. We then inset the *WebView viewport*
+        //    via View padding so SillyTavern's own CSS (which uses top:var(--topBarBlockSize) etc.)
+        //    naturally places its fixed header below the status bar without any custom ST CSS.
+        //    This preserves the official SillyTavern frontend 100% (public/style.css etc.).
+        //  * ClipToPadding=true ensures HTML content is laid out inside the inset rect; the
+        //    padding area shows WebView background (#121212) matching ST, so status bar appears
+        //    with correct dark background and white icons.
+        //  * Splash (native View) is also padded so its retry button never sits under nav.
+        //  * We do NOT hardcode heights/margins; we use system-provided insets. We also expose
+        //    the insets as CSS vars (--sat etc.) for ST or extensions that may read them, but
+        //    we do not override ST's #top-bar/#sheld rules.
+        View root = swipe; // SwipeRefresh is root – single listener prevents double dispatch
         ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
             Insets sys = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
             Insets ime = insets.getInsets(WindowInsetsCompat.Type.ime());
-            // Combine bottom inset: use max of system nav and IME so keyboard doesn’t hide input
+            // Bottom: nav bar when keyboard closed, keyboard height when open.
+            // With edge-to-edge, ime is the only signal; max() handles both.
             int bottom = Math.max(sys.bottom, ime.bottom);
-            // WebView: pad so its HTML viewport is inset – fixed headers with top:0 will render BELOW status bar
-            // This is the critical fix for status-bar overlap on all phones (notch, punch-hole, gesture nav)
+            // Single inset application – View padding in physical pixels (View system)
             webView.setPadding(sys.left, sys.top, sys.right, bottom);
-            webView.setClipToPadding(true); // don’t draw content under padding
-            // Splash also respects insets so its retry button is never under nav bar
+            webView.setClipToPadding(true);
             if (splashScroll != null) {
                 splashScroll.setPadding(sys.left, sys.top, sys.right, bottom);
+                splashScroll.setClipToPadding(false);
             }
-            // Also expose insets to the web page as CSS vars for ST’s own CSS (env(safe-area-inset-* ) fallback)
-            final String js = "document.documentElement.style.setProperty('--sat','" + sys.top + "px');"
-                    + "document.documentElement.style.setProperty('--sab','" + bottom + "px');"
-                    + "document.documentElement.style.setProperty('--sal','" + sys.left + "px');"
-                    + "document.documentElement.style.setProperty('--sar','" + sys.right + "px');";
-            if (webView.getUrl() != null) {
-                try { webView.evaluateJavascript(js, null); } catch (Exception ignored) {}
-            }
+            // Expose to web as CSS vars (optional, non-layout-critical). Convert to CSS px
+            // for any web code that reads --sat, but do not inject layout-changing style.
+            try {
+                float density = getResources().getDisplayMetrics().density;
+                if (density == 0) density = 1f;
+                int topCss = Math.round(sys.top / density);
+                int bottomCss = Math.round(bottom / density);
+                int leftCss = Math.round(sys.left / density);
+                int rightCss = Math.round(sys.right / density);
+                String js = "document.documentElement.style.setProperty('--sat','" + topCss + "px');"
+                        + "document.documentElement.style.setProperty('--sab','" + bottomCss + "px');"
+                        + "document.documentElement.style.setProperty('--sal','" + leftCss + "px');"
+                        + "document.documentElement.style.setProperty('--sar','" + rightCss + "px');";
+                if (webView.getUrl() != null) webView.evaluateJavascript(js, null);
+            } catch (Exception ignored) {}
             return WindowInsetsCompat.CONSUMED;
         });
-        // Force initial insets dispatch so WebView is correctly padded before first draw (prevents flash under status bar)
         ViewCompat.requestApplyInsets(root);
 
         // WebView: enable remote debugging on debug builds (fits developer devices)
@@ -192,34 +210,33 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                // Re-apply safe-area CSS vars – ST reloads CSS on navigation, so inject every page
+                // Keep CSS vars in sync for any web code that reads --sat/--sab (no layout override)
                 try {
-                    // Get current insets again (in case they changed during load)
                     WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(swipe);
                     if (insets != null) {
                         Insets sys = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
                         Insets ime = insets.getInsets(WindowInsetsCompat.Type.ime());
                         int bottom = Math.max(sys.bottom, ime.bottom);
-                        String js = "(function(){"
-                                + "var s=document.documentElement.style;"
-                                + "s.setProperty('--sat','" + sys.top + "px');"
-                                + "s.setProperty('--sab','" + bottom + "px');"
-                                + "s.setProperty('--sal','" + sys.left + "px');"
-                                + "s.setProperty('--sar','" + sys.right + "px');"
-                                // Also inject a <style> that forces ST’s top bar to respect safe area if it uses fixed positioning
-                                + "var id='st-safe-area'; if(!document.getElementById(id)){"
-                                + "var st=document.createElement('style'); st.id=id;"
-                                + "st.textContent=':root{--st-top-offset:var(--sat,0px)} .top_bar, #top-bar, #topBar { padding-top: var(--sat,0px) !important; } .drawer-content, #sheld { padding-bottom: var(--sab,0px) !important; }';"
-                                + "document.head.appendChild(st);}"
-                                + "})();";
+                        float density = getResources().getDisplayMetrics().density;
+                        if (density == 0) density = 1f;
+                        int topCss = Math.round(sys.top / density);
+                        int bottomCss = Math.round(bottom / density);
+                        int leftCss = Math.round(sys.left / density);
+                        int rightCss = Math.round(sys.right / density);
+                        String js = "document.documentElement.style.setProperty('--sat','" + topCss + "px');"
+                                + "document.documentElement.style.setProperty('--sab','" + bottomCss + "px');"
+                                + "document.documentElement.style.setProperty('--sal','" + leftCss + "px');"
+                                + "document.documentElement.style.setProperty('--sar','" + rightCss + "px');";
                         view.evaluateJavascript(js, null);
                     }
                 } catch (Exception ignored) {}
                 swipe.setRefreshing(false);
                 if (splash.getVisibility() == View.VISIBLE && url != null && url.contains("127.0.0.1")) {
-                    // Small delay so transition feels smooth on slow devices
+                    // Remove splash completely – GONE so it doesn't reserve layout space or intercept touches
                     splashScroll.animate().alpha(0f).setDuration(180).withEndAction(() -> {
                         splashScroll.setVisibility(View.GONE);
+                        // Ensure WebView is measured full-size after splash gone (foldables/orientation)
+                        ViewCompat.requestApplyInsets(swipe);
                     }).start();
                 }
             }

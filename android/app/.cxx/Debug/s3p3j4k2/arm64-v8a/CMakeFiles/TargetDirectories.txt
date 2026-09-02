@@ -1,0 +1,3 @@
+D:/MYnestAI/android/app/.cxx/Debug/s3p3j4k2/arm64-v8a/CMakeFiles/native-node.dir
+D:/MYnestAI/android/app/.cxx/Debug/s3p3j4k2/arm64-v8a/CMakeFiles/edit_cache.dir
+D:/MYnestAI/android/app/.cxx/Debug/s3p3j4k2/arm64-v8a/CMakeFiles/rebuild_cache.dir

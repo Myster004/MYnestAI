@@ -52,13 +52,26 @@ const EXCLUDE_PATHS = [
 ];
 
 function shouldExclude(relPath, isDir) {
-    const parts = relPath.split(path.sep);
-    for (const p of parts) if (EXCLUDE_DIRS.has(p)) return true;
-    for (const excl of EXCLUDE_PATHS) if (relPath === excl || relPath.startsWith(excl + path.sep)) return true;
+    // Normalize to POSIX for cross-platform (Windows uses backslash)
+    const relPosix = relPath.split(path.sep).join('/');
+    const parts = relPosix.split('/');
+
+    // Explicit exact-path excludes always apply (e.g. node_modules/.cache)
+    for (const excl of EXCLUDE_PATHS) if (relPosix === excl || relPosix.startsWith(excl + '/')) return true;
+
+    // Inside node_modules, do NOT apply the generic name-based exclude list —
+    // packages legitimately have their own build/, dist/, cache/ folders that must be kept.
+    const isInsideNodeModules = parts[0] === 'node_modules';
+    if (!isInsideNodeModules) {
+        if (EXCLUDE_DIRS.has(parts[0])) return true;
+    } else {
+        // Only exclude the node_modules root itself if node_modules bundling is off
+        if (!includeNodeModules) return true;
+    }
+
     const base = parts[parts.length - 1];
     if (EXCLUDE_FILES.has(base)) return true;
     if (!isDir && EXCLUDE_EXT.has(path.extname(base))) return true;
-    if (!includeNodeModules && relPath.startsWith('node_modules')) return true;
     return false;
 }
 
@@ -106,6 +119,29 @@ console.log('Copying files… (this may take 30-60s)');
 const start = Date.now();
 copyRecursive(repoRoot, destRoot);
 const elapsed = ((Date.now() - start) / 1000).toFixed(1);
+
+// Android-specific post-processing: fix issues that break the embedded
+// nodejs-mobile runtime but are fine for normal desktop/CLI usage.
+
+// 1) Strip the shebang line - node::Start() loads server.js as an ESM
+//    module directly, and the ESM parser chokes on '#!/usr/bin/env node'.
+const bundledServerJs = path.join(destRoot, 'server.js');
+if (fs.existsSync(bundledServerJs)) {
+    let serverJsContent = fs.readFileSync(bundledServerJs, 'utf8');
+    serverJsContent = serverJsContent.replace(/^#!.*\r?\n/, '');
+    fs.writeFileSync(bundledServerJs, serverJsContent, 'utf8');
+    console.log('Stripped shebang from bundled server.js');
+}
+
+// 2) Disable browserLaunch - there is no xdg-open/system browser on Android,
+//    and the resulting spawn ENOENT crashes the embedded Node process.
+const bundledConfigYaml = path.join(destRoot, 'config.yaml');
+if (fs.existsSync(bundledConfigYaml)) {
+    let configContent = fs.readFileSync(bundledConfigYaml, 'utf8');
+    configContent = configContent.replace(/(?<=browserLaunch:[\s\S]*?enabled:\s*)true/, 'false');
+    fs.writeFileSync(bundledConfigYaml, configContent, 'utf8');
+    console.log('Disabled browserLaunch in bundled config.yaml');
+}
 
 // Ensure a marker for bundled version
 fs.writeFileSync(path.join(destRoot, '.android-bundled'), new Date().toISOString(), 'utf8');

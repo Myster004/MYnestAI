@@ -8,6 +8,8 @@
  * See: https://nodejs-mobile.github.io/
  */
 #include <jni.h>
+#include <fcntl.h>
+#include <string>
 #include <cstring>
 #include <cstdlib>
 #include <unistd.h>
@@ -62,14 +64,31 @@ Java_app_sillytavern_android_NativeNode_startNode(
     argv[argc + 1] = nullptr;
 
     // Set working directory if provided (SillyTavern dir)
+    std::string cwdSaved;
     if (cwd != nullptr) {
         const char* cwdStr = env->GetStringUTFChars(cwd, nullptr);
         if (cwdStr != nullptr) {
-            // chdir for working directory – affects Node's process.cwd()
+            cwdSaved = cwdStr;
+            // chdir for working directory - affects Node's process.cwd()
             if (chdir(cwdStr) != 0) {
                 LOGW("chdir to %s failed: %s", cwdStr, strerror(errno));
             }
             env->ReleaseStringUTFChars(cwd, cwdStr);
+        }
+    }
+
+    // Redirect stdout/stderr to a log file - console.log output otherwise
+    // never reaches logcat in this embedded environment.
+    if (!cwdSaved.empty()) {
+        std::string logPath = cwdSaved + "/../node_stdio.log";
+        int logFd = open(logPath.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        if (logFd >= 0) {
+            dup2(logFd, STDOUT_FILENO);
+            dup2(logFd, STDERR_FILENO);
+            close(logFd);
+            LOGI("Redirected stdout/stderr to %s", logPath.c_str());
+        } else {
+            LOGW("Failed to open node stdio log %s: %s", logPath.c_str(), strerror(errno));
         }
     }
 

@@ -37,7 +37,7 @@ public final class AppConstants {
     public static final long NODE_LOG_MAX_BYTES = 2 * 1024 * 1024L; // 2 MB fits low-storage devices
 
     /** Timeout for server readiness – longer on low-end devices (eMMC) */
-    public static final long SERVER_START_TIMEOUT_MS = 60_000L;
+    public static final long SERVER_START_TIMEOUT_MS = 300_000L;
     public static final long SERVER_POLL_INTERVAL_MS = 400L;
 
     /** Minimum free space to attempt extraction (payload ~60–200 MB + node) */

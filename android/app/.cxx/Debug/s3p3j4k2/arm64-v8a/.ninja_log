@@ -1,7 +1,3 @@
 # ninja log v5
-1	19511	8100306429388654	CMakeFiles/native-node.dir/native-node.cpp.o	a7e69ac03f56536e
-19516	22714	8100306460499359	D:/MYnestAI/android/app/build/intermediates/cxx/Debug/s3p3j4k2/obj/arm64-v8a/libnative-node.so	ae1161faacfa0ab2
-14	4079	8100383687444856	CMakeFiles/native-node.dir/native-node.cpp.o	a7e69ac03f56536e
-4109	9294	8100383741041142	D:/MYnestAI/android/app/build/intermediates/cxx/Debug/s3p3j4k2/obj/arm64-v8a/libnative-node.so	ae1161faacfa0ab2
-26	18972	8100575198111662	CMakeFiles/native-node.dir/native-node.cpp.o	a7e69ac03f56536e
-18975	21290	8100575226481289	D:/MYnestAI/android/app/build/intermediates/cxx/Debug/s3p3j4k2/obj/arm64-v8a/libnative-node.so	ae1161faacfa0ab2
+2	31065	8100756181542353	CMakeFiles/native-node.dir/native-node.cpp.o	a7e69ac03f56536e
+31086	34826	8100756218693739	D:/MYnestAI/android/app/build/intermediates/cxx/Debug/s3p3j4k2/obj/arm64-v8a/libnative-node.so	ae1161faacfa0ab2

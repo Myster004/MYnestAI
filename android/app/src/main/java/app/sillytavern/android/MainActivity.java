@@ -43,6 +43,7 @@ import androidx.core.splashscreen.SplashScreen;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 /**
@@ -105,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Edge-to-edge: let WebView draw behind system bars, we handle insets
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        enterImmersiveFullscreen();
 
         setContentView(R.layout.activity_main);
 
@@ -118,31 +120,20 @@ public class MainActivity extends AppCompatActivity {
         swipe = findViewById(R.id.swipeRefresh);
 
         // Edge-to-edge WindowInsets handling – single source of truth.
-        // Strategy (pure Android, no ST UI rewrite):
-        //  * Window is edge-to-edge (decorFitsSystemWindows=false, transparent bars, shortEdges)
-        //    so the activity draws behind status/nav. We then inset the *WebView viewport*
-        //    via View padding so SillyTavern's own CSS (which uses top:var(--topBarBlockSize) etc.)
-        //    naturally places its fixed header below the status bar without any custom ST CSS.
-        //    This preserves the official SillyTavern frontend 100% (public/style.css etc.).
-        //  * ClipToPadding=true ensures HTML content is laid out inside the inset rect; the
-        //    padding area shows WebView background (#121212) matching ST, so status bar appears
-        //    with correct dark background and white icons.
-        //  * Splash (native View) is also padded so its retry button never sits under nav.
-        //  * We do NOT hardcode heights/margins; we use system-provided insets. We also expose
-        //    the insets as CSS vars (--sat etc.) for ST or extensions that may read them, but
-        //    we do not override ST's #top-bar/#sheld rules.
+        // Immersive system bars overlay the app when transiently revealed, so they do not
+        // reserve WebView space. Only physical display cutouts and the IME affect padding.
+        // This preserves SillyTavern's own layout without injecting layout-changing CSS.
         View root = swipe; // SwipeRefresh is root – single listener prevents double dispatch
         ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
-            Insets sys = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+            Insets cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
             Insets ime = insets.getInsets(WindowInsetsCompat.Type.ime());
-            // Bottom: nav bar when keyboard closed, keyboard height when open.
-            // With edge-to-edge, ime is the only signal; max() handles both.
-            int bottom = Math.max(sys.bottom, ime.bottom);
-            // Single inset application – View padding in physical pixels (View system)
-            webView.setPadding(sys.left, sys.top, sys.right, bottom);
+            // Keep the keyboard usable while allowing hidden system bars to overlay content.
+            int bottom = Math.max(cutout.bottom, ime.bottom);
+            // Single inset application – View padding is in physical pixels.
+            webView.setPadding(cutout.left, cutout.top, cutout.right, bottom);
             webView.setClipToPadding(true);
             if (splashScroll != null) {
-                splashScroll.setPadding(sys.left, sys.top, sys.right, bottom);
+                splashScroll.setPadding(cutout.left, cutout.top, cutout.right, bottom);
                 splashScroll.setClipToPadding(false);
             }
             // Expose to web as CSS vars (optional, non-layout-critical). Convert to CSS px
@@ -150,10 +141,10 @@ public class MainActivity extends AppCompatActivity {
             try {
                 float density = getResources().getDisplayMetrics().density;
                 if (density == 0) density = 1f;
-                int topCss = Math.round(sys.top / density);
+                int topCss = Math.round(cutout.top / density);
                 int bottomCss = Math.round(bottom / density);
-                int leftCss = Math.round(sys.left / density);
-                int rightCss = Math.round(sys.right / density);
+                int leftCss = Math.round(cutout.left / density);
+                int rightCss = Math.round(cutout.right / density);
                 String js = "document.documentElement.style.setProperty('--sat','" + topCss + "px');"
                         + "document.documentElement.style.setProperty('--sab','" + bottomCss + "px');"
                         + "document.documentElement.style.setProperty('--sal','" + leftCss + "px');"
@@ -214,15 +205,15 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(swipe);
                     if (insets != null) {
-                        Insets sys = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+                        Insets cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
                         Insets ime = insets.getInsets(WindowInsetsCompat.Type.ime());
-                        int bottom = Math.max(sys.bottom, ime.bottom);
+                        int bottom = Math.max(cutout.bottom, ime.bottom);
                         float density = getResources().getDisplayMetrics().density;
                         if (density == 0) density = 1f;
-                        int topCss = Math.round(sys.top / density);
+                        int topCss = Math.round(cutout.top / density);
                         int bottomCss = Math.round(bottom / density);
-                        int leftCss = Math.round(sys.left / density);
-                        int rightCss = Math.round(sys.right / density);
+                        int leftCss = Math.round(cutout.left / density);
+                        int rightCss = Math.round(cutout.right / density);
                         String js = "document.documentElement.style.setProperty('--sat','" + topCss + "px');"
                                 + "document.documentElement.style.setProperty('--sab','" + bottomCss + "px');"
                                 + "document.documentElement.style.setProperty('--sal','" + leftCss + "px');"
@@ -462,9 +453,30 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onConfigurationChanged(@NonNull android.content.res.Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        enterImmersiveFullscreen();
         // Foldables / tablets: WebView layout will reflow automatically via responsive CSS;
         // we just ensure splash re-centers (insets will be re-dispatched)
         ViewCompat.requestApplyInsets(swipe);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        enterImmersiveFullscreen();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) enterImmersiveFullscreen();
+    }
+
+    private void enterImmersiveFullscreen() {
+        WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(
+                getWindow(), getWindow().getDecorView());
+        controller.setSystemBarsBehavior(
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        controller.hide(WindowInsetsCompat.Type.statusBars() | WindowInsetsCompat.Type.navigationBars());
     }
 
     @Override
